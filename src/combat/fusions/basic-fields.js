@@ -11,7 +11,7 @@ export function tickFields(c,code,interval){
   });
   if(code==='F10')every('main',interval,()=>{
     const t=aim(520)[0];if(!t)return false;const a=c.angleTo(t),g=group();
-    for(let i=0;i<3;i++)add('rect',{x:player.x+Math.cos(a)*(120+140*i)*p.length,y:player.y+Math.sin(a)*(120+140*i)*p.length,angle:a,width:320*p.size,depth:80*p.size,c:[.9,.7,.6][i],delay:.06+i*.1,bucket:g,limit:2,life:.06+i*.1},9,'strips');
+    for(let i=0;i<3;i++)add('rect',{x:player.x+Math.cos(a)*(50+100*i)*p.length,y:player.y+Math.sin(a)*(50+100*i)*p.length,angle:a,width:320*p.size,depth:80*p.size,c:[.9,.7,.6][i],delay:.06+i*.1,bucket:g,limit:2,life:.06+i*.1},9,'strips');
   });
   if(code==='F13')every('main',interval,()=>{
     const centers=[];for(const t of aim(520))if(centers.every(e=>Math.hypot(t.x-e.x,t.y-e.y)>=160))centers.push(t);

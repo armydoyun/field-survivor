@@ -1,0 +1,486 @@
+{
+  "version": "2.6.27",
+  "note": "Seed 42, isolated skill, no passives, fixed targets (HP 1e6) at distance 120 (mines 20, orbit 50) for single/crowd; swarm = 40 approaching from 260 with enemy AI. 10s. DPS = total damage / seconds. Mock canvas only.",
+  "rows": [
+    {
+      "id": "pulse",
+      "tier": "base",
+      "level": 5,
+      "single": 48,
+      "crowd": 48,
+      "swarm": 45
+    },
+    {
+      "id": "orbit",
+      "tier": "base",
+      "level": 5,
+      "single": 23,
+      "crowd": 669,
+      "swarm": 109
+    },
+    {
+      "id": "nova",
+      "tier": "base",
+      "level": 5,
+      "single": 10,
+      "crowd": 312,
+      "swarm": 333
+    },
+    {
+      "id": "chain",
+      "tier": "base",
+      "level": 5,
+      "single": 16,
+      "crowd": 73,
+      "swarm": 73
+    },
+    {
+      "id": "lance",
+      "tier": "base",
+      "level": 5,
+      "single": 17,
+      "crowd": 17,
+      "swarm": 66
+    },
+    {
+      "id": "mine",
+      "tier": "base",
+      "level": 5,
+      "single": 9,
+      "crowd": 282,
+      "swarm": 376
+    },
+    {
+      "id": "rift",
+      "tier": "base",
+      "level": 5,
+      "single": 8,
+      "crowd": 29,
+      "swarm": 452
+    },
+    {
+      "id": "beacon",
+      "tier": "base",
+      "level": 5,
+      "single": 33,
+      "crowd": 33,
+      "swarm": 35
+    },
+    {
+      "id": "spec:pulse:tracking",
+      "tier": "spec",
+      "level": 5,
+      "single": 91,
+      "crowd": 91,
+      "swarm": 86
+    },
+    {
+      "id": "spec:pulse:reservoir",
+      "tier": "spec",
+      "level": 5,
+      "single": 83,
+      "crowd": 89,
+      "swarm": 95
+    },
+    {
+      "id": "spec:orbit:escort",
+      "tier": "spec",
+      "level": 5,
+      "single": 28,
+      "crowd": 112,
+      "swarm": 611
+    },
+    {
+      "id": "spec:orbit:eccentric",
+      "tier": "spec",
+      "level": 5,
+      "single": 0,
+      "crowd": 0,
+      "swarm": 244
+    },
+    {
+      "id": "spec:nova:boundary",
+      "tier": "spec",
+      "level": 5,
+      "single": 13,
+      "crowd": 395,
+      "swarm": 614
+    },
+    {
+      "id": "spec:nova:reflux",
+      "tier": "spec",
+      "level": 5,
+      "single": 16,
+      "crowd": 472,
+      "swarm": 538
+    },
+    {
+      "id": "spec:chain:return",
+      "tier": "spec",
+      "level": 5,
+      "single": 29,
+      "crowd": 130,
+      "swarm": 260
+    },
+    {
+      "id": "spec:chain:circuit",
+      "tier": "spec",
+      "level": 5,
+      "single": 23,
+      "crowd": 119,
+      "swarm": 337
+    },
+    {
+      "id": "spec:lance:return",
+      "tier": "spec",
+      "level": 5,
+      "single": 40,
+      "crowd": 40,
+      "swarm": 197
+    },
+    {
+      "id": "spec:lance:stake",
+      "tier": "spec",
+      "level": 5,
+      "single": 23,
+      "crowd": 23,
+      "swarm": 342
+    },
+    {
+      "id": "spec:mine:pressure",
+      "tier": "spec",
+      "level": 5,
+      "single": 14,
+      "crowd": 423,
+      "swarm": 564
+    },
+    {
+      "id": "spec:mine:leap",
+      "tier": "spec",
+      "level": 5,
+      "single": 16,
+      "crowd": 472,
+      "swarm": 499
+    },
+    {
+      "id": "spec:rift:fold",
+      "tier": "spec",
+      "level": 5,
+      "single": 26,
+      "crowd": 93,
+      "swarm": 673
+    },
+    {
+      "id": "spec:rift:trail",
+      "tier": "spec",
+      "level": 5,
+      "single": 27,
+      "crowd": 81,
+      "swarm": 649
+    },
+    {
+      "id": "spec:beacon:relay",
+      "tier": "spec",
+      "level": 5,
+      "single": 25,
+      "crowd": 127,
+      "swarm": 679
+    },
+    {
+      "id": "spec:beacon:rover",
+      "tier": "spec",
+      "level": 5,
+      "single": 89,
+      "crowd": 89,
+      "swarm": 89
+    },
+    {
+      "id": "fusion:fs_rapid_pulse",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F01",
+      "single": 139,
+      "crowd": 266,
+      "swarm": 1096
+    },
+    {
+      "id": "fusion:fs_support_guns",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F02",
+      "single": 162,
+      "crowd": 161,
+      "swarm": 359
+    },
+    {
+      "id": "fusion:fs_shock_mines",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F03",
+      "single": 70,
+      "crowd": 1957,
+      "swarm": 2040
+    },
+    {
+      "id": "fusion:fs_pulse_typhoon",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F04",
+      "single": 45,
+      "crowd": 1280,
+      "swarm": 2141
+    },
+    {
+      "id": "fusion:fs_wing_lances",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F05",
+      "single": 71,
+      "crowd": 336,
+      "swarm": 1741
+    },
+    {
+      "id": "fusion:fs_conductive_guard",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F06",
+      "single": 100,
+      "crowd": 608,
+      "swarm": 581
+    },
+    {
+      "id": "fusion:fs_rotating_cutters",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F07",
+      "single": 56,
+      "crowd": 1495,
+      "swarm": 1027
+    },
+    {
+      "id": "fusion:fs_meteor_satellites",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F08",
+      "single": 67,
+      "crowd": 840,
+      "swarm": 1633
+    },
+    {
+      "id": "fusion:fs_bullet_barrier",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F09",
+      "single": 61,
+      "crowd": 475,
+      "swarm": 951
+    },
+    {
+      "id": "fusion:fs_surging_strata",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F10",
+      "single": 39,
+      "crowd": 710,
+      "swarm": 1491
+    },
+    {
+      "id": "fusion:fs_reflux_lightning",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F11",
+      "single": 57,
+      "crowd": 1745,
+      "swarm": 1011
+    },
+    {
+      "id": "fusion:fs_mobile_transmission",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F12",
+      "single": 170,
+      "crowd": 341,
+      "swarm": 342
+    },
+    {
+      "id": "fusion:fs_distributed_cuts",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F13",
+      "single": 41,
+      "crowd": 1197,
+      "swarm": 1427
+    },
+    {
+      "id": "fusion:fs_leaping_lances",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F14",
+      "single": 50,
+      "crowd": 71,
+      "swarm": 1150
+    },
+    {
+      "id": "fusion:fs_instant_slash",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F15",
+      "single": 74,
+      "crowd": 440,
+      "swarm": 1938
+    },
+    {
+      "id": "fusion:fs_mobile_mines",
+      "tier": "fusion",
+      "level": 4,
+      "code": "F16",
+      "single": 71,
+      "crowd": 2051,
+      "swarm": 2007
+    },
+    {
+      "id": "fusion:hs_barrage_rapid_pulse",
+      "tier": "higher",
+      "level": 4,
+      "code": "H01",
+      "single": 514,
+      "crowd": 835,
+      "swarm": 2303
+    },
+    {
+      "id": "fusion:hs_barrage_support_guns",
+      "tier": "higher",
+      "level": 4,
+      "code": "H01",
+      "single": 407,
+      "crowd": 1123,
+      "swarm": 1274
+    },
+    {
+      "id": "fusion:hs_barrage_bullet_barrier",
+      "tier": "higher",
+      "level": 4,
+      "code": "H01",
+      "single": 253,
+      "crowd": 1098,
+      "swarm": 2156
+    },
+    {
+      "id": "fusion:hs_storm_pulse_typhoon",
+      "tier": "higher",
+      "level": 4,
+      "code": "H02",
+      "single": 180,
+      "crowd": 3229,
+      "swarm": 4373
+    },
+    {
+      "id": "fusion:hs_storm_reflux_lightning",
+      "tier": "higher",
+      "level": 4,
+      "code": "H02",
+      "single": 227,
+      "crowd": 3853,
+      "swarm": 2284
+    },
+    {
+      "id": "fusion:hs_fleet_wing_lances",
+      "tier": "higher",
+      "level": 4,
+      "code": "H03",
+      "single": 265,
+      "crowd": 1636,
+      "swarm": 4544
+    },
+    {
+      "id": "fusion:hs_fleet_meteor_satellites",
+      "tier": "higher",
+      "level": 4,
+      "code": "H03",
+      "single": 261,
+      "crowd": 2728,
+      "swarm": 4366
+    },
+    {
+      "id": "fusion:hs_fleet_leaping_lances",
+      "tier": "higher",
+      "level": 4,
+      "code": "H03",
+      "single": 219,
+      "crowd": 1347,
+      "swarm": 3085
+    },
+    {
+      "id": "fusion:hs_crusher_conductive_guard",
+      "tier": "higher",
+      "level": 4,
+      "code": "H04",
+      "single": 162,
+      "crowd": 2467,
+      "swarm": 3190
+    },
+    {
+      "id": "fusion:hs_crusher_rotating_cutters",
+      "tier": "higher",
+      "level": 4,
+      "code": "H04",
+      "single": 134,
+      "crowd": 3721,
+      "swarm": 3871
+    },
+    {
+      "id": "fusion:hs_crusher_distributed_cuts",
+      "tier": "higher",
+      "level": 4,
+      "code": "H04",
+      "single": 116,
+      "crowd": 3439,
+      "swarm": 4434
+    },
+    {
+      "id": "fusion:hs_frontline_shock_mines",
+      "tier": "higher",
+      "level": 4,
+      "code": "H05",
+      "single": 155,
+      "crowd": 4357,
+      "swarm": 4784
+    },
+    {
+      "id": "fusion:hs_frontline_surging_strata",
+      "tier": "higher",
+      "level": 4,
+      "code": "H05",
+      "single": 177,
+      "crowd": 2154,
+      "swarm": 3080
+    },
+    {
+      "id": "fusion:hs_frontline_mobile_mines",
+      "tier": "higher",
+      "level": 4,
+      "code": "H05",
+      "single": 160,
+      "crowd": 4623,
+      "swarm": 4788
+    },
+    {
+      "id": "fusion:hs_thunder_slash_mobile_transmission",
+      "tier": "higher",
+      "level": 4,
+      "code": "H06",
+      "single": 257,
+      "crowd": 1167,
+      "swarm": 3336
+    },
+    {
+      "id": "fusion:hs_thunder_slash_instant_slash",
+      "tier": "higher",
+      "level": 4,
+      "code": "H06",
+      "single": 208,
+      "crowd": 1406,
+      "swarm": 5628
+    }
+  ]
+}
