@@ -63,6 +63,18 @@ export const BUILDS = [
       ["power", 5],
     ],
   },
+  {
+    id: "late",
+    label: "후반 빌드(상위융합 Lv4 + 공격력 8 · 다중 사격 3 · 치명 4 · 집중 4 · 과속 5)",
+    skills: [
+      ["fusion:hs_barrage_rapid_pulse", 4],
+      ["power", 8],
+      ["multishot", 3],
+      ["crit", 4],
+      ["focus", 4],
+      ["haste", 5],
+    ],
+  },
 ];
 
 export function simulate(build, route, limit = LIMIT) {

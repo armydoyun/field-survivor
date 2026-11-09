@@ -146,6 +146,11 @@ test('burned signals strengthen the core and add the voice pattern; heard signal
   const cc=core.ensureCore(x,w.profile);for(const node of x.enemies)node.hp=0;const fb=w.spawnEnemy(x,3);fb.final=true;fb.x=x.player.x-240;fb.y=x.player.y;core.moveCore(x,w.profile,fb,.1);assert.deepEqual(healed,[30]);
   x.time=cc.next;core.moveCore(x,w.profile,fb,.01);assert.ok(Math.abs(cc.attack.fireAt-x.time-1.4)<1e-9);
 });
+test('each dismantled guardian shortens the rest between phase-2 core attacks down to a floor', () => {
+  const rest=ended=>{const h=harness(),r=h.run;r.guardianFate={spare:0,end:ended};const c=h.core.ensureCore(r,h.profile);for(const node of r.enemies)node.hp=0;const boss=h.spawnEnemy(r,3);boss.final=true;boss.x=r.player.x-240;boss.y=r.player.y;h.core.moveCore(r,h.profile,boss,.1);
+    c.attack={kind:'ring',x:r.player.x+500,y:r.player.y,angle:0,fireAt:r.time,endAt:r.time};r.time+=.01;h.core.moveCore(r,h.profile,boss,.01);return +(c.next-r.time).toFixed(4);};
+  assert.equal(rest(0),.95);assert.equal(rest(1),+(.95*.8).toFixed(4));assert.equal(rest(3),+(.95*.8**3).toFixed(4));assert.equal(rest(6),.45);
+});
 test('the voice attack hits a player who stays at its centre, unlike the ring attack', () => {
   for(const [kind,hitsAtCentre]of [['voice',true],['ring',false]]){const h=harness(),r=h.run;const c=h.core.ensureCore(r,h.profile);for(const node of r.enemies)node.hp=0;const boss=h.spawnEnemy(r,3);boss.final=true;boss.x=r.player.x-240;boss.y=r.player.y;h.core.moveCore(r,h.profile,boss,.1);h.hits.length=0;
     c.attack={kind,x:r.player.x,y:r.player.y,angle:0,fireAt:r.time,endAt:r.time+.24};h.core.moveCore(r,h.profile,boss,.01);assert.equal(h.hits.length>0,hitsAtCentre,kind);}

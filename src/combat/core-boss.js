@@ -9,7 +9,8 @@ import { coreLines } from '../data/world.js';
 //   분해한 감시자 1회당 연결점 1개 추가(기본 2, 최대 5).
 //   태운 신호 1개당 중심핵 HP +6%, 2개 이상이면 2단계에 '목소리' 공격 추가. 기억한 신호 1개당 2단계 진입 시 HP 15 회복.
 //   기록원을 들었다면 2단계 공격 예고 +0.3초.
-export const CORE_PAYOFF = Object.freeze({ maxShields: 3, baseNodes: 2, maxNodes: 5, burnHp: .06, voiceAt: 2, heardHeal: 15, witnessTell: .3 });
+//   분해한 감시자 1회당 2단계 공격 사이 휴식 ×0.8(최소 0.45초): 분해한 명령이 중심핵의 박자를 빠르게 한다.
+export const CORE_PAYOFF = Object.freeze({ maxShields: 3, baseNodes: 2, maxNodes: 5, burnHp: .06, voiceAt: 2, heardHeal: 15, witnessTell: .3, endedPace: .8, minPhase2Rest: .45 });
 // 목소리 공격: 플레이어 위치의 원판 + 바깥 고리. 고리 공격(ring)과 달리 제자리에 서 있으면 맞는다.
 export const VOICE = Object.freeze({ core: 40, ring: 120, width: 23 });
 const burned = run => (run.signalChoices || []).filter(x => x === 'burn').length;
@@ -38,7 +39,7 @@ export function createCoreBoss({ spawnEnemy, finalRating, hurtPlayer, healPlayer
         if(hit&&c.shields>0){c.shields--;a.blocked=true;appendRecord(profile,run,coreLines.blocked.replace('{left}',c.shields));}
         else if(hit)hurtPlayer(Math.round((c.phase?18:14)*incomingScale(run.time)),run);
       }
-      if(run.time>a.endAt){c.attack=null;c.next=run.time+(c.phase?.95:1.8)+(run.objectiveOutcomes.relay==='complete'?.32:0);}
+      if(run.time>a.endAt){c.attack=null;c.next=run.time+(c.phase?Math.max(CORE_PAYOFF.minPhase2Rest,.95*CORE_PAYOFF.endedPace**(run.guardianFate?.end||0)):1.8)+(run.objectiveOutcomes.relay==='complete'?.32:0);}
     } else if(run.time>=c.next){const tell=1.1+(run.objectiveOutcomes.courier==='complete'?.23:0)+(c.phase&&run.npc?.state==='heard'?CORE_PAYOFF.witnessTell:0),pool=c.phase?(burned(run)>=CORE_PAYOFF.voiceAt?['cross','ring','sweep','voice']:['cross','ring','sweep']):['cross','ring'],kind=pool[c.cycle++%pool.length],sweep=kind==='sweep';c.attack={kind,x:sweep?e.x:p.x,y:sweep?e.y:p.y,angle:sweep?Math.atan2(p.y-e.y,p.x-e.x)-Math.PI/4:run.guardianOrder==='end'?Math.PI/4:0,turn:sweep?Math.PI/2:0,length:400,width:24,fireAt:run.time+tell,endAt:run.time+tell+(sweep?.9:.24)};e.phase=1;}
     if(Math.hypot(p.x-e.x,p.y-e.y)<e.radius+11)hurtPlayer(Math.round(29*incomingScale(run.time)),run);
   }

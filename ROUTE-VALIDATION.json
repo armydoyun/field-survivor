@@ -35,6 +35,10 @@
     {
       "id": "higher",
       "label": "상위융합 Lv4(연사 계열) + 공격력 Lv5"
+    },
+    {
+      "id": "late",
+      "label": "후반 빌드(상위융합 Lv4 + 공격력 8 · 다중 사격 3 · 치명 4 · 집중 4 · 과속 5)"
     }
   ],
   "rows": [
@@ -83,7 +87,7 @@
       "shields": 0,
       "nodesClearedAt": 340,
       "thresholdAt": null,
-      "damageTaken": 3322,
+      "damageTaken": 3719,
       "shieldsUsed": 0
     },
     {
@@ -95,7 +99,7 @@
       "shields": 0,
       "nodesClearedAt": 342,
       "thresholdAt": null,
-      "damageTaken": 3854,
+      "damageTaken": 4419,
       "shieldsUsed": 0
     },
     {
@@ -142,8 +146,8 @@
       "nodeHp": 1200,
       "shields": 0,
       "nodesClearedAt": 26,
-      "thresholdAt": 315.4,
-      "damageTaken": 2194,
+      "thresholdAt": 328.4,
+      "damageTaken": 2723,
       "shieldsUsed": 0
     },
     {
@@ -154,8 +158,8 @@
       "nodeHp": 1200,
       "shields": 0,
       "nodesClearedAt": 24,
-      "thresholdAt": 328.2,
-      "damageTaken": 2939,
+      "thresholdAt": 342,
+      "damageTaken": 3750,
       "shieldsUsed": 0
     },
     {
@@ -202,8 +206,8 @@
       "nodeHp": 1200,
       "shields": 0,
       "nodesClearedAt": 6,
-      "thresholdAt": 62.7,
-      "damageTaken": 443,
+      "thresholdAt": 65.4,
+      "damageTaken": 503,
       "shieldsUsed": 0
     },
     {
@@ -214,8 +218,68 @@
       "nodeHp": 1200,
       "shields": 0,
       "nodesClearedAt": 6,
-      "thresholdAt": 65.4,
-      "damageTaken": 563,
+      "thresholdAt": 68.3,
+      "damageTaken": 743,
+      "shieldsUsed": 0
+    },
+    {
+      "build": "late",
+      "route": "neutral",
+      "coreHp": 105396,
+      "nodes": 2,
+      "nodeHp": 1868,
+      "shields": 0,
+      "nodesClearedAt": 2,
+      "thresholdAt": 19.8,
+      "damageTaken": 150,
+      "shieldsUsed": 0
+    },
+    {
+      "build": "late",
+      "route": "mercy-preserve",
+      "coreHp": 105396,
+      "nodes": 2,
+      "nodeHp": 1868,
+      "shields": 3,
+      "nodesClearedAt": 2,
+      "thresholdAt": 20.4,
+      "damageTaken": 30,
+      "shieldsUsed": 3
+    },
+    {
+      "build": "late",
+      "route": "mercy-consume",
+      "coreHp": 129195,
+      "nodes": 2,
+      "nodeHp": 1947,
+      "shields": 3,
+      "nodesClearedAt": 2,
+      "thresholdAt": 21.9,
+      "damageTaken": 90,
+      "shieldsUsed": 3
+    },
+    {
+      "build": "late",
+      "route": "ruthless-preserve",
+      "coreHp": 105396,
+      "nodes": 5,
+      "nodeHp": 1494,
+      "shields": 0,
+      "nodesClearedAt": 3,
+      "thresholdAt": 22,
+      "damageTaken": 150,
+      "shieldsUsed": 0
+    },
+    {
+      "build": "late",
+      "route": "ruthless-consume",
+      "coreHp": 129195,
+      "nodes": 5,
+      "nodeHp": 1558,
+      "shields": 0,
+      "nodesClearedAt": 3,
+      "thresholdAt": 23.6,
+      "damageTaken": 210,
       "shieldsUsed": 0
     }
   ]
