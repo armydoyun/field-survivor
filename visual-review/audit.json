@@ -1,0 +1,709 @@
+{
+  "note": "Canvas rasterization, not browser layout or GPU/FPS verification. Peak frames plus timing strips and reduced/crowded variants.",
+  "records": [
+    {
+      "id": "pulse",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 525,
+      "panic": false
+    },
+    {
+      "id": "orbit",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 681,
+      "panic": false
+    },
+    {
+      "id": "nova",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1377,
+      "panic": false
+    },
+    {
+      "id": "chain",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 544,
+      "panic": false
+    },
+    {
+      "id": "lance",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 537,
+      "panic": false
+    },
+    {
+      "id": "mine",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 338,
+      "panic": false
+    },
+    {
+      "id": "rift",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 796,
+      "panic": false
+    },
+    {
+      "id": "beacon",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 526,
+      "panic": false
+    },
+    {
+      "id": "spec:pulse:tracking",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 536,
+      "panic": false
+    },
+    {
+      "id": "spec:pulse:reservoir",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 530,
+      "panic": false
+    },
+    {
+      "id": "spec:orbit:escort",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 580,
+      "panic": false
+    },
+    {
+      "id": "spec:orbit:eccentric",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 638,
+      "panic": false
+    },
+    {
+      "id": "spec:nova:boundary",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1416,
+      "panic": false
+    },
+    {
+      "id": "spec:nova:reflux",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1022,
+      "panic": false
+    },
+    {
+      "id": "spec:chain:return",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 532,
+      "panic": false
+    },
+    {
+      "id": "spec:chain:circuit",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 577,
+      "panic": false
+    },
+    {
+      "id": "spec:lance:return",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 519,
+      "panic": false
+    },
+    {
+      "id": "spec:lance:stake",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 590,
+      "panic": false
+    },
+    {
+      "id": "spec:mine:pressure",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 343,
+      "panic": false
+    },
+    {
+      "id": "spec:mine:leap",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 336,
+      "panic": false
+    },
+    {
+      "id": "spec:rift:fold",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 735,
+      "panic": false
+    },
+    {
+      "id": "spec:rift:trail",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 541,
+      "panic": false
+    },
+    {
+      "id": "spec:beacon:relay",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 614,
+      "panic": false
+    },
+    {
+      "id": "spec:beacon:rover",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 546,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_rapid_pulse",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 625,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_support_guns",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 577,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_shock_mines",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 762,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_pulse_typhoon",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 883,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_wing_lances",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 629,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_conductive_guard",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 687,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_rotating_cutters",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 739,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_meteor_satellites",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 691,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_bullet_barrier",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 757,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_surging_strata",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 671,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_reflux_lightning",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 914,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_mobile_transmission",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 734,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_distributed_cuts",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1043,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_leaping_lances",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 594,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_instant_slash",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 744,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_mobile_mines",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 712,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_barrage_rapid_pulse",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 771,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_barrage_support_guns",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 734,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_barrage_bullet_barrier",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 906,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_storm_pulse_typhoon",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1267,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_storm_reflux_lightning",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1301,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_fleet_wing_lances",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 933,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_fleet_meteor_satellites",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 890,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_fleet_leaping_lances",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 857,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_crusher_conductive_guard",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1095,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_crusher_rotating_cutters",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1174,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_crusher_distributed_cuts",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1454,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_frontline_shock_mines",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 930,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_frontline_surging_strata",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 864,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_frontline_mobile_mines",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 910,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_thunder_slash_mobile_transmission",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 960,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_thunder_slash_instant_slash",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1141,
+      "panic": false
+    },
+    {
+      "id": "burst",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 516,
+      "panic": false
+    },
+    {
+      "id": "pulse",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 720,
+      "panic": false
+    },
+    {
+      "id": "orbit",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 645,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_pulse_typhoon",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1213,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_instant_slash",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 744,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_shock_mines",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 762,
+      "panic": false
+    },
+    {
+      "id": "fusion:fs_pulse_typhoon",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 883,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_thunder_slash_instant_slash",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1141,
+      "panic": false
+    },
+    {
+      "id": "spec:rift:fold",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 735,
+      "panic": false
+    },
+    {
+      "id": "spec:mine:pressure",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 343,
+      "panic": false
+    },
+    {
+      "id": "spec:beacon:relay",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 614,
+      "panic": false
+    },
+    {
+      "id": "spec:nova:reflux",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1022,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_storm_pulse_typhoon",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1267,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_storm_pulse_typhoon",
+      "combo": false,
+      "reduced": true,
+      "crowded": false,
+      "peakBrightSamples": 1151,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_storm_pulse_typhoon",
+      "combo": false,
+      "reduced": false,
+      "crowded": true,
+      "peakBrightSamples": 2087,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_storm_pulse_typhoon",
+      "combo": false,
+      "reduced": true,
+      "crowded": true,
+      "peakBrightSamples": 2087,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_crusher_rotating_cutters",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1174,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_crusher_rotating_cutters",
+      "combo": false,
+      "reduced": true,
+      "crowded": false,
+      "peakBrightSamples": 1047,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_crusher_rotating_cutters",
+      "combo": false,
+      "reduced": false,
+      "crowded": true,
+      "peakBrightSamples": 2020,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_crusher_rotating_cutters",
+      "combo": false,
+      "reduced": true,
+      "crowded": true,
+      "peakBrightSamples": 2020,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_thunder_slash_instant_slash",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1141,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_thunder_slash_instant_slash",
+      "combo": false,
+      "reduced": true,
+      "crowded": false,
+      "peakBrightSamples": 1124,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_thunder_slash_instant_slash",
+      "combo": false,
+      "reduced": false,
+      "crowded": true,
+      "peakBrightSamples": 1997,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_thunder_slash_instant_slash",
+      "combo": false,
+      "reduced": true,
+      "crowded": true,
+      "peakBrightSamples": 1997,
+      "panic": false
+    },
+    {
+      "id": "spec:beacon:relay",
+      "combo": false,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 614,
+      "panic": false
+    },
+    {
+      "id": "spec:beacon:relay",
+      "combo": false,
+      "reduced": true,
+      "crowded": false,
+      "peakBrightSamples": 601,
+      "panic": false
+    },
+    {
+      "id": "spec:beacon:relay",
+      "combo": false,
+      "reduced": false,
+      "crowded": true,
+      "peakBrightSamples": 1619,
+      "panic": false
+    },
+    {
+      "id": "spec:beacon:relay",
+      "combo": false,
+      "reduced": true,
+      "crowded": true,
+      "peakBrightSamples": 1619,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_storm_pulse_typhoon",
+      "combo": true,
+      "reduced": false,
+      "crowded": false,
+      "peakBrightSamples": 1853,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_storm_pulse_typhoon",
+      "combo": true,
+      "reduced": true,
+      "crowded": false,
+      "peakBrightSamples": 1698,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_storm_pulse_typhoon",
+      "combo": true,
+      "reduced": false,
+      "crowded": true,
+      "peakBrightSamples": 2665,
+      "panic": false
+    },
+    {
+      "id": "fusion:hs_storm_pulse_typhoon",
+      "combo": true,
+      "reduced": true,
+      "crowded": true,
+      "peakBrightSamples": 2665,
+      "panic": false
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+// Read-only action permissions. Routing, focus, input priority and state changes stay with callers.
+export const canSimulate=view=>view.mode==='playing'&&!view.panic&&!view.buildOpen&&!view.shopOpen;
+export const canRenderScene=view=>canSimulate(view);
+export const canControlLiveCombat=view=>canSimulate(view)&&!view.skillInfoOpen;
+export const canRefreshHud=view=>view.mode==='playing'&&!view.buildOpen&&!view.shopOpen&&!view.skillInfoOpen;
+export const canAutoSave=(view,run)=>!!run&&!view.panic&&canRefreshHud(view);
+export const canInteractInWorld=view=>view.mode==='playing';
+export const canAcceptMovement=view=>view.mode==='playing';
+export const canPauseGame=view=>view.mode==='playing';
+export const canTogglePause=view=>view.mode==='playing'||view.mode==='paused';
+export const canOpenFusion=(view,run)=>!!run&&!view.panic&&!view.buildOpen&&!view.shopOpen&&!view.skillInfoOpen&&canTogglePause(view);
+export const fusionButtonEnabled=(view,run)=>!!run&&['playing','paused','fusion'].includes(view.mode);
+export const canRerollUpgrade=(view,run)=>view.mode==='levelup'&&!view.panic&&!view.buildOpen&&!view.skillInfoOpen&&!!run?.pending;
+export const canOpenUpgradeInfo=view=>view.mode==='levelup'&&!view.panic&&!view.skillInfoOpen;
+export const canToggleBuildGuide=(view,open)=>!view.panic&&!(open&&(view.shopOpen||view.mode==='resetconfirm'))&&view.buildOpen!==open;
+export const canToggleShop=(view,open)=>!view.panic&&!(open&&(view.buildOpen||view.skillInfoOpen||!['menu','paused','playing','ending','gameover'].includes(view.mode)))&&view.shopOpen!==open;
+export const canOpenShopWithKeyboard=view=>['menu','paused','ending','gameover'].includes(view.mode);
+export const canBuyPermanentUpgrade=view=>view.mode==='menu';
+export const canResetRecords=view=>view.mode==='resetconfirm'&&!view.panic;

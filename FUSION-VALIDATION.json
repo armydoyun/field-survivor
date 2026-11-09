@@ -1,0 +1,1384 @@
+{
+  "version": "2.6.26",
+  "note": "Fixed ring at distance180, 5 seconds, no passives, no enemy AI. Warmup first60 frames excluded from CPU samples. Mock canvas only; not browser FPS or general balance evidence.",
+  "rows": [
+    {
+      "id": "fs_rapid_pulse",
+      "count": 1,
+      "before": false,
+      "damage": 688.8420000007609,
+      "peakBolts": 18,
+      "peakFields": 0,
+      "meanCpuMs": 0.5234636416666627,
+      "p95CpuMs": 1.1635440000000017
+    },
+    {
+      "id": "fs_rapid_pulse",
+      "count": 30,
+      "before": false,
+      "damage": 1319.2564000035636,
+      "peakBolts": 18,
+      "peakFields": 0,
+      "meanCpuMs": 0.5636964250000001,
+      "p95CpuMs": 1.4572369999999637
+    },
+    {
+      "id": "fs_rapid_pulse",
+      "count": 80,
+      "before": false,
+      "damage": 3334.6356120094424,
+      "peakBolts": 18,
+      "peakFields": 0,
+      "meanCpuMs": 0.8042026833333357,
+      "p95CpuMs": 1.6642000000000507
+    },
+    {
+      "id": "fs_rapid_pulse",
+      "count": 165,
+      "before": false,
+      "damage": 4281.433741213521,
+      "peakBolts": 18,
+      "peakFields": 0,
+      "meanCpuMs": 1.01885187083333,
+      "p95CpuMs": 2.387911000000031
+    },
+    {
+      "id": "fs_support_guns",
+      "count": 1,
+      "before": false,
+      "damage": 491.56799999822397,
+      "peakBolts": 6,
+      "peakFields": 0,
+      "meanCpuMs": 0.34331774583333946,
+      "p95CpuMs": 0.7342180000000553
+    },
+    {
+      "id": "fs_support_guns",
+      "count": 30,
+      "before": false,
+      "damage": 483.37519999803044,
+      "peakBolts": 6,
+      "peakFields": 0,
+      "meanCpuMs": 0.5361058749999946,
+      "p95CpuMs": 1.2561379999999644
+    },
+    {
+      "id": "fs_support_guns",
+      "count": 80,
+      "before": false,
+      "damage": 917.5935999993235,
+      "peakBolts": 6,
+      "peakFields": 0,
+      "meanCpuMs": 0.4474670874999968,
+      "p95CpuMs": 0.9642689999998311
+    },
+    {
+      "id": "fs_support_guns",
+      "count": 165,
+      "before": false,
+      "damage": 1339.604728002334,
+      "peakBolts": 2,
+      "peakFields": 0,
+      "meanCpuMs": 0.40277260416667293,
+      "p95CpuMs": 0.8463090000000193
+    },
+    {
+      "id": "fs_shock_mines",
+      "count": 1,
+      "before": false,
+      "damage": 420.41999999969266,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.31926187499999137,
+      "p95CpuMs": 0.7149520000000393
+    },
+    {
+      "id": "fs_shock_mines",
+      "count": 30,
+      "before": false,
+      "damage": 3460.3799999970943,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.41715266666666934,
+      "p95CpuMs": 1.0090099999999893
+    },
+    {
+      "id": "fs_shock_mines",
+      "count": 80,
+      "before": false,
+      "damage": 10736.879999991506,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.36161055000000697,
+      "p95CpuMs": 0.8002839999999196
+    },
+    {
+      "id": "fs_shock_mines",
+      "count": 165,
+      "before": false,
+      "damage": 21894.17999998131,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.5172755208333475,
+      "p95CpuMs": 1.1312339999999494
+    },
+    {
+      "id": "fs_pulse_typhoon",
+      "count": 1,
+      "before": false,
+      "damage": 226.3800000002375,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.25858352916664745,
+      "p95CpuMs": 0.6325459999998202
+    },
+    {
+      "id": "fs_pulse_typhoon",
+      "count": 30,
+      "before": false,
+      "damage": 6413.022000008146,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.43950372500001816,
+      "p95CpuMs": 1.1773090000001503
+    },
+    {
+      "id": "fs_pulse_typhoon",
+      "count": 80,
+      "before": false,
+      "damage": 17111.094000022276,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.405516683333326,
+      "p95CpuMs": 0.7724459999999453
+    },
+    {
+      "id": "fs_pulse_typhoon",
+      "count": 165,
+      "before": false,
+      "damage": 35147.112000047346,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.5641283499999967,
+      "p95CpuMs": 1.1137439999997696
+    },
+    {
+      "id": "fs_wing_lances",
+      "count": 1,
+      "before": false,
+      "damage": 0,
+      "peakBolts": 0,
+      "peakFields": 8,
+      "meanCpuMs": 0.4083861083333299,
+      "p95CpuMs": 1.216551000000436
+    },
+    {
+      "id": "fs_wing_lances",
+      "count": 30,
+      "before": false,
+      "damage": 667.2820000004722,
+      "peakBolts": 0,
+      "peakFields": 8,
+      "meanCpuMs": 0.646579258333342,
+      "p95CpuMs": 0.7603009999997994
+    },
+    {
+      "id": "fs_wing_lances",
+      "count": 80,
+      "before": false,
+      "damage": 2160.312000000733,
+      "peakBolts": 0,
+      "peakFields": 8,
+      "meanCpuMs": 0.7483462749999735,
+      "p95CpuMs": 1.9068339999998898
+    },
+    {
+      "id": "fs_wing_lances",
+      "count": 165,
+      "before": false,
+      "damage": 4424.112000001711,
+      "peakBolts": 0,
+      "peakFields": 8,
+      "meanCpuMs": 1.74961496666668,
+      "p95CpuMs": 4.271287000000029
+    },
+    {
+      "id": "fs_conductive_guard",
+      "count": 1,
+      "before": false,
+      "damage": 181.10399999981746,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.3180164166666752,
+      "p95CpuMs": 0.9464020000000346
+    },
+    {
+      "id": "fs_conductive_guard",
+      "count": 30,
+      "before": false,
+      "damage": 1067.2200000032317,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.2847090666666702,
+      "p95CpuMs": 0.693721000000096
+    },
+    {
+      "id": "fs_conductive_guard",
+      "count": 80,
+      "before": false,
+      "damage": 1100.853600003058,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.3149036708333597,
+      "p95CpuMs": 0.6632980000003954
+    },
+    {
+      "id": "fs_conductive_guard",
+      "count": 165,
+      "before": false,
+      "damage": 1111.202400003327,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.7939716041666429,
+      "p95CpuMs": 2.9993170000007012
+    },
+    {
+      "id": "fs_rotating_cutters",
+      "count": 1,
+      "before": false,
+      "damage": 130.43800000008196,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.42408274583337213,
+      "p95CpuMs": 1.6729010000008202
+    },
+    {
+      "id": "fs_rotating_cutters",
+      "count": 30,
+      "before": false,
+      "damage": 3581.11600000225,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.5201842499999998,
+      "p95CpuMs": 1.655308000000332
+    },
+    {
+      "id": "fs_rotating_cutters",
+      "count": 80,
+      "before": false,
+      "damage": 9687.986000006087,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.5447245083333617,
+      "p95CpuMs": 1.6038559999997233
+    },
+    {
+      "id": "fs_rotating_cutters",
+      "count": 165,
+      "before": false,
+      "damage": 19945.156000012532,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 1.1977556374999874,
+      "p95CpuMs": 3.166480999999294
+    },
+    {
+      "id": "fs_meteor_satellites",
+      "count": 1,
+      "before": false,
+      "damage": 280.28000000061,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.31202980833331445,
+      "p95CpuMs": 1.064886999999544
+    },
+    {
+      "id": "fs_meteor_satellites",
+      "count": 30,
+      "before": false,
+      "damage": 1358.2800000031712,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.3571413833333281,
+      "p95CpuMs": 1.0783849999997983
+    },
+    {
+      "id": "fs_meteor_satellites",
+      "count": 80,
+      "before": false,
+      "damage": 4139.520000009332,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.5127426625000112,
+      "p95CpuMs": 1.2473919999993086
+    },
+    {
+      "id": "fs_meteor_satellites",
+      "count": 165,
+      "before": false,
+      "damage": 8149.680000019027,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.5158140041666608,
+      "p95CpuMs": 1.6789150000004156
+    },
+    {
+      "id": "fs_bullet_barrier",
+      "count": 1,
+      "before": false,
+      "damage": 0,
+      "peakBolts": 16,
+      "peakFields": 0,
+      "meanCpuMs": 0.36446274166666703,
+      "p95CpuMs": 0.7446970000000874
+    },
+    {
+      "id": "fs_bullet_barrier",
+      "count": 30,
+      "before": false,
+      "damage": 974.2964000046486,
+      "peakBolts": 16,
+      "peakFields": 0,
+      "meanCpuMs": 0.3878630291666733,
+      "p95CpuMs": 0.8023940000002767
+    },
+    {
+      "id": "fs_bullet_barrier",
+      "count": 80,
+      "before": false,
+      "damage": 2820.9104000126245,
+      "peakBolts": 16,
+      "peakFields": 0,
+      "meanCpuMs": 1.5803035708333406,
+      "p95CpuMs": 4.136492000000544
+    },
+    {
+      "id": "fs_bullet_barrier",
+      "count": 165,
+      "before": false,
+      "damage": 6014.593200028874,
+      "peakBolts": 8,
+      "peakFields": 0,
+      "meanCpuMs": 0.7724306166666604,
+      "p95CpuMs": 1.4272320000000036
+    },
+    {
+      "id": "fs_surging_strata",
+      "count": 1,
+      "before": false,
+      "damage": 0,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.45076637916664974,
+      "p95CpuMs": 1.6081859999994776
+    },
+    {
+      "id": "fs_surging_strata",
+      "count": 30,
+      "before": false,
+      "damage": 989.6039999990026,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 2.253269954166679,
+      "p95CpuMs": 4.259111999999732
+    },
+    {
+      "id": "fs_surging_strata",
+      "count": 80,
+      "before": false,
+      "damage": 2697.1559999972815,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.62502962083333,
+      "p95CpuMs": 2.6220669999993333
+    },
+    {
+      "id": "fs_surging_strata",
+      "count": 165,
+      "before": false,
+      "damage": 5782.391999994172,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.47118622083336653,
+      "p95CpuMs": 1.137032000000545
+    },
+    {
+      "id": "fs_reflux_lightning",
+      "count": 1,
+      "before": false,
+      "damage": 172.48000000033062,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.2657574833333456,
+      "p95CpuMs": 0.5666780000001381
+    },
+    {
+      "id": "fs_reflux_lightning",
+      "count": 30,
+      "before": false,
+      "damage": 5105.408000011812,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.5872376041666485,
+      "p95CpuMs": 1.471997999999985
+    },
+    {
+      "id": "fs_reflux_lightning",
+      "count": 80,
+      "before": false,
+      "damage": 12976.964000030188,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.5060448541666195,
+      "p95CpuMs": 1.002000999998927
+    },
+    {
+      "id": "fs_reflux_lightning",
+      "count": 165,
+      "before": false,
+      "damage": 26353.86600006232,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.5674058666667179,
+      "p95CpuMs": 1.5431019999996352
+    },
+    {
+      "id": "fs_mobile_transmission",
+      "count": 1,
+      "before": false,
+      "damage": 426.8880000002682,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.6486409250000482,
+      "p95CpuMs": 0.7636959999999817
+    },
+    {
+      "id": "fs_mobile_transmission",
+      "count": 30,
+      "before": false,
+      "damage": 835.449999999837,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.29362899583341007,
+      "p95CpuMs": 0.6550980000010895
+    },
+    {
+      "id": "fs_mobile_transmission",
+      "count": 80,
+      "before": false,
+      "damage": 841.9179999998305,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.3746225708332531,
+      "p95CpuMs": 0.8749050000005809
+    },
+    {
+      "id": "fs_mobile_transmission",
+      "count": 165,
+      "before": false,
+      "damage": 842.99599999981,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.30928789166675114,
+      "p95CpuMs": 0.6115110000009736
+    },
+    {
+      "id": "fs_distributed_cuts",
+      "count": 1,
+      "before": false,
+      "damage": 163.8560000002617,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.36914904999998727,
+      "p95CpuMs": 0.8344940000006318
+    },
+    {
+      "id": "fs_distributed_cuts",
+      "count": 30,
+      "before": false,
+      "damage": 3234.000000010594,
+      "peakBolts": 0,
+      "peakFields": 3,
+      "meanCpuMs": 0.3219912666666081,
+      "p95CpuMs": 0.6776700000009441
+    },
+    {
+      "id": "fs_distributed_cuts",
+      "count": 80,
+      "before": false,
+      "damage": 7507.192000022042,
+      "peakBolts": 0,
+      "peakFields": 3,
+      "meanCpuMs": 0.5023179874999869,
+      "p95CpuMs": 1.4838660000004893
+    },
+    {
+      "id": "fs_distributed_cuts",
+      "count": 165,
+      "before": false,
+      "damage": 15204.112000046764,
+      "peakBolts": 0,
+      "peakFields": 3,
+      "meanCpuMs": 0.5142055500000121,
+      "p95CpuMs": 1.070770000000266
+    },
+    {
+      "id": "fs_leaping_lances",
+      "count": 1,
+      "before": false,
+      "damage": 108.87799999990966,
+      "peakBolts": 0,
+      "peakFields": 3,
+      "meanCpuMs": 0.2509747625000197,
+      "p95CpuMs": 0.5752599999996164
+    },
+    {
+      "id": "fs_leaping_lances",
+      "count": 30,
+      "before": false,
+      "damage": 306.1519999996526,
+      "peakBolts": 0,
+      "peakFields": 3,
+      "meanCpuMs": 0.28519582083326894,
+      "p95CpuMs": 0.6203139999997802
+    },
+    {
+      "id": "fs_leaping_lances",
+      "count": 80,
+      "before": false,
+      "damage": 1327.017999998643,
+      "peakBolts": 0,
+      "peakFields": 3,
+      "meanCpuMs": 0.40697523749995523,
+      "p95CpuMs": 0.8984019999988959
+    },
+    {
+      "id": "fs_leaping_lances",
+      "count": 165,
+      "before": false,
+      "damage": 3065.83199999691,
+      "peakBolts": 0,
+      "peakFields": 3,
+      "meanCpuMs": 0.5132916374999771,
+      "p95CpuMs": 0.8036780000002182
+    },
+    {
+      "id": "fs_instant_slash",
+      "count": 1,
+      "before": false,
+      "damage": 814.9680000008084,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.3175491708332705,
+      "p95CpuMs": 0.9337110000014945
+    },
+    {
+      "id": "fs_instant_slash",
+      "count": 30,
+      "before": false,
+      "damage": 2739.1980000037,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.27305332916663855,
+      "p95CpuMs": 0.5684790000013891
+    },
+    {
+      "id": "fs_instant_slash",
+      "count": 80,
+      "before": false,
+      "damage": 6927.2280000086175,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.29712612083336204,
+      "p95CpuMs": 0.6820260000004055
+    },
+    {
+      "id": "fs_instant_slash",
+      "count": 165,
+      "before": false,
+      "damage": 14080.836000018986,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.38528334999998604,
+      "p95CpuMs": 0.8539919999984704
+    },
+    {
+      "id": "fs_mobile_mines",
+      "count": 1,
+      "before": false,
+      "damage": 446.2919999998994,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.2624645916666774,
+      "p95CpuMs": 0.6339360000001761
+    },
+    {
+      "id": "fs_mobile_mines",
+      "count": 30,
+      "before": false,
+      "damage": 2900.897999999346,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.3030371249999841,
+      "p95CpuMs": 0.7842380000001867
+    },
+    {
+      "id": "fs_mobile_mines",
+      "count": 80,
+      "before": false,
+      "damage": 7215.053999998374,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.3044711583333613,
+      "p95CpuMs": 0.6182580000004236
+    },
+    {
+      "id": "fs_mobile_mines",
+      "count": 165,
+      "before": false,
+      "damage": 14901.193999996642,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.40244452916665524,
+      "p95CpuMs": 0.8931649999994988
+    },
+    {
+      "id": "hs_barrage_rapid_pulse",
+      "count": 1,
+      "before": false,
+      "damage": 1254.7919999971054,
+      "peakBolts": 29,
+      "peakFields": 0,
+      "meanCpuMs": 0.423415983333363,
+      "p95CpuMs": 0.8857219999990775
+    },
+    {
+      "id": "hs_barrage_rapid_pulse",
+      "count": 30,
+      "before": false,
+      "damage": 2017.239839993068,
+      "peakBolts": 29,
+      "peakFields": 0,
+      "meanCpuMs": 0.6271248374999155,
+      "p95CpuMs": 1.2601599999998143
+    },
+    {
+      "id": "hs_barrage_rapid_pulse",
+      "count": 80,
+      "before": false,
+      "damage": 4904.891375988955,
+      "peakBolts": 29,
+      "peakFields": 0,
+      "meanCpuMs": 0.991641829166709,
+      "p95CpuMs": 2.2169469999989815
+    },
+    {
+      "id": "hs_barrage_rapid_pulse",
+      "count": 165,
+      "before": false,
+      "damage": 6748.213422702975,
+      "peakBolts": 29,
+      "peakFields": 0,
+      "meanCpuMs": 1.7667876625000265,
+      "p95CpuMs": 3.982840999999098
+    },
+    {
+      "id": "hs_barrage_support_guns",
+      "count": 1,
+      "before": false,
+      "damage": 1012.6300799960736,
+      "peakBolts": 15,
+      "peakFields": 0,
+      "meanCpuMs": 0.32510427916663504,
+      "p95CpuMs": 0.6562860000012734
+    },
+    {
+      "id": "hs_barrage_support_guns",
+      "count": 30,
+      "before": false,
+      "damage": 1028.1532799960114,
+      "peakBolts": 15,
+      "peakFields": 0,
+      "meanCpuMs": 0.3961874916666754,
+      "p95CpuMs": 0.8382870000004914
+    },
+    {
+      "id": "hs_barrage_support_guns",
+      "count": 80,
+      "before": false,
+      "damage": 2036.6438399925828,
+      "peakBolts": 15,
+      "peakFields": 0,
+      "meanCpuMs": 0.6517125208332725,
+      "p95CpuMs": 1.4582359999985783
+    },
+    {
+      "id": "hs_barrage_support_guns",
+      "count": 165,
+      "before": false,
+      "damage": 3165.9152447913075,
+      "peakBolts": 10,
+      "peakFields": 0,
+      "meanCpuMs": 0.7061214458333022,
+      "p95CpuMs": 1.406514000000243
+    },
+    {
+      "id": "hs_barrage_bullet_barrier",
+      "count": 1,
+      "before": false,
+      "damage": 465.6959999987157,
+      "peakBolts": 24,
+      "peakFields": 0,
+      "meanCpuMs": 0.36685135833331517,
+      "p95CpuMs": 0.764790000001085
+    },
+    {
+      "id": "hs_barrage_bullet_barrier",
+      "count": 30,
+      "before": false,
+      "damage": 2128.7481599978637,
+      "peakBolts": 24,
+      "peakFields": 0,
+      "meanCpuMs": 0.4833986958332616,
+      "p95CpuMs": 0.8640180000002147
+    },
+    {
+      "id": "hs_barrage_bullet_barrier",
+      "count": 80,
+      "before": false,
+      "damage": 5090.709254396497,
+      "peakBolts": 24,
+      "peakFields": 0,
+      "meanCpuMs": 0.8991285499999625,
+      "p95CpuMs": 1.6435160000000906
+    },
+    {
+      "id": "hs_barrage_bullet_barrier",
+      "count": 165,
+      "before": false,
+      "damage": 9366.575211842777,
+      "peakBolts": 12,
+      "peakFields": 0,
+      "meanCpuMs": 1.3775791833332884,
+      "p95CpuMs": 3.2874469999987923
+    },
+    {
+      "id": "hs_storm_pulse_typhoon",
+      "count": 1,
+      "before": false,
+      "damage": 592.4688000001479,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.2902980708333265,
+      "p95CpuMs": 0.6529259999988426
+    },
+    {
+      "id": "hs_storm_pulse_typhoon",
+      "count": 30,
+      "before": false,
+      "damage": 9841.708800009452,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.4411998791666823,
+      "p95CpuMs": 1.0946029999995517
+    },
+    {
+      "id": "hs_storm_pulse_typhoon",
+      "count": 80,
+      "before": false,
+      "damage": 25439.937600022648,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.7943009374999899,
+      "p95CpuMs": 2.01392499999929
+    },
+    {
+      "id": "hs_storm_pulse_typhoon",
+      "count": 165,
+      "before": false,
+      "damage": 51762.110400044825,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 3.168079024999967,
+      "p95CpuMs": 6.7913229999994655
+    },
+    {
+      "id": "hs_storm_reflux_lightning",
+      "count": 1,
+      "before": false,
+      "damage": 527.788799999631,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.3033640666666239,
+      "p95CpuMs": 0.7106060000005527
+    },
+    {
+      "id": "hs_storm_reflux_lightning",
+      "count": 30,
+      "before": false,
+      "damage": 8229.8831999877,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.3170940291666587,
+      "p95CpuMs": 0.6596330000011221
+    },
+    {
+      "id": "hs_storm_reflux_lightning",
+      "count": 80,
+      "before": false,
+      "damage": 20466.045599965262,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.47590652083338986,
+      "p95CpuMs": 1.037865000000238
+    },
+    {
+      "id": "hs_storm_reflux_lightning",
+      "count": 165,
+      "before": false,
+      "damage": 41039.45999992511,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 1.4840734333333028,
+      "p95CpuMs": 4.778073999999833
+    },
+    {
+      "id": "hs_fleet_wing_lances",
+      "count": 1,
+      "before": false,
+      "damage": 877.0608000013744,
+      "peakBolts": 6,
+      "peakFields": 8,
+      "meanCpuMs": 0.42405414999999114,
+      "p95CpuMs": 1.3688230000007025
+    },
+    {
+      "id": "hs_fleet_wing_lances",
+      "count": 30,
+      "before": false,
+      "damage": 4355.551199999871,
+      "peakBolts": 6,
+      "peakFields": 8,
+      "meanCpuMs": 0.37574912500008395,
+      "p95CpuMs": 0.7982350000020233
+    },
+    {
+      "id": "hs_fleet_wing_lances",
+      "count": 80,
+      "before": false,
+      "damage": 11441.891999998246,
+      "peakBolts": 6,
+      "peakFields": 8,
+      "meanCpuMs": 0.7002313208333059,
+      "p95CpuMs": 1.7133880000001227
+    },
+    {
+      "id": "hs_fleet_wing_lances",
+      "count": 165,
+      "before": false,
+      "damage": 23487.89519999642,
+      "peakBolts": 3,
+      "peakFields": 8,
+      "meanCpuMs": 1.5316385875000682,
+      "p95CpuMs": 4.089104999999108
+    },
+    {
+      "id": "hs_fleet_meteor_satellites",
+      "count": 1,
+      "before": false,
+      "damage": 812.3808000005083,
+      "peakBolts": 6,
+      "peakFields": 1,
+      "meanCpuMs": 2.381494320833402,
+      "p95CpuMs": 6.537911999999778
+    },
+    {
+      "id": "hs_fleet_meteor_satellites",
+      "count": 30,
+      "before": false,
+      "damage": 5430.53279999597,
+      "peakBolts": 6,
+      "peakFields": 1,
+      "meanCpuMs": 0.4259128624998842,
+      "p95CpuMs": 1.422299000001658
+    },
+    {
+      "id": "hs_fleet_meteor_satellites",
+      "count": 80,
+      "before": false,
+      "damage": 14467.6223999887,
+      "peakBolts": 6,
+      "peakFields": 1,
+      "meanCpuMs": 0.6553403249999368,
+      "p95CpuMs": 1.5405190000019502
+    },
+    {
+      "id": "hs_fleet_meteor_satellites",
+      "count": 165,
+      "before": false,
+      "damage": 28821.407999976072,
+      "peakBolts": 3,
+      "peakFields": 1,
+      "meanCpuMs": 0.5963716875001107,
+      "p95CpuMs": 1.3282510000026377
+    },
+    {
+      "id": "hs_fleet_leaping_lances",
+      "count": 1,
+      "before": false,
+      "damage": 589.8816000003135,
+      "peakBolts": 6,
+      "peakFields": 3,
+      "meanCpuMs": 0.3595737208332139,
+      "p95CpuMs": 1.0676710000007006
+    },
+    {
+      "id": "hs_fleet_leaping_lances",
+      "count": 30,
+      "before": false,
+      "damage": 3556.106399997021,
+      "peakBolts": 6,
+      "peakFields": 3,
+      "meanCpuMs": 0.7306802291665766,
+      "p95CpuMs": 2.345766000002186
+    },
+    {
+      "id": "hs_fleet_leaping_lances",
+      "count": 80,
+      "before": false,
+      "damage": 10088.786399989389,
+      "peakBolts": 6,
+      "peakFields": 3,
+      "meanCpuMs": 0.8245567833333856,
+      "p95CpuMs": 2.173092999997607
+    },
+    {
+      "id": "hs_fleet_leaping_lances",
+      "count": 165,
+      "before": false,
+      "damage": 20678.19599997485,
+      "peakBolts": 3,
+      "peakFields": 3,
+      "meanCpuMs": 1.190225529166628,
+      "p95CpuMs": 1.6056160000007367
+    },
+    {
+      "id": "hs_crusher_conductive_guard",
+      "count": 1,
+      "before": false,
+      "damage": 349.27200000034645,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.23983599166673836,
+      "p95CpuMs": 0.5070730000006733
+    },
+    {
+      "id": "hs_crusher_conductive_guard",
+      "count": 30,
+      "before": false,
+      "damage": 5235.457920024288,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.3812734041666469,
+      "p95CpuMs": 0.884701999999379
+    },
+    {
+      "id": "hs_crusher_conductive_guard",
+      "count": 80,
+      "before": false,
+      "damage": 11760.376320060692,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.41887649999992693,
+      "p95CpuMs": 0.9713650000012422
+    },
+    {
+      "id": "hs_crusher_conductive_guard",
+      "count": 165,
+      "before": false,
+      "damage": 22749.76704012428,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.6543373833333287,
+      "p95CpuMs": 1.8971519999977318
+    },
+    {
+      "id": "hs_crusher_rotating_cutters",
+      "count": 1,
+      "before": false,
+      "damage": 303.21984000049997,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.26040499583327803,
+      "p95CpuMs": 0.6097799999988638
+    },
+    {
+      "id": "hs_crusher_rotating_cutters",
+      "count": 30,
+      "before": false,
+      "damage": 8318.882880012621,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.5147457291665433,
+      "p95CpuMs": 1.4039010000014969
+    },
+    {
+      "id": "hs_crusher_rotating_cutters",
+      "count": 80,
+      "before": false,
+      "damage": 22061.83056003251,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.5706727374998536,
+      "p95CpuMs": 1.1214729999992414
+    },
+    {
+      "id": "hs_crusher_rotating_cutters",
+      "count": 165,
+      "before": false,
+      "damage": 45266.42736006656,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.7793992583332814,
+      "p95CpuMs": 1.594044000001304
+    },
+    {
+      "id": "hs_crusher_distributed_cuts",
+      "count": 1,
+      "before": false,
+      "damage": 327.02208000130486,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.27725740416658484,
+      "p95CpuMs": 0.8100439999980154
+    },
+    {
+      "id": "hs_crusher_distributed_cuts",
+      "count": 30,
+      "before": false,
+      "damage": 7797.8208000346785,
+      "peakBolts": 0,
+      "peakFields": 3,
+      "meanCpuMs": 0.4231628666667196,
+      "p95CpuMs": 0.9282190000012633
+    },
+    {
+      "id": "hs_crusher_distributed_cuts",
+      "count": 80,
+      "before": false,
+      "damage": 20272.264320091344,
+      "peakBolts": 0,
+      "peakFields": 3,
+      "meanCpuMs": 0.4804162791667447,
+      "p95CpuMs": 1.1006840000009106
+    },
+    {
+      "id": "hs_crusher_distributed_cuts",
+      "count": 165,
+      "before": false,
+      "damage": 42434.21952019166,
+      "peakBolts": 0,
+      "peakFields": 3,
+      "meanCpuMs": 0.6420360041666148,
+      "p95CpuMs": 1.467666000000463
+    },
+    {
+      "id": "hs_frontline_shock_mines",
+      "count": 1,
+      "before": false,
+      "damage": 698.5439999994123,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.37374354583334934,
+      "p95CpuMs": 0.6818829999974696
+    },
+    {
+      "id": "hs_frontline_shock_mines",
+      "count": 30,
+      "before": false,
+      "damage": 5840.603999994346,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.2869394291665079,
+      "p95CpuMs": 0.6572050000031595
+    },
+    {
+      "id": "hs_frontline_shock_mines",
+      "count": 80,
+      "before": false,
+      "damage": 19675.65599998273,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.3246067041667023,
+      "p95CpuMs": 0.6481149999999616
+    },
+    {
+      "id": "hs_frontline_shock_mines",
+      "count": 165,
+      "before": false,
+      "damage": 40612.57199996349,
+      "peakBolts": 0,
+      "peakFields": 1,
+      "meanCpuMs": 0.44219761666649904,
+      "p95CpuMs": 1.0054700000000594
+    },
+    {
+      "id": "hs_frontline_surging_strata",
+      "count": 1,
+      "before": false,
+      "damage": 333.748799999943,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.23984850833347385,
+      "p95CpuMs": 0.5351729999965755
+    },
+    {
+      "id": "hs_frontline_surging_strata",
+      "count": 30,
+      "before": false,
+      "damage": 3372.415199999814,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.27488973749994633,
+      "p95CpuMs": 0.5709380000007513
+    },
+    {
+      "id": "hs_frontline_surging_strata",
+      "count": 80,
+      "before": false,
+      "damage": 8898.674399999552,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 1.1626398499999293,
+      "p95CpuMs": 2.6829069999985222
+    },
+    {
+      "id": "hs_frontline_surging_strata",
+      "count": 165,
+      "before": false,
+      "damage": 18096.170399999828,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.5122629333332952,
+      "p95CpuMs": 1.4073109999990265
+    },
+    {
+      "id": "hs_frontline_mobile_mines",
+      "count": 1,
+      "before": false,
+      "damage": 710.1864000001224,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.27613865000001475,
+      "p95CpuMs": 0.5360810000020138
+    },
+    {
+      "id": "hs_frontline_mobile_mines",
+      "count": 30,
+      "before": false,
+      "damage": 5217.088800000143,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.32838065000000827,
+      "p95CpuMs": 0.8709119999984978
+    },
+    {
+      "id": "hs_frontline_mobile_mines",
+      "count": 80,
+      "before": false,
+      "damage": 14040.734400000656,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.4078456833331226,
+      "p95CpuMs": 0.8669869999976072
+    },
+    {
+      "id": "hs_frontline_mobile_mines",
+      "count": 165,
+      "before": false,
+      "damage": 27238.04160000081,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.4717441499999495,
+      "p95CpuMs": 0.9109109999990324
+    },
+    {
+      "id": "hs_thunder_slash_mobile_transmission",
+      "count": 1,
+      "before": false,
+      "damage": 849.895199999446,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.29926226666669514,
+      "p95CpuMs": 0.6781649999975343
+    },
+    {
+      "id": "hs_thunder_slash_mobile_transmission",
+      "count": 30,
+      "before": false,
+      "damage": 2436.366240000818,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.2984553541666628,
+      "p95CpuMs": 0.6372869999977411
+    },
+    {
+      "id": "hs_thunder_slash_mobile_transmission",
+      "count": 80,
+      "before": false,
+      "damage": 4768.468320003478,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.38908823333341996,
+      "p95CpuMs": 0.9550029999991239
+    },
+    {
+      "id": "hs_thunder_slash_mobile_transmission",
+      "count": 165,
+      "before": false,
+      "damage": 8071.029120007064,
+      "peakBolts": 0,
+      "peakFields": 2,
+      "meanCpuMs": 0.43886972916663275,
+      "p95CpuMs": 0.935273999999481
+    },
+    {
+      "id": "hs_thunder_slash_instant_slash",
+      "count": 1,
+      "before": false,
+      "damage": 1300.0679999989225,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.3171208250000291,
+      "p95CpuMs": 0.660704000001715
+    },
+    {
+      "id": "hs_thunder_slash_instant_slash",
+      "count": 30,
+      "before": false,
+      "damage": 5050.473119997885,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.2925129624999954,
+      "p95CpuMs": 0.5668470000018715
+    },
+    {
+      "id": "hs_thunder_slash_instant_slash",
+      "count": 80,
+      "before": false,
+      "damage": 13268.455199990654,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.36350982500002826,
+      "p95CpuMs": 0.6542889999982435
+    },
+    {
+      "id": "hs_thunder_slash_instant_slash",
+      "count": 165,
+      "before": false,
+      "damage": 25985.060639978037,
+      "peakBolts": 0,
+      "peakFields": 0,
+      "meanCpuMs": 0.4224871458333079,
+      "p95CpuMs": 0.7367059999996854
+    }
+  ],
+  "transitions": [
+    {
+      "id": "hs_barrage_rapid_pulse",
+      "beforeDamage": 1688.401598490891,
+      "afterDamage": 2017.239839993068,
+      "ratio": 1.1947630479597364
+    },
+    {
+      "id": "hs_barrage_support_guns",
+      "beforeDamage": 893.9671999977436,
+      "afterDamage": 1028.1532799960114,
+      "ratio": 1.150101793442317
+    },
+    {
+      "id": "hs_barrage_bullet_barrier",
+      "beforeDamage": 1218.4396000044653,
+      "afterDamage": 2128.7481599978637,
+      "ratio": 1.7471101234645217
+    },
+    {
+      "id": "hs_storm_pulse_typhoon",
+      "beforeDamage": 6782.167198495474,
+      "afterDamage": 9841.708800009452,
+      "ratio": 1.451115626018877
+    },
+    {
+      "id": "hs_storm_reflux_lightning",
+      "beforeDamage": 5276.033000011812,
+      "afterDamage": 8229.8831999877,
+      "ratio": 1.5598619644663472
+    },
+    {
+      "id": "hs_fleet_wing_lances",
+      "beforeDamage": 1137.6820000001462,
+      "afterDamage": 4355.551199999871,
+      "ratio": 3.8284434490475467
+    },
+    {
+      "id": "hs_fleet_meteor_satellites",
+      "beforeDamage": 1758.3300000037998,
+      "afterDamage": 5430.53279999597,
+      "ratio": 3.0884605278782904
+    },
+    {
+      "id": "hs_fleet_leaping_lances",
+      "beforeDamage": 2158.9820000048494,
+      "afterDamage": 3556.106399997021,
+      "ratio": 1.6471218379722636
+    },
+    {
+      "id": "hs_crusher_conductive_guard",
+      "beforeDamage": 1067.2200000032317,
+      "afterDamage": 5235.457920024288,
+      "ratio": 4.905696969704873
+    },
+    {
+      "id": "hs_crusher_rotating_cutters",
+      "beforeDamage": 3816.221764657297,
+      "afterDamage": 8318.882880012621,
+      "ratio": 2.17987407258542
+    },
+    {
+      "id": "hs_crusher_distributed_cuts",
+      "beforeDamage": 3404.625000010594,
+      "afterDamage": 7797.8208000346785,
+      "ratio": 2.2903611410978932
+    },
+    {
+      "id": "hs_frontline_shock_mines",
+      "beforeDamage": 3561.179999996908,
+      "afterDamage": 5840.603999994346,
+      "ratio": 1.6400754805989635
+    },
+    {
+      "id": "hs_frontline_surging_strata",
+      "beforeDamage": 989.6039999990026,
+      "afterDamage": 3372.415199999814,
+      "ratio": 3.4078431372581486
+    },
+    {
+      "id": "hs_frontline_mobile_mines",
+      "beforeDamage": 4753.728000004543,
+      "afterDamage": 5217.088800000143,
+      "ratio": 1.0974731410789926
+    },
+    {
+      "id": "hs_thunder_slash_mobile_transmission",
+      "beforeDamage": 1024.9539999997942,
+      "afterDamage": 2436.366240000818,
+      "ratio": 2.3770493505087127
+    },
+    {
+      "id": "hs_thunder_slash_instant_slash",
+      "beforeDamage": 2938.3340000034077,
+      "afterDamage": 5050.473119997885,
+      "ratio": 1.7188219991301288
+    }
+  ]
+}

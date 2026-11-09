@@ -1,0 +1,1 @@
+export function makeFusionRuntime(owner){return {version:2,owner,phase:'active',clock:0,age:0,remainder:0,sequence:0,clocks:{},slashes:{},hits:[],recent:[],baseTargets:[],units:[],effects:[],visuals:[]};}

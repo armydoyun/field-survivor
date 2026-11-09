@@ -1,0 +1,262 @@
+{
+  "fleet": {
+    "up": {
+      "pulse": 4,
+      "orbit": 4,
+      "fusion_fleet": 2
+    },
+    "branches": {
+      "pulse": "tracking",
+      "orbit": "escort"
+    }
+  },
+  "ring": {
+    "up": {
+      "pulse": 4,
+      "orbit": 4,
+      "fusion_ring": 2
+    },
+    "branches": {
+      "pulse": "reservoir",
+      "orbit": "eccentric"
+    }
+  },
+  "beam": {
+    "up": {
+      "pulse": 4,
+      "chain": 4,
+      "fusion_beam": 2
+    },
+    "branches": {
+      "pulse": "tracking",
+      "chain": "return"
+    }
+  },
+  "chamber": {
+    "up": {
+      "pulse": 4,
+      "chain": 4,
+      "fusion_chamber": 2
+    },
+    "branches": {
+      "pulse": "reservoir",
+      "chain": "circuit"
+    }
+  },
+  "siege": {
+    "up": {
+      "orbit": 4,
+      "nova": 4,
+      "fusion_siege": 2
+    },
+    "branches": {
+      "orbit": "escort",
+      "nova": "boundary"
+    }
+  },
+  "binary": {
+    "up": {
+      "orbit": 4,
+      "nova": 4,
+      "fusion_binary": 2
+    },
+    "branches": {
+      "orbit": "eccentric",
+      "nova": "reflux"
+    }
+  },
+  "fault": {
+    "up": {
+      "nova": 4,
+      "mine": 4,
+      "fusion_fault": 2
+    },
+    "branches": {
+      "nova": "boundary",
+      "mine": "pressure"
+    }
+  },
+  "rewind": {
+    "up": {
+      "nova": 4,
+      "mine": 4,
+      "fusion_rewind": 2
+    },
+    "branches": {
+      "nova": "reflux",
+      "mine": "leap"
+    }
+  },
+  "reactor": {
+    "up": {
+      "chain": 4,
+      "mine": 4,
+      "fusion_reactor": 2
+    },
+    "branches": {
+      "chain": "return",
+      "mine": "leap"
+    }
+  },
+  "cage": {
+    "up": {
+      "chain": 4,
+      "mine": 4,
+      "fusion_cage": 2
+    },
+    "branches": {
+      "chain": "circuit",
+      "mine": "pressure"
+    }
+  },
+  "seam": {
+    "up": {
+      "lance": 4,
+      "rift": 4,
+      "fusion_seam": 2
+    },
+    "branches": {
+      "lance": "return",
+      "rift": "fold"
+    }
+  },
+  "stakes": {
+    "up": {
+      "lance": 4,
+      "rift": 4,
+      "fusion_stakes": 2
+    },
+    "branches": {
+      "lance": "stake",
+      "rift": "trail"
+    }
+  },
+  "ship": {
+    "up": {
+      "lance": 4,
+      "beacon": 4,
+      "fusion_ship": 2
+    },
+    "branches": {
+      "lance": "return",
+      "beacon": "rover"
+    }
+  },
+  "loom": {
+    "up": {
+      "lance": 4,
+      "beacon": 4,
+      "fusion_loom": 2
+    },
+    "branches": {
+      "lance": "stake",
+      "beacon": "relay"
+    }
+  },
+  "glyph": {
+    "up": {
+      "rift": 4,
+      "beacon": 4,
+      "fusion_glyph": 2
+    },
+    "branches": {
+      "rift": "fold",
+      "beacon": "relay"
+    }
+  },
+  "frontline": {
+    "up": {
+      "rift": 4,
+      "beacon": 4,
+      "fusion_frontline": 2
+    },
+    "branches": {
+      "rift": "trail",
+      "beacon": "rover"
+    }
+  },
+  "ark": {
+    "up": {
+      "pulse": 4,
+      "orbit": 4,
+      "beacon": 4,
+      "fusion_fleet": 3,
+      "fusion_ark": 2
+    },
+    "branches": {
+      "pulse": "tracking",
+      "orbit": "escort",
+      "beacon": "relay"
+    }
+  },
+  "prison": {
+    "up": {
+      "pulse": 4,
+      "orbit": 4,
+      "nova": 4,
+      "fusion_ring": 3,
+      "fusion_prison": 2
+    },
+    "branches": {
+      "pulse": "reservoir",
+      "orbit": "eccentric",
+      "nova": "boundary"
+    }
+  },
+  "worldline": {
+    "up": {
+      "nova": 4,
+      "mine": 4,
+      "rift": 4,
+      "fusion_rewind": 3,
+      "fusion_worldline": 2
+    },
+    "branches": {
+      "nova": "reflux",
+      "mine": "leap",
+      "rift": "fold"
+    }
+  },
+  "eclipse": {
+    "up": {
+      "chain": 4,
+      "mine": 4,
+      "nova": 4,
+      "fusion_reactor": 3,
+      "fusion_eclipse": 2
+    },
+    "branches": {
+      "chain": "return",
+      "mine": "leap",
+      "nova": "reflux"
+    }
+  },
+  "focus": {
+    "up": {
+      "pulse": 4,
+      "chain": 4,
+      "nova": 4,
+      "fusion_beam": 3,
+      "fusion_focus": 2
+    },
+    "branches": {
+      "pulse": "tracking",
+      "chain": "return",
+      "nova": "boundary"
+    }
+  },
+  "burial": {
+    "up": {
+      "lance": 4,
+      "beacon": 4,
+      "mine": 4,
+      "fusion_loom": 3,
+      "fusion_burial": 2
+    },
+    "branches": {
+      "lance": "stake",
+      "beacon": "relay",
+      "mine": "pressure"
+    }
+  }
+}

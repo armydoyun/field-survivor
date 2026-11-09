@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>FIELD SURVIVOR</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./src/main.js"></script>
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">F</span><div><strong>FIELD<span class="brand-light"> / SURVIVOR</span></strong><small>LOCAL · SINGLE PLAYER · OFFLINE</small></div></div>
+      <div class="top-actions"><span id="saveStatus" class="save-status" role="status">로컬 저장 준비</span><button id="saveButton" class="button subtle" type="button">저장</button><button id="pauseButton" class="button subtle" type="button">일시정지 <kbd>ESC</kbd></button><button id="hideButton" class="button panic-button" type="button">화면 숨김 <kbd>F9</kbd></button></div>
+    </header>
+
+    <main class="layout">
+      <section id="gameColumn" class="game-column" aria-label="게임 영역">
+        <div class="hud">
+          <div class="hud-item"><span>LEVEL</span><strong id="hudLevel">01</strong></div>
+          <div class="hud-item"><span>ELAPSED</span><strong id="hudTime">00:00</strong></div>
+          <div class="hud-item"><span>KILLS</span><strong id="hudKills">0</strong></div>
+          <div class="hud-item"><span>RUN GOLD</span><strong id="hudGold">0</strong></div>
+        </div>
+        <div class="bars"><div class="bar-row"><span class="bar-label">HP</span><div class="bar-track"><div id="hpFill" class="bar-fill hp"></div></div><span id="hpText" class="bar-value">100 / 100</span></div><div class="bar-row"><span class="bar-label">EXP</span><div class="bar-track"><div id="xpFill" class="bar-fill xp"></div></div><span id="xpText" class="bar-value">0 / 24</span></div></div>
+        <div class="arena-stage"><div class="arena"><canvas id="field" tabindex="0" width="960" height="540" aria-label="게임 화면. WASD나 방향키로 이동하며 E로 탐사와 작전을 진행합니다.">Canvas를 지원하는 브라우저가 필요합니다.</canvas><div id="overlay" class="overlay" aria-live="polite"></div><div class="arena-label" aria-hidden="true"><span id="sectorLabel">PHASE 01 · 생존과 발견</span></div></div></div>
+        <footer class="help"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / 방향키 · 이동</span><span><kbd>E</kbd> · 대화 / 탐사 / 작전 / 전선</span><span><kbd>ESC</kbd> / <kbd>P</kbd> · 일시정지</span><span><kbd>F9</kbd> · 즉시 숨기기</span><span><kbd>F</kbd> · 전체화면</span><span title="겹화살표는 화면 밖 목표, 숫자는 목표까지의 거리입니다.">주변 화살표 · 목표 방향 / 거리</span><span><kbd>B</kbd> · 조합 도감</span><span><kbd>1</kbd>~<kbd>9</kbd> · 메뉴 / 선택</span><span><kbd>Ctrl</kbd>+<kbd>S</kbd> · 저장</span><span><kbd>Enter</kbd> · 확인</span><span><kbd>I</kbd> · 레벨업 선택지 상세</span><span><kbd>S</kbd> · 영구 강화 (제목 / 일시정지 / 결과)</span></footer>
+        <div id="buildModal" class="build-backdrop" hidden>
+          <section class="build-dialog" role="dialog" aria-modal="true" aria-labelledby="buildTitle" aria-describedby="buildIntro">
+            <header class="build-head"><div><div class="eyebrow">SPECIALIZATION · FUSIONS · UPPER</div><h2 id="buildTitle">조합 도감</h2><p id="buildIntro">선택한 전문화 경로, 현재 보유와 재료 소비 상태를 확인합니다. 이번 도전에서 만들 수 없는 조합은 경로 닫힘으로 표시합니다. 표시 수치는 반올림합니다.</p></div><button id="closeBuildGuide" type="button" class="button build-close" aria-label="조합 도감 닫기">닫기 <kbd>ESC</kbd></button></header>
+            <div class="build-toolbar"><div class="build-tabs" role="tablist" aria-label="조합 보기"><button type="button" role="tab" id="buildActiveTab" aria-controls="evolutionGuide" aria-selected="false" data-build-tab="active">현재 보유</button><button type="button" role="tab" id="buildAllTab" aria-controls="evolutionGuide" aria-selected="true" data-build-tab="all">전체 도감</button></div><span id="buildModalCount" class="build-count">열람 전</span></div>
+            <div id="evolutionGuide" class="build-guide" role="tabpanel" aria-labelledby="buildAllTab" tabindex="0"></div>
+            <footer class="build-foot"><span><kbd>B</kbd> 또는 <kbd>ESC</kbd> · 닫기</span><span>열람 중 게임 일시정지</span></footer>
+          </section>
+        </div>
+        <div id="shopModal" class="build-backdrop" hidden>
+          <section class="build-dialog shop-dialog" role="dialog" aria-modal="true" aria-labelledby="shopTitle" aria-describedby="shopIntro">
+            <header class="build-head"><div><div class="eyebrow">PERMANENT · ACCOUNT GROWTH</div><h2 id="shopTitle">영구 강화</h2><p id="shopIntro">제목 화면에서 구매합니다. 보관 중인 도전에도 적용되며 전술 재설계 횟수는 새 도전에서 충전됩니다.</p></div><button id="closeShop" type="button" class="button build-close">닫기 <kbd>ESC</kbd></button></header>
+            <div class="shop-toolbar"><span>보유 골드 <strong id="shopWallet">0 G</strong></span><span id="shopNote" role="status"></span></div>
+            <div id="shop" class="shop shop-grid"></div>
+            <footer class="build-foot"><span><kbd>S</kbd> / <kbd>ESC</kbd> · 닫기 · ↑ ↓ / Tab · 이동</span><span>구매 시 자동 저장</span></footer>
+          </section>
+        </div>
+        <div id="skillModal" class="skill-backdrop" hidden>
+          <section class="skill-dialog" role="dialog" aria-modal="true" aria-labelledby="skillInfoTitle">
+            <header class="skill-head"><span class="eyebrow">SKILL DETAILS · BUILDCRAFT</span><button id="closeSkillInfo" type="button" class="button skill-close" aria-label="스킬 상세 설명 닫기">닫기 <kbd>ESC</kbd></button></header>
+            <div id="skillInfoContent" class="skill-content"></div>
+            <footer class="skill-foot">자세한 정보만 확인합니다 · 업그레이드는 아직 선택되지 않았습니다.</footer>
+          </section>
+        </div>
+        <details class="visual-guide"><summary>전투 표현 읽기</summary><div class="visual-key"><span><i class="visual-sample live" aria-hidden="true"></i><b>발동 중</b> 밝은 공격체·띠와 진행 방향</span><span><i class="visual-sample planned" aria-hidden="true"></i><b>준비·기록</b> 옅은 점선·고정점·예상 경로</span><span><i class="visual-sample danger" aria-hidden="true">!</i><b>적 공격</b> 주황 예고·붉은 위험 구역·남은 초</span><span><i class="visual-sample heal" aria-hidden="true">+</i><b>회복·방어</b> 초록 회복·금색 무적·위성 요격 호</span></div><p>채운 폭발 범위와 비어 있는 고리 경계는 공격 방식이 다릅니다. 기록선·설치선은 이동을 막는 벽이 아니며, 남은 잔광은 지속 피해를 뜻하지 않습니다. 옅은 영역 내부의 흐름은 분위기 표현이며, 실제 공격은 밝은 경계·선·구획의 발동 단계에 따릅니다.</p></details>
+        <div id="enemyGuide" class="enemy-guide" aria-label="적 유형 안내"></div><details id="enemyReference" class="enemy-reference"></details>
+      </section>
+      <aside class="sidebar">
+        <section class="side-card"><div class="section-title"><h2>CHARACTER</h2><span class="tag">LIVE STATS</span></div><dl id="characterStats" class="stat-list"></dl><p class="small-note">배율은 공격별 추가 보정·피해 반올림·피격 무적과 별개입니다. 최대 HP 증감은 효과의 적용 순서·배율에 따라 달라지며 즉시 회복과 별개입니다. 수집 EXP는 소수 보너스도 누적합니다.</p></section>
+        <section class="side-card"><div class="section-title"><h2>WEAPON SYSTEM</h2><span class="tag">ARSENAL</span></div><dl id="weaponList" class="stat-list"></dl><button id="openBuildGuide" class="build-shortcut" type="button" aria-haspopup="dialog" aria-controls="buildModal"><span>조합 도감 <kbd>B</kbd><small>전문화 · 융합 · 상위융합</small></span><strong id="buildProgress">미활성</strong></button><button id="openFusion" class="build-shortcut" type="button" aria-haspopup="dialog" aria-controls="overlay" aria-expanded="false"><span>무기 융합 <kbd>G</kbd><small>원본 Lv5 · 기반 융합 Lv4</small></span><strong id="fusionReadyCount">0개 가능</strong></button></section>
+        <section class="side-card"><div class="section-title"><h2>RELICS</h2><span id="relicCount" class="tag">0/3</span></div><div id="relicList" class="relic-list"><p class="muted">탐사 지점을 조사하면 유물이 나타납니다.</p></div><p class="small-note">한 도전에 최대 3개 · 효과는 도전 종료 시 초기화</p></section>
+        <section class="side-card"><div class="section-title"><h2>ACTIVE UPGRADES</h2><span id="upgradeCount" class="tag">0</span></div><div id="activeUpgrades" class="upgrade-list"><p class="muted">레벨업하면 효과를 선택할 수 있습니다.</p></div></section>
+        <section class="side-card"><div class="section-title"><h2>ECHO ARCHIVE</h2><span id="memoryCount" class="tag">0 기억</span></div><ol id="echoLog" class="echo-log"></ol><p id="guardianStatus" class="small-note">감시자는 아직 등장하지 않았습니다.</p><p id="witnessStatus" class="small-note">전장에 숨은 존재를 찾으세요.</p><p id="anomalyStatus" class="small-note" style="white-space:pre-line">아직 이상 현상이 기록되지 않았습니다.</p><p id="relicHistory" class="small-note">발견한 유물은 아직 없습니다.</p><p id="siteStatus" class="small-note" style="white-space:pre-line">탐사 지점은 아직 발견되지 않았습니다.</p><p id="objectiveStatus" class="small-note" style="white-space:pre-line">작전 신호는 아직 도착하지 않았습니다.</p><p id="journeyStatus" class="small-note" style="white-space:pre-line">응답 사건 · 현재 도전 없음</p><p id="keystoneStatus" class="small-note">최종 강화 · 미선택</p><p id="frontStatus" class="small-note" style="white-space:pre-line">FIELD PATHS · 선택한 전선 경로</p><p id="echoStatus" class="small-note echo-status" style="white-space:pre-line">THE ARCHIVE · 전장에 남은 잔향</p><p id="chapterStatus" class="small-note">기록을 끝까지 추적하면 새로운 문장이 남습니다.</p><details class="ending-memory" id="endingMemory" hidden><summary>마지막 결말 · 회수된 기록</summary><ol id="resolutionList"></ol></details></section>
+        <section class="side-card"><div class="section-title"><h2>PERMANENT</h2><span class="tag">ACCOUNT</span></div><div class="wallet">보유 골드 <strong id="walletGold">0 G</strong></div><button id="openShop" class="build-shortcut" type="button" aria-haspopup="dialog" aria-controls="shopModal" aria-expanded="false"><span>영구 강화 <kbd>S</kbd><small>성장 항목 확인 · 제목 화면에서 구매</small></span><strong>열기 ↗</strong></button></section>
+        <section class="side-card records"><div class="section-title"><h2>RECORDS</h2></div><dl class="stat-list"><div><dt>최장 생존</dt><dd id="bestTime">00:00</dd></div><div><dt>최다 처치</dt><dd id="bestKills">0</dd></div><div><dt>도전 횟수</dt><dd id="runCount">0</dd></div></dl></section>
+      </aside>
+    </main>
+  </div>
+  <div id="privacy" class="privacy" tabindex="-1" hidden aria-label="화면 숨김"><div class="privacy-heading">Workspace</div><div class="privacy-line"></div><div class="privacy-line short"></div><span class="privacy-hint">F9 — 돌아가기</span></div>
+</body>
+</html>
