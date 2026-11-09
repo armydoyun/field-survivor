@@ -3,17 +3,15 @@ import { escapeHtml as htmlEscape, modal as modalHtml, action as actionHtml, dec
 import { hasRecords } from '../core/profile.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../data/world-choices.js';
 import { timeText } from '../core/utils.js';
-import { VERSION, GUARDIAN_SALVAGE } from '../core/config.js';
+import { VERSION } from '../core/config.js';
 import { finalEndings, endingTexts, signals, anomalies, sites as siteDefinitions, legacies, echoes } from '../data/world.js';
-import { guardianMood } from '../combat/guardians.js';
-import { rewardGold } from '../growth/rewards.js';
 import { relicChoices } from '../world/effects.js';
 import { branchReady } from '../growth/build.js';
 import { upgrades, upgradeFamilies } from '../data/upgrades.js';
 import { branches } from '../data/specializations.js';
 import { canReroll } from '../growth/cards.js';
 
-export function createModalContent({ sessionState, view, keystoneOptions, rewardXp, fusionHtml, growthMetrics, route }) {
+export function createModalContent({ sessionState, view, keystoneOptions, fusionHtml, growthMetrics, route }) {
 
   function siteEffect(site,id){
     const reward=siteRewards[site.id][id],up=sessionState.run.up,extra=(key,amount)=>Math.min(amount,upgrades.find(x=>x.id===key).max-(up[key]||0));
@@ -43,10 +41,6 @@ export function createModalContent({ sessionState, view, keystoneOptions, reward
       return  modalHtml('DATA MANAGEMENT · PERMANENT', '모든 기록을 초기화할까요?', '되돌릴 수 없습니다. 현재 도전, 골드, 영구 강화, 최고 기록, NPC·신호·이상 현상·탐사·작전·유물의 기억, 엔딩 발견 기록을 이 실행 환경에서 전부 삭제합니다. 다른 사이트 데이터는 삭제하지 않습니다.', actionHtml('reset-cancel', '취소', true) + actionHtml('reset-confirm', '모든 기록을 영구 삭제'));
     } else if (view.mode === 'paused') {
       return  modalHtml('PAUSED', '일시정지', '게임 시간과 전투가 멈췄습니다. 자동 저장 결과는 상단 저장 상태에서 확인할 수 있습니다.', actionHtml('resume', '계속하기', true) + actionHtml('menu', '제목 화면'));
-    } else if (view.mode === 'bosschoice') {
-      const mood=guardianMood(sessionState.profile,sessionState.run), prior=mood==='spare'?'내려놓은 무기 안에서 익숙한 주파수가 들린다.':mood==='end'?'깨진 껍질과 같은 무늬가 안쪽에 남아 있다.':'감시자가 무기를 내렸다. 껍질 안쪽의 빛은 아직 꺼지지 않았다.';
-      const e=sessionState.run?.enemies.find(e=>e.id===sessionState.run.bossChoiceId),xp=e?rewardXp(e):0,gold=e?rewardGold(e):0,reserve=Math.min(sessionState.run?.xpReserve||0,5000);
-      return decisionHtml('GUARDIAN · DECISION','감시자의 마지막 신호',prior,[{id:'boss-spare',name:'돌려보낸다',effect:`${xp.toLocaleString('ko-KR')} 보석 EXP / ${gold.toLocaleString('ko-KR')}G`},{id:'boss-end',name:'분해한다',effect:`${(xp*GUARDIAN_SALVAGE).toLocaleString('ko-KR')} 보석 EXP${reserve?` (+보관 ${reserve.toLocaleString('ko-KR')} XP)`:''} / ${(gold*GUARDIAN_SALVAGE).toLocaleString('ko-KR')}G`}]);
     } else if (view.mode === 'encounter') {
       const witness = sessionState.profile.memory.witness, wasTaken = witness.taken > 0, wasHeard = witness.heard > 0;
       const intro = witness.quiet ? '네가 말없이 서 있던 시간은 아직 남아 있어. 다른 시간은 전부 사라졌는데.' : wasTaken ? '전에는 내 말을 전부 연료로 바꿨지. 그래도 돌아왔네.' : wasHeard ? '너는 나를 기억하지 못해도, 나는 네가 멈췄던 순간을 기억해.' : '처음 보는 얼굴이네. 아니, 그저 처음이라고 믿는 얼굴인가.';

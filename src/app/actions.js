@@ -5,7 +5,7 @@ export function createActions({ view, buildGuide, growthActions, session, screen
     'fusion-close':growthActions.toggleFusion,'fusion-guide':()=>buildGuide.toggleBuildGuide(true),
     new:()=>session.startFresh(),'new-cancel':()=>{if(view.mode==='newconfirm')screen.setMode(view.newConfirmReturn);},'new-confirm':()=>{if(view.mode==='newconfirm')session.startFresh(true);},
     resume:session.resume,reroll:growthActions.rerollUpgrade,hear:()=>story.chooseSignal('hear'),burn:()=>story.chooseSignal('burn'),
-    'boss-spare':()=>story.chooseBoss('spare'),'boss-end':()=>story.chooseBoss('end'),'witness-hear':()=>story.chooseWitness('hear'),'witness-take':()=>story.chooseWitness('take'),silence:story.acknowledgeSilence,
+    'witness-hear':()=>story.chooseWitness('hear'),'witness-take':()=>story.chooseWitness('take'),silence:story.acknowledgeSilence,
     'final-enter':finale.beginFinale,'reset-open':()=>{if(view.mode==='menu')screen.setMode('resetconfirm');},'reset-cancel':()=>{if(view.mode==='resetconfirm')screen.setMode('menu');},'reset-confirm':session.resetAllRecords,
     'ledger-open':()=>{if(['menu','ending'].includes(view.mode))screen.setMode('ledger');},'ledger-back':()=>{if(view.mode==='ledger')screen.setMode('menu');},menu:()=>{screen.setMode('menu');storage.save();}
   };
@@ -23,6 +23,7 @@ export function createActions({ view, buildGuide, growthActions, session, screen
   }
   function interact(){
     if(!canInteractInWorld(view))return;
+    if(story.dismantleGuardian())return;
     if(!sites.meetSite()&&!objectives.meetObjective()){story.meetWitness();if(canInteractInWorld(view)&&!encounters.meetEcho()&&!encounters.meetFront())story.meetLegacy();}
   }
   return { dispatch, overlayClick, interact, toggleFusion:growthActions.toggleFusion };

@@ -115,4 +115,21 @@ const endingScenes = {
 
 const episodeKinds = ['relay','gates','hunt'];
 
-export { signals, anomalies, sites, objectives, echoes, fronts, legacies, relics, finalEndings, endingTexts, endingScenes, episodeKinds };
+// 감시자는 한 존재다. 돌려보낸 횟수(모든 판 누적)에 따라 말을 되찾는다. 6회 이상이면 이름을 말한다.
+const guardianLines = {
+  name: '이안',
+  arrival: [
+    { from: 0, line: '감시자가 나타났다. 커다란 원 안에서 또 하나의 소리가 난다.' },
+    { from: 1, line: '감시자가 다시 나타났다. 방패 안쪽에서 짧은 신호가 두 번 울린다.' },
+    { from: 3, line: '감시자가 나타났다. "…또 너구나." 껍질 안에서 갈라진 목소리가 났다.' },
+    { from: 6, line: '감시자가 나타났다. "나는 이안이었어. 네가 그걸 기억하게 해 줬지."' }
+  ],
+  ended: '감시자가 나타났다. 이전에 부순 껍질의 흔적이 남아 있다.',
+  hollow: '이름 없는 껍질이 나타났다. 안쪽에서는 아무 소리도 나지 않는다.',
+  yieldLine: '감시자가 무기를 내렸다. 가만히 서 있으면 돌려보내고, E로 분해한다.',
+  spare: '감시자 · 네가 멈춰 있는 동안 껍질이 닫혔다. 그는 등을 돌려 돌아갔다.',
+  end: '감시자 · 껍질 안쪽까지 분해했다. 끊어진 명령이 한 번 더 점멸했다.',
+  leave: '감시자 · 기다리던 껍질이 스스로 물러났다. 아무 선택도 남지 않았다.'
+};
+
+export { signals, anomalies, sites, objectives, echoes, fronts, legacies, relics, finalEndings, endingTexts, endingScenes, guardianLines, episodeKinds };

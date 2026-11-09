@@ -50,10 +50,11 @@ test('boss phases and exposure preserve damage scales and director exclusion', (
   const r=fresh(), e=enemy({hp:10}); commitEnemyHit(r,e,100,null);
   assert.equal(r.director.damage,10); assert.equal(e.combatAt,r.time); assert.equal(e.hp,-90);
 });
-test('guardian choice opens at zero HP, while final choice retains its independent threshold', () => {
-  const r=fresh(), boss=enemy({id:42,kind:3,hp:10});
+test('named guardian yields at zero HP, hollow shells die normally, and the final choice keeps its own threshold', () => {
+  const r=fresh(), boss=enemy({id:42,kind:3,named:true,hp:10});
   assert.equal(commitEnemyHit(r,boss,9,null).choice,null); assert.equal(boss.hp,1);
-  assert.equal(commitEnemyHit(r,boss,1,null).choice,'bosschoice'); assert.equal(boss.hp,0); assert.equal(r.bossChoiceId,42);
+  assert.equal(commitEnemyHit(r,boss,1,null).choice,null); assert.equal(boss.hp,0); assert.equal(boss.phase,3); assert.equal(r.bossChoiceId,42);
+  const shellRun=fresh(), shell=enemy({id:7,kind:3,hollow:true,hp:5}); assert.equal(commitEnemyHit(shellRun,shell,9,null).choice,null); assert.ok(shell.hp<=0); assert.notEqual(shell.phase,3); assert.equal(shellRun.bossChoiceId,0);
   const before=structuredClone(boss); assert.equal(commitEnemyHit(r,boss,100,null),null); assert.deepEqual(boss,before);
   const finalRun=fresh(), final=enemy({kind:3,final:true,hp:11});
   assert.equal(commitEnemyHit(finalRun,final,1,1).choice,'finalchoice'); assert.equal(finalRun.finalStep,3); assert.equal(final.hp,10);

@@ -13,6 +13,7 @@ export function createUpdate({ sessionState, view, platform, screen, feedback, s
     story.spawnWitness(); sites.spawnSite(); objectives.spawnObjective(); encounters.spawnEcho(); encounters.spawnFront(); story.spawnLegacy();
     if (journey.journeyTick(dt)) return;
     if (story.tickWitness(dt,moving)) return;
+    story.tickGuardian(dt,moving);
     population.maintainEnemies();
     objectives.updateObjective(dt);
     population.spawnPopulation(dt);
@@ -26,7 +27,8 @@ export function createUpdate({ sessionState, view, platform, screen, feedback, s
     enemyRuntime.tickHazards();
     collisions.tickBullets(dt,s);
     if (p.hp <= 0) { session.finish(); return; } // Collected EXP must not revive a lethal hit.
-    sessionState.run.enemies = sessionState.run.enemies.filter(e => e.hp > 0);
+    // 무기를 내린 감시자(hp 0, bossChoiceId)는 결정이 날 때까지 남긴다.
+    sessionState.run.enemies = sessionState.run.enemies.filter(e => e.hp > 0 || e.id === sessionState.run.bossChoiceId);
     progression.tickGems(dt,s.magnet);
     pickups.updatePickups(dt);
     progression.tickAmbientXp(dt);

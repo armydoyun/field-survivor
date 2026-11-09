@@ -1,11 +1,34 @@
 import { canInteractInWorld } from '../core/view-policy.js';
-import { signals, anomalies, legacies } from '../data/world.js';
-import { W, H } from '../core/config.js';
+import { signals, anomalies, legacies, guardianLines } from '../data/world.js';
+import { W, H, GUARDIAN_REACH, GUARDIAN_STILL } from '../core/config.js';
 
 export function createStory({ sessionState, view, platform, screen, storage, session, decisions, feedback, growthActions }) {
   const { keys } = platform;
 
-  function recordGuardianArrival(){session.record(sessionState.profile.memory.guardian.spared ? '감시자가 다시 나타났다. 한 번 돌아갔던 존재는 너를 기억하고 있다.' : sessionState.profile.memory.guardian.ended ? '감시자가 다시 나타났다. 이전에 부순 껍질의 흔적이 남아 있다.' : '감시자가 나타났다. 커다란 원 안에서 또 하나의 소리가 난다.');}
+  function recordGuardianArrival(guardian){
+    const memory=sessionState.profile.memory.guardian;
+    if(!guardian?.named){session.record(guardianLines.hollow);return;}
+    if(memory.ended>memory.spared){session.record(guardianLines.ended);return;}
+    session.record(guardianLines.arrival.filter(x=>memory.spared>=x.from).at(-1).line);
+  }
+
+  // 무기를 내린 감시자: 가까이에서 멈춰 서면 돌려보내고(GUARDIAN_STILL초), 시간이 지나면 물러난다.
+  function tickGuardian(dt,moving){
+    const e=decisions.yieldingGuardian();if(!e)return false;
+    if(!e.yieldNoted){e.yieldNoted=true;session.record(guardianLines.yieldLine);storage.save();}
+    const p=sessionState.run.player,near=Math.hypot(p.x-e.x,p.y-e.y)<=GUARDIAN_REACH;
+    e.yieldStill=near&&!moving?(e.yieldStill||0)+dt:0;
+    if(e.yieldStill>=GUARDIAN_STILL){const result=decisions.chooseBoss('spare');if(result)feedback.burst(result.enemy.x,result.enemy.y,'#a8cbbd',24);storage.save();return true;}
+    if(sessionState.run.time>=e.yieldUntil){decisions.guardianLeaves();storage.save();return true;}
+    return false;
+  }
+
+  // E: 가까이 있는 무기를 내린 감시자를 분해한다.
+  function dismantleGuardian(){
+    if(!canInteractInWorld(view))return false;const e=decisions.yieldingGuardian(),p=sessionState.run?.player;
+    if(!e||Math.hypot(p.x-e.x,p.y-e.y)>GUARDIAN_REACH)return false;
+    decisions.chooseBoss('end');storage.save();return true;
+  }
 
   function tickWitness(dt,moving){
     const p=sessionState.run.player;
@@ -44,12 +67,6 @@ export function createStory({ sessionState, view, platform, screen, storage, ses
 
   function acknowledgeSilence(){if(view.mode!=='secret'||!decisions.acknowledgeSilence())return;screen.setMode('playing');storage.save();}
 
-  function chooseBoss(choice){
-    if(view.mode!=='bosschoice')return;const result=decisions.chooseBoss(choice);if(!result)return;
-    if(result.spared)feedback.burst(result.enemy.x,result.enemy.y,'#a8cbbd',24);
-    screen.setMode('playing');storage.save();
-  }
-
   function chooseSignal(choice){if(view.mode!=='signal'||!decisions.chooseSignal(choice))return;screen.setMode('playing');storage.save();}
 
   function openAnomaly() {
@@ -75,5 +92,5 @@ export function createStory({ sessionState, view, platform, screen, storage, ses
     if(view.mode==='legacy'){if(sessionState.run.pending)growthActions.openUpgrade();else screen.setMode('playing');}storage.save();return true;
   }
 
-  return { recordGuardianArrival, tickWitness, openSignal, spawnWitness, meetWitness, chooseWitness, revealSilence, acknowledgeSilence, chooseBoss, chooseSignal, openAnomaly, chooseAnomaly, spawnLegacy, meetLegacy, chooseLegacy };
+  return { recordGuardianArrival, tickGuardian, dismantleGuardian, tickWitness, openSignal, spawnWitness, meetWitness, chooseWitness, revealSilence, acknowledgeSilence, chooseSignal, openAnomaly, chooseAnomaly, spawnLegacy, meetLegacy, chooseLegacy };
 }

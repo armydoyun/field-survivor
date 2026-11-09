@@ -18,8 +18,7 @@ import { createModalContent } from '../src/ui/modal-content.js';
 import { sites, relics, anomalies, legacies, echoes, fronts } from '../src/data/world.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../src/data/world-choices.js';
 import { endingTexts, endingScenes } from '../src/data/world.js';
-import { GUARDIAN_SALVAGE, GEM_LIMIT, ENEMY_LIMIT } from '../src/core/config.js';
-import { rewardGold } from '../src/growth/rewards.js';
+import { GUARDIAN_SALVAGE, ENEMY_LIMIT, GUARDIAN_REACH, GUARDIAN_YIELD } from '../src/core/config.js';
 
 function state(){const s={profile:initialProfile(),run:null,replaceRun:r=>{s.run=r;}};s.run=createRun(s.profile,{maxHp:100,xpNext:xpNeed(1)});return s;}
 function harness(s=state()){
@@ -77,13 +76,22 @@ test('every anomaly option retains duration, ward timing, HP clamp and exactly o
     if(event.id==='border'&&option.id==='ward')assert.equal(s.run.anomalyWardAt,event.at);noChange(s,()=>h.story.chooseAnomaly(option.id));
   }
 });
-test('guardian decisions keep spare rewards distinct and commit fate before delegated salvage',()=>{
-  for(const choice of ['spare','end']){const s=state(),e={id:1,kind:3,phase:3,hp:0,maxHp:100,x:0,y:0};s.run.enemies=[e];s.run.bossChoiceId=1;let kills=0;
-    const d=createStoryDecisions({sessionState:s,difficulty:{rewardXp:()=>50},combat:{killEnemy:(enemy,depth,m)=>{kills++;assert.equal(enemy,e);assert.equal(depth,0);assert.equal(m,GUARDIAN_SALVAGE);assert.equal(s.run.guardianOrder,'end');assert.equal(s.profile.memory.guardian.ended,1);}}});
+test('guardian decisions: returning gives only a token, dismantling keeps double salvage, leaving counts nothing',()=>{
+  for(const choice of ['spare','end']){const s=state(),e={id:1,kind:3,named:true,phase:3,hp:0,maxHp:100,x:0,y:0};s.run.enemies=[e];s.run.bossChoiceId=1;let kills=0;
+    const d=createStoryDecisions({sessionState:s,combat:{killEnemy:(enemy,depth,m)=>{kills++;assert.equal(enemy,e);assert.equal(depth,0);assert.equal(m,GUARDIAN_SALVAGE);assert.equal(s.run.guardianOrder,'end');assert.equal(s.profile.memory.guardian.ended,1);}}});
     const result=d.chooseBoss(choice);assert.equal(result.spared,choice==='spare');assert.equal(s.run.bossChoiceId,0);assert.equal(s.run.guardianFate[choice],1);assert.equal(s.run.enemies.length,0);assert.equal(kills,choice==='end'?1:0);
-    if(choice==='spare'){assert.equal(s.run.gold,rewardGold(e));assert.equal(s.run.gems[0].xp,50);}noChange(s,()=>d.chooseBoss(choice));
+    if(choice==='spare'){assert.equal(s.run.gold,0);assert.equal(s.run.gems.length,0);assert.equal(s.profile.memory.guardian.spared,1);}noChange(s,()=>d.chooseBoss(choice));
   }
-  const s=state(),e={id:1,kind:3,phase:3,x:0,y:0,hp:0};s.run.enemies=[e];s.run.bossChoiceId=1;s.run.gems=Array.from({length:GEM_LIMIT},()=>({xp:1,x:1e5,y:1e5}));const d=createStoryDecisions({sessionState:s,difficulty:{rewardXp:()=>50}});assert.ok(d.chooseBoss('spare'));assert.equal(s.run.xpReserve,50);
+  const s=state(),e={id:1,kind:3,named:true,phase:3,hp:0,x:0,y:0};s.run.enemies=[e];s.run.bossChoiceId=1;const d=createStoryDecisions({sessionState:s});assert.equal(d.guardianLeaves(),true);assert.deepEqual(s.run.guardianFate,{spare:0,end:0});assert.equal(s.run.enemies.length,0);assert.equal(s.run.bossChoiceId,0);noChange(s,()=>d.guardianLeaves());
+  const shell=state();shell.run.enemies=[{id:1,kind:3,hollow:true,phase:3,hp:0}];shell.run.bossChoiceId=1;const x=createStoryDecisions({sessionState:shell});noChange(shell,()=>x.chooseBoss('spare'));noChange(shell,()=>x.guardianLeaves());
+});
+test('a yielding guardian is returned by standing still nearby, dismantled with E in reach, and leaves when time runs out',()=>{
+  const setup=()=>{const h=harness(),ui=screens(h.s,'playing'),e={id:1,kind:3,named:true,phase:3,hp:0,maxHp:100,x:h.s.run.player.x+GUARDIAN_REACH-1,y:h.s.run.player.y,yieldUntil:h.s.run.time+GUARDIAN_YIELD,yieldStill:0};h.s.run.enemies=[e];h.s.run.bossChoiceId=1;
+    const decisions=createStoryDecisions({sessionState:h.s,statistics:h.statistics,combat:{killEnemy(enemy){enemy.hp=0;}}}),records=[];const story=createStory({...ui,session:{record:line=>records.push(line)},decisions,feedback:{burst(){}}});return {h,ui,e,story,records};};
+  let t=setup();for(let i=0;i<29;i++)t.story.tickGuardian(.1,false);assert.equal(t.h.s.run.guardianFate.spare,0);t.story.tickGuardian(.1,false);assert.equal(t.h.s.run.guardianFate.spare,1);assert.equal(t.h.s.run.enemies.length,0);assert.ok(t.records.some(x=>x.includes('무기를 내렸다')));
+  t=setup();for(let i=0;i<20;i++)t.story.tickGuardian(.1,false);t.story.tickGuardian(.1,true);for(let i=0;i<20;i++)t.story.tickGuardian(.1,false);assert.equal(t.h.s.run.guardianFate.spare,0);
+  t=setup();t.e.x+=2;for(let i=0;i<40;i++)t.story.tickGuardian(.1,false);assert.equal(t.h.s.run.guardianFate.spare,0);assert.equal(t.story.dismantleGuardian(),false);t.e.x-=2;assert.equal(t.story.dismantleGuardian(),true);assert.equal(t.h.s.run.guardianFate.end,1);
+  t=setup();t.ui.view.mode='paused';assert.equal(t.story.dismantleGuardian(),false);t.ui.view.mode='playing';t.h.s.run.time=t.e.yieldUntil;t.story.tickGuardian(.1,true);assert.deepEqual(t.h.s.run.guardianFate,{spare:0,end:0});assert.equal(t.h.s.run.enemies.length,0);
 });
 test('all legacy choices and nonresponse record once and clamp HP using the committed choice',()=>{
   for(const [origin,def]of Object.entries(legacies))for(const choice of [...def.options.map(o=>o.id),'silent']){const h=harness(),{s}=h;s.run.legacyOrigin=origin;s.run.legacySite={x:0,y:0};s.run.player.hp=200;noChange(s,()=>h.story.chooseLegacy('invalid'));assert.equal(h.story.chooseLegacy(choice),true);assert.equal(s.run.legacyChoice,choice);assert.equal(s.profile.memory.legacies[origin][choice],1);assert.equal(s.run.player.hp,Math.min(200,h.statistics.stats().maxHp));assert.equal(s.run.legacySite,null);noChange(s,()=>h.story.chooseLegacy(choice));}

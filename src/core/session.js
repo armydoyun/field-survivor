@@ -12,7 +12,6 @@ export function resumeMode(r){
   if (r.finalStep === 3) return 'finalchoice';
   if (r.finalStep === 1) return 'finalintro';
   if (r.journey.keystonePending) return 'keystone';
-  if (r.bossChoiceId && r.enemies.some(e => e.id === r.bossChoiceId && e.kind === 3 && e.phase === 3)) return 'bosschoice';
   if (r.npc.secretPending) return 'secret';
   if (r.npc.encounterPending) return 'encounter';
   if (r.sitePending && r.site) return 'site';

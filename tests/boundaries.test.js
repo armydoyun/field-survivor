@@ -14,7 +14,7 @@ import { upgrades } from '../src/data/upgrades.js';
 import { makeChoices, availableUpgrades } from '../src/growth/cards.js';
 import { enemyType } from '../src/data/enemies.js';
 import { movePlayer } from '../src/input/movement.js';
-import { ENEMY_LIMIT, DESPAWN_RADIUS } from '../src/core/config.js';
+import { ENEMY_LIMIT, DESPAWN_RADIUS, GUARDIAN_YIELD } from '../src/core/config.js';
 const source = file => readFileSync(new URL('../'+file,import.meta.url),'utf8');
 function state(){const profile=initialProfile();return {profile,run:createRun(profile,{maxHp:100,xpNext:24})};}
 function freeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const v of Object.values(value))freeze(v);}return value;}
@@ -54,11 +54,11 @@ test('combat death callbacks retain pre-death, loot, feedback and objective orde
   const combat=createCombat({sessionState:s,statistics:{stats:()=>({burst:0})},enemyRuntime:{},difficulty:{rewardXp:()=>7},progression:{rewardKill:(e,xp,m)=>{assert.equal(s.run.kills,1);assert.equal(e.hp,0);assert.equal(xp,7);assert.equal(m,2);calls.push('loot');}},feedback:{...quiet,showEnemyDeath:()=>calls.push('feedback')},onEnemyDying:e=>{assert.equal(e.hp,5);assert.equal(s.run.kills,0);calls.push('dying');},onEnemyKilled:()=>calls.push('objective'),onChoice:()=>assert.fail('unexpected choice')});
   combat.killEnemy(enemy,0,2);assert.deepEqual(calls,['dying','loot','feedback','objective']);
 });
-test('guardian lethal hit requests a choice without ordinary kill rewards or death notifications',()=>{
-  const s=state(), enemy={id:1,kind:3,hp:1,maxHp:100,phase:0,x:0,y:0}, calls=[];s.run.enemies=[enemy];
+test('named guardian lethal hit lowers its weapons without a modal, ordinary kill rewards or death notifications',()=>{
+  const s=state(), enemy={id:1,kind:3,named:true,hp:1,maxHp:100,phase:0,x:0,y:0}, calls=[];s.run.enemies=[enemy];s.run.time=200;
   const reject=()=>assert.fail('ordinary death workflow must not run');
   const combat=createCombat({sessionState:s,statistics:{},enemyRuntime:{},difficulty:{rewardXp:reject},progression:{rewardKill:reject},feedback:quiet,onEnemyDying:reject,onEnemyKilled:reject,onChoice:mode=>calls.push(mode)});
-  combat.damage(enemy,100);assert.deepEqual(calls,['bosschoice']);assert.equal(s.run.kills,0);assert.equal(s.run.bossChoiceId,1);
+  combat.damage(enemy,100);assert.deepEqual(calls,[]);assert.equal(s.run.kills,0);assert.equal(s.run.bossChoiceId,1);assert.equal(enemy.phase,3);assert.equal(enemy.yieldUntil,200+GUARDIAN_YIELD);
 });
 test('projectiles resolve nearest hits first and stop the frame immediately when a choice opens',()=>{
   const s=state(), view={mode:'playing'}, hits=[];s.run.player.x=s.run.player.y=0;
@@ -76,7 +76,7 @@ test('population retains objective/boss/core targets while discarding dead and d
 test('population signals successful guardian arrivals only, and capacity defers the encounter',()=>{
   for(const full of [false,true]){
     const s=state(),r=s.run,calls=[];r.time=960;r.nextBoss=960;r.spawnClock=100;r.stage=0;r.waveIndex=3;if(full)r.enemies=Array.from({length:ENEMY_LIMIT},(_,id)=>({id,hp:1,kind:0}));
-    const population=createPopulation({sessionState:s,difficulty:{paceAt:()=>({index:0,cap:0,interval:1,extra:0}),pressureProfile:()=>({spawn:1})},enemyRuntime:{spawnEnemy:kind=>{assert.equal(kind,3);calls.push('spawn');}},encounters:{spawnTacticalWave(){}},feedback:quiet,onGuardianSpawned:()=>calls.push('arrival')});
+    const population=createPopulation({sessionState:s,difficulty:{paceAt:()=>({index:0,cap:0,interval:1,extra:0}),pressureProfile:()=>({spawn:1})},enemyRuntime:{spawnEnemy:kind=>{assert.equal(kind,3);calls.push('spawn');return {kind};}},encounters:{spawnTacticalWave(){}},feedback:quiet,onGuardianSpawned:()=>calls.push('arrival')});
     population.spawnPopulation(.01);assert.deepEqual(calls,full?[]:['spawn','arrival']);assert.equal(r.nextBoss,1200);
   }
 });

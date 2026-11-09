@@ -57,7 +57,7 @@ test('manual save keeps its original input priority and is not blocked by autosa
   }
 });
 test('world interaction rechecks the mode between prioritized encounters and stops after a screen opens',()=>{
-  const view={mode:'playing'},calls=[],actions=createActions({view,buildGuide:{},growthActions:{},session:{},screen:{},storage:{},journey:{},finale:{},sites:{meetSite(){calls.push('site');return false;}},objectives:{meetObjective(){calls.push('objective');return false;}},story:{meetWitness(){calls.push('witness');view.mode='encounter';},meetLegacy(){calls.push('legacy');}},encounters:{meetEcho(){calls.push('echo');return false;},meetFront(){calls.push('front');return false;}}});
+  const view={mode:'playing'},calls=[],actions=createActions({view,buildGuide:{},growthActions:{},session:{},screen:{},storage:{},journey:{},finale:{},sites:{meetSite(){calls.push('site');return false;}},objectives:{meetObjective(){calls.push('objective');return false;}},story:{dismantleGuardian(){return false;},meetWitness(){calls.push('witness');view.mode='encounter';},meetLegacy(){calls.push('legacy');}},encounters:{meetEcho(){calls.push('echo');return false;},meetFront(){calls.push('front');return false;}}});
   actions.interact();assert.deepEqual(calls,['site','objective','witness']);actions.interact();assert.deepEqual(calls,['site','objective','witness']);
 });
 test('fusion UI opens when screen policy allows it',()=>{

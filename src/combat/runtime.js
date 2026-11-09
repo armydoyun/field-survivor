@@ -31,7 +31,7 @@ export function createCombat({ sessionState, statistics, enemyRuntime, feedback,
   function damage(enemy,amount,crit=false,vx=0,vy=0,burstDepth=0){
     if(!targetable(enemy,sessionState.run))return;const hit=commitEnemyHit(sessionState.run,enemy,amount,enemy.final?enemyRuntime.ensureCore().phase:null);if(!hit)return;
     inspector?.hit(enemy,hit.amount||0);if(hit.choice){onChoice(hit.choice);return;}
-    if(vx||vy)pushEnemy(enemy,enemy.x-vx,enemy.y-vy,6);feedback.showEnemyHit(enemy,hit.amount,crit);if(enemy.hp<=0)killEnemy(enemy,burstDepth);
+    if(vx||vy)pushEnemy(enemy,enemy.x-vx,enemy.y-vy,6);feedback.showEnemyHit(enemy,hit.amount,crit);if(enemy.hp<=0&&!(enemy.kind===3&&enemy.phase===3))killEnemy(enemy,burstDepth);
   }
 
   return { healRepeated, hurtPlayer, killEnemy, damage };

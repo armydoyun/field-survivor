@@ -1,4 +1,4 @@
-import { HURT_TIME, RECOVERY_DELAY, CORE_SHIELD, CORE_THRESHOLD } from '../core/config.js';
+import { HURT_TIME, RECOVERY_DELAY, CORE_SHIELD, CORE_THRESHOLD, GUARDIAN_YIELD } from '../core/config.js';
 import { frontEffect, legacyEffect, hasRelic } from '../world/effects.js';
 import { armorScale, wardRadius } from './rules.js';
 
@@ -21,7 +21,8 @@ function commitEnemyHit(r,enemy,amount,corePhase){
   if(enemy.final&&corePhase===0)amount=Math.min(amount,Math.max(0,enemy.hp-enemy.maxHp*CORE_SHIELD));
   if(enemy.kind!==3&&!enemy.coreNode&&r.finalStep<2){if(enemy.combatAt==null)enemy.combatAt=r.time;r.director.damage+=Math.max(0,Math.min(amount,enemy.hp));}
   enemy.hp-=amount;enemy.flash=.11;let choice=null;
-  if(enemy.kind===3&&enemy.hp<=enemy.maxHp*(enemy.final?CORE_THRESHOLD:0)){enemy.hp=enemy.final?Math.max(1,enemy.hp):0;enemy.phase=3;if(enemy.final){r.finalStep=3;choice='finalchoice';}else{r.bossChoiceId=enemy.id;choice='bosschoice';}}
+  if(enemy.final&&enemy.hp<=enemy.maxHp*CORE_THRESHOLD){enemy.hp=Math.max(1,enemy.hp);enemy.phase=3;r.finalStep=3;choice='finalchoice';}
+  else if(enemy.kind===3&&enemy.named&&enemy.hp<=0){enemy.hp=0;enemy.phase=3;r.bossChoiceId=enemy.id;enemy.yieldUntil=r.time+GUARDIAN_YIELD;enemy.yieldStill=0;}
   return {amount,choice};
 }
 
