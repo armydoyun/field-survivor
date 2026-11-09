@@ -132,4 +132,15 @@ const guardianLines = {
   leave: '감시자 · 기다리던 껍질이 스스로 물러났다. 아무 선택도 남지 않았다.'
 };
 
-export { signals, anomalies, sites, objectives, echoes, fronts, legacies, relics, finalEndings, endingTexts, endingScenes, guardianLines, episodeKinds };
+// 중심핵 전투에서 이번 판의 선택이 돌아올 때 남는 기록.
+const coreLines = {
+  shields: '돌려보낸 감시자의 방패가 네 옆에 섰다.',
+  shells: '분해한 감시자의 껍질이 연결점이 되어 중심핵을 감쌌다.',
+  blocked: '감시자가 방패로 중심핵의 공격을 막았다. 남은 방패 {left}.',
+  heard: '기억한 목소리들이 상처를 덮었다.',
+  witness: '기록원이 중심핵 곁에서 공격 신호를 먼저 읽어 준다.',
+  taken: '중심핵 안에서 기록원의 목소리가 들린다. 네가 추출한 파형이다.',
+  voice: '태운 신호들이 중심핵의 목소리가 되어 겹겹이 퍼진다.'
+};
+
+export { signals, anomalies, sites, objectives, echoes, fronts, legacies, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, episodeKinds };

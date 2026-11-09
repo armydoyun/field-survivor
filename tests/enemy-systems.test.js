@@ -121,14 +121,30 @@ test('guardian pools, memories and forced attack behavior preserve all five patt
     else {h.guardians.moveGuardian(r,p,e,.01,e.speed,300,1,0);if(pattern!=='charge')assert.ok(r.bullets.length>0);else assert.ok(e.x>r.player.x-300);}
   }
 });
-test('core creation is idempotent, respects guardian outcome and opens after nodes are severed', () => {
-  for(const [order,salvaged,count,hp]of [['',false,2,1000],['end',false,3,800],['end',true,3,650]]){
-    const h=harness(),r=h.run;r.guardianOrder=order;if(salvaged)r.journey.outcomes=[{slot:2,success:true}];
-    const c=h.core.ensureCore(r,h.profile);assert.equal(h.core.ensureCore(r,h.profile),c);assert.equal(r.enemies.length,count);assert.ok(r.enemies.every(e=>e.coreNode&&e.hp===hp));
-    for(const node of r.enemies)node.hp=0;
+test('core creation is idempotent, adds one node per dismantled guardian and opens after nodes are severed', () => {
+  for(const [ended,salvaged,count,hp]of [[0,false,2,1000],[1,false,3,800],[1,true,3,650],[3,false,5,800],[6,false,5,800]]){
+    const h=harness(),r=h.run;r.guardianFate={spare:0,end:ended};if(salvaged)r.journey.outcomes=[{slot:2,success:true}];
+    const c=h.core.ensureCore(r,h.profile);assert.equal(h.core.ensureCore(r,h.profile),c);assert.equal(r.enemies.length,count);assert.ok(r.enemies.every(e=>e.coreNode&&e.hp===hp));assert.equal(c.shields,0);
+    for(const node of r.enemies)node.hp=0;r.logs=[];h.profile.memory.archive=[];
     const boss=h.spawnEnemy(r,3);boss.final=true;boss.x=r.player.x-240;boss.y=r.player.y;
     h.core.moveCore(r,h.profile,boss,.1);assert.equal(c.phase,1);assert.equal(r.logs.length,1);assert.equal(h.profile.memory.archive.length,1);
   }
+});
+test('returned guardians shield one core attack each, then damage resumes', () => {
+  const h=harness(),r=h.run;r.guardianFate={spare:5,end:0};const c=h.core.ensureCore(r,h.profile);assert.equal(c.shields,3);for(const node of r.enemies)node.hp=0;
+  const boss=h.spawnEnemy(r,3);boss.final=true;boss.x=r.player.x-240;boss.y=r.player.y;h.core.moveCore(r,h.profile,boss,.1);
+  for(let attack=0;attack<4;attack++){c.attack={kind:'ring',x:r.player.x-110,y:r.player.y,angle:0,fireAt:r.time,endAt:r.time+.24};for(let i=0;i<3;i++){h.core.moveCore(r,h.profile,boss,.01);r.time+=.01;}r.time+=1;}
+  assert.equal(c.shields,0);assert.equal(h.hits.length,3);
+});
+test('burned signals strengthen the core and add the voice pattern; heard signals and the witness help in phase 2', () => {
+  const h=harness(),r=h.run;r.finalStep=2;r.signalChoices=['burn','burn','hear'];h.core.spawnFinalCore(r,h.profile);assert.equal(r.enemies.find(e=>e.final).maxHp,Math.round(10000*1.12));
+  const seen=new Set(),c=r.journey.core,boss=r.enemies.find(e=>e.final);for(const node of r.enemies.filter(e=>e.coreNode))node.hp=0;
+  for(let i=0;i<400;i++){h.core.moveCore(r,h.profile,boss,.05);r.time+=.05;if(c.attack)seen.add(c.attack.kind);}assert.ok(seen.has('voice'));
+  const calm=harness(),q=calm.run;q.finalStep=2;q.signalChoices=['burn','hear','hear'];calm.core.spawnFinalCore(q,calm.profile);const kinds=new Set();for(const node of q.enemies.filter(e=>e.coreNode))node.hp=0;const b=q.enemies.find(e=>e.final);
+  for(let i=0;i<400;i++){calm.core.moveCore(q,calm.profile,b,.05);q.time+=.05;if(q.journey.core.attack)kinds.add(q.journey.core.attack.kind);}assert.ok(!kinds.has('voice'));
+  const healed=[],w=harness(),x=w.run;x.signalChoices=['hear','hear'];x.npc.state='heard';const core=createCoreBoss({spawnEnemy:w.spawnEnemy,finalRating:()=>({power:1200,nodeHp:1000,hp:10000}),hurtPlayer:()=>{},healPlayer:amount=>healed.push(amount)});
+  const cc=core.ensureCore(x,w.profile);for(const node of x.enemies)node.hp=0;const fb=w.spawnEnemy(x,3);fb.final=true;fb.x=x.player.x-240;fb.y=x.player.y;core.moveCore(x,w.profile,fb,.1);assert.deepEqual(healed,[30]);
+  x.time=cc.next;core.moveCore(x,w.profile,fb,.01);assert.ok(Math.abs(cc.attack.fireAt-x.time-1.4)<1e-9);
 });
 test('final core spawn belongs to its module and is guarded against duplicates and wrong phases', () => {
   const h=harness(),r=h.run;h.core.spawnFinalCore(r,h.profile);assert.equal(r.enemies.length,0);

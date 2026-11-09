@@ -15,8 +15,8 @@ export function restoreJourney(raw,time) {
   const a=raw.active;
   if(a&&a.slot===j.step&&episodeKinds.includes(a.kind)) j.active={slot:j.step,kind:a.kind,x:n(a.x),y:n(a.y),baseX:n(a.baseX),baseY:n(a.baseY),start:n(a.start,time,0,time),until:n(a.until,time,0,time+85),reinforce:n(a.reinforce,time,0,time+7),charge:n(a.charge,0,0,14),gate:integer(a.gate,0,0,2),targetId:integer(a.targetId),targetDead:a.targetDead===true};
   const c=raw.core;
-  if(c&&[0,1].includes(c.phase)) { j.core={phase:c.phase,cycle:integer(c.cycle),next:n(c.next,time,0,time+5),attack:null,power:n(c.power,0,0,1e6),nodeHp:n(c.nodeHp,1500,300,4000)}; const a=c.attack;
-    if(a&&['cross','ring','sweep'].includes(a.kind)) j.core.attack={kind:a.kind,x:n(a.x),y:n(a.y),angle:n(a.angle,0,-100,100),turn:n(a.turn,0,-Math.PI/2,Math.PI/2),length:n(a.length,400,200,450),width:n(a.width,24,16,30),fireAt:n(a.fireAt,time,0,time+3),endAt:n(a.endAt,time,0,time+4)};
+  if(c&&[0,1].includes(c.phase)) { j.core={phase:c.phase,cycle:integer(c.cycle),next:n(c.next,time,0,time+5),attack:null,power:n(c.power,0,0,1e6),nodeHp:n(c.nodeHp,1500,300,4000),shields:integer(c.shields,0,0,3)}; const a=c.attack;
+    if(a&&['cross','ring','sweep','voice'].includes(a.kind)) j.core.attack={blocked:a.blocked===true,kind:a.kind,x:n(a.x),y:n(a.y),angle:n(a.angle,0,-100,100),turn:n(a.turn,0,-Math.PI/2,Math.PI/2),length:n(a.length,400,200,450),width:n(a.width,24,16,30),fireAt:n(a.fireAt,time,0,time+3),endAt:n(a.endAt,time,0,time+4)};
   }
   return j;
 }
