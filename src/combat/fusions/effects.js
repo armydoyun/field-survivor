@@ -1,6 +1,6 @@
 import { segmentEntry } from '../../math/geometry.js';
 export function tickEffects(c,dt){
-  const {q,p,player,alive,allow,hit,visual,circle,rect,targets,lightning}=c;
+  const {q,player,alive,allow,hit,visual,circle,rect,targets,lightning}=c;
   for(const e of [...q.effects]){
     if(!q.effects.includes(e))continue;
     c.visualLayer(e.channel.startsWith('upper')?'upper':'base');const oldAge=e.age;e.age+=dt;const snap=e.p;

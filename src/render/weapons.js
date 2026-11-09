@@ -1,4 +1,4 @@
-import { createSkillDesign, skillStyle } from './skill-style.js';
+import { createSkillDesign } from './skill-style.js';
 import { beaconRange, specTiming, novaEdgeWidth, specRiftWidth, specBeaconRadius } from '../combat/weapon-parameters.js';
 import { W, H } from '../core/config.js';
 import { easeSkill } from '../math/geometry.js';
@@ -110,7 +110,7 @@ export function createWeaponView({ sessionState, renderState, platform, primitiv
     ctx.save();
     for(const arc of sessionState.run.arcs){
       if(Math.max(arc.x1,arc.x2)<cx-W/2-12||Math.min(arc.x1,arc.x2)>cx+W/2+12||Math.max(arc.y1,arc.y2)<cy-H/2-12||Math.min(arc.y1,arc.y2)>cy+H/2+12)continue;
-      const dx=arc.x2-arc.x1,dy=arc.y2-arc.y1,d=Math.hypot(dx,dy)||1,fade=clamp(arc.life/(arc.max||.18),0,1),color=arc.kind==='rift'?'#d4b9ff':arc.kind==='reflect'?skillColors.rift[0]:skillColors.chain[0];
+      const dx=arc.x2-arc.x1,dy=arc.y2-arc.y1,fade=clamp(arc.life/(arc.max||.18),0,1),color=arc.kind==='rift'?'#d4b9ff':arc.kind==='reflect'?skillColors.rift[0]:skillColors.chain[0];
       if(arc.kind==='chain')design.lightning(arc.x1,arc.y1,arc.x2,arc.y2,skillColors.chain[0],{fade,detail,seed:arc.seed||2});
       else if(arc.kind==='rift')drawRiftScar(arc.x1,arc.y1,arc.x2,arc.y2,10,fade,'#ceb5ff',detail);
       else{

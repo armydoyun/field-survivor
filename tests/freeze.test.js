@@ -16,8 +16,6 @@ import { createScene } from '../src/render/scene.js';
 import { escapeHtml, number, percent, decision } from '../src/ui/html.js';
 import { makeFusionState, resetFusionCycle, createSpecField, recordAttackHit } from '../src/combat/attack-state.js';
 import * as parameters from '../src/combat/weapon-parameters.js';
-import { commitFusion } from '../src/growth/commands.js';
-import { fusionRecipes } from '../src/data/fusions.js';
 import { branches } from '../src/data/specializations.js';
 import { xpNeed } from '../src/growth/experience.js';
 

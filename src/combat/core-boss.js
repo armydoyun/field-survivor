@@ -5,7 +5,7 @@ import { frontEffect } from '../world/effects.js';
 import { appendRecord } from '../core/profile.js';
 
 export function createCoreBoss({ spawnEnemy, finalRating, hurtPlayer }) {
-  function ensureCore(run,profile){
+  function ensureCore(run,_profile){
     const j=run.journey;if(j.core)return j.core;
     const rating=finalRating(run);j.core={phase:0,cycle:0,next:run.time+1.4,attack:null,power:rating.power,nodeHp:rating.nodeHp};
     const count=run.guardianOrder==='end'?3:2,salvaged=j.outcomes.some(x=>x.slot===2&&x.success);for(let i=0;i<count;i++){const a=i*Math.PI*2/count,node=spawnEnemy(run,8);node.coreNode=true;node.x=run.player.x+Math.cos(a)*155;node.y=run.player.y+Math.sin(a)*155;node.hp=node.maxHp=Math.round(j.core.nodeHp*(count===3?(salvaged?.65:.8):1));node.radius=20;node.speed=1;}

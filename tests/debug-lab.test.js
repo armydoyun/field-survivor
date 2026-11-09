@@ -2,11 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createDebugGame } from '../src/debug/create-debug-game.js';
 import { createGame } from '../src/app/create-game.js';
-import { mountDebugPanel } from '../src/debug/panel.js';
 import { createMockBrowser } from './mock-browser.js';
-import { activeFusions, refreshBuild } from '../src/growth/build.js';
 import { branches } from '../src/data/specializations.js';
-import { fusionRecipes } from '../src/data/fusions.js';
 import { ENEMY_LIMIT } from '../src/core/config.js';
 
 function withBrowser(callback){

@@ -4,7 +4,6 @@ import { readFileSync } from 'node:fs';
 import { initialProfile } from '../src/core/profile.js';
 import { createRun } from '../src/core/run.js';
 import { commitRunStart, commitRunResult } from '../src/core/run-lifecycle.js';
-import { fusionRecipes } from '../src/data/fusions.js';
 
 function state(){const s={profile:initialProfile(),run:null,replaceRun(r){s.run=r;}};return s;}
 test('starting a run owns replacement and run counting without touching another session or banking old gold',()=>{

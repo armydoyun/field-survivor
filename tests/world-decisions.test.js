@@ -15,7 +15,7 @@ import { createStory } from '../src/world/story.js';
 import { createEncounters } from '../src/world/encounters.js';
 import { createFinale } from '../src/world/finale.js';
 import { createModalContent } from '../src/ui/modal-content.js';
-import { sites, relics, signals, anomalies, legacies, echoes, fronts } from '../src/data/world.js';
+import { sites, relics, anomalies, legacies, echoes, fronts } from '../src/data/world.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../src/data/world-choices.js';
 import { GUARDIAN_SALVAGE, GEM_LIMIT, ENEMY_LIMIT } from '../src/core/config.js';
 import { rewardGold } from '../src/growth/rewards.js';
@@ -43,7 +43,7 @@ test('all six site choices retain exact rewards, HP order, enemy patterns and si
   }
 });
 test('site invalid IDs, stale sites, pending relics and already owned site relics reject before rewards',()=>{
-  for(const mutate of [s=>{},s=>{s.run.site.id='stale';},s=>{s.run.relicPending=sites[0].id;},s=>{s.run.relics=[relics.find(r=>r.site===sites[0].id).id];}]){
+  for(const mutate of [()=>{},s=>{s.run.site.id='stale';},s=>{s.run.relicPending=sites[0].id;},s=>{s.run.relics=[relics.find(r=>r.site===sites[0].id).id];}]){
     const h=harness();prepareSite(h.s,0);mutate(h.s);noChange(h.s,()=>h.site.chooseSite('invalid'));
     if(h.s.run.site.id==='stale'||h.s.run.relicPending||h.s.run.relics.length)noChange(h.s,()=>h.site.chooseSite('take'));
     assert.equal(h.spawned.length,0);
@@ -130,6 +130,6 @@ test('choice descriptions and applied immediate rewards read the same definition
 test('world choice modules exclude UI, feedback and storage while workflow choices exclude reward mutation',()=>{
   const read=name=>readFileSync(new URL('../src/'+name,import.meta.url),'utf8');
   for(const file of ['world/site-decisions.js','world/story-decisions.js','world/encounter-decisions.js','world/ending-decisions.js']){const source=read(file);assert.doesNotMatch(source,/\b(?:view|platform|screen|feedback|storage|document|window|localStorage|session)\b/,file);assert.doesNotMatch(source,/from ['"][^'"]*(?:ui|render|app)\//,file);}
-  for(const file of ['world/sites.js','world/story.js','world/encounters.js','world/finale.js']){const source=read(file);for(const m of source.matchAll(/  function (?:choose\w+|acknowledgeSilence|finishEcho|resolveFront)\([^]*?(?=\n  function |\n  return \{)/g)){assert.doesNotMatch(m[0],/sessionState\.(?:run|profile)[\w.]*\s*(?:=(?!=)|\+\+|\+=)/,file);assert.doesNotMatch(m[0],/\b(?:rewardGold|dropXp|reserveXp|appendRecord|killEnemy)\s*\(/,file);}}
+  for(const file of ['world/sites.js','world/story.js','world/encounters.js','world/finale.js']){const source=read(file);for(const m of source.matchAll(/ {2}function (?:choose\w+|acknowledgeSilence|finishEcho|resolveFront)\([^]*?(?=\n {2}function |\n {2}return \{)/g)){assert.doesNotMatch(m[0],/sessionState\.(?:run|profile)[\w.]*\s*(?:=(?!=)|\+\+|\+=)/,file);assert.doesNotMatch(m[0],/\b(?:rewardGold|dropXp|reserveXp|appendRecord|killEnemy)\s*\(/,file);}}
   assert.doesNotMatch(read('ui/modals.js'),/sites\.siteEffect/);assert.doesNotMatch(read('world/ending-decisions.js'),/journey\.episodeTitle/);
 });

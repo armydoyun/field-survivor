@@ -10,7 +10,6 @@ import { createCombat } from '../src/combat/runtime.js';
 import { createCollisions } from '../src/combat/collisions.js';
 import { createPopulation } from '../src/combat/population.js';
 import { createGrowthActions } from '../src/ui/growth-actions.js';
-import { fusionRecipes } from '../src/data/fusions.js';
 import { upgrades } from '../src/data/upgrades.js';
 import { makeChoices, availableUpgrades } from '../src/growth/cards.js';
 import { enemyType } from '../src/data/enemies.js';
