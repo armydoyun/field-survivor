@@ -13,7 +13,7 @@ import { restoreJourney } from '../src/save/restore-world.js';
 import { xpNeed } from '../src/growth/experience.js';
 import { commitFusion } from '../src/growth/commands.js';
 import { fusionRecipes } from '../src/data/fusions.js';
-import { sites, echoes, fronts } from '../src/data/world.js';
+import { sites } from '../src/data/world.js';
 import { upgrades } from '../src/data/upgrades.js';
 import { SAVE_KEY, RECOVERY_DELAY } from '../src/core/config.js';
 
@@ -58,10 +58,11 @@ test('journey restoration limits plans, deduplicates outcomes and validates acti
   const raw=makeJourney(plan);raw.plan=raw.plan.map(x=>({...x,at:1e6}));raw.step=4;raw.outcomes=[{slot:0,kind:'relay',success:true},{slot:0,kind:'hunt',success:true},{slot:5,kind:'hunt',success:true}];raw.active={slot:1,kind:'hunt'};raw.keystone='invalid';raw.core={phase:1,cycle:9,nodeHp:1e9,attack:{kind:'ring',length:1e9}};
   const j=restoreJourney(raw,1800);assert.deepEqual(j.plan.map(x=>x.at),[465,855,1215,1605]);assert.deepEqual(j.outcomes,[{slot:0,kind:'relay',success:true}]);assert.equal(j.active,null);assert.equal(j.keystone,null);assert.equal(j.core.nodeHp,4000);assert.equal(j.core.attack.length,450);
 });
-test('world restore keeps matched pending sites and drops stale or already completed encounters',()=>{
-  const profile=initialProfile(),raw=fresh(profile);raw.siteStep=1;raw.site={id:sites[1].id,x:1,y:2};raw.sitePending=true;raw.echoStep=0;raw.echoSeed[echoes[0].id]='none';raw.echoSite={id:echoes[0].id,x:1,y:2};raw.echoPending=true;raw.frontStep=0;raw.front={id:fronts[0].id,x:1,y:2};raw.legacyOrigin='preserve';raw.legacySite={x:1,y:2};raw.legacyPending=true;
-  let r=restoreRun(raw,profile);assert.equal(r.sitePending,true);assert.equal(r.echoPending,true);assert.equal(r.legacyPending,true);assert.ok(r.front);
-  raw.site.id='stale';raw.echoOutcomes[echoes[0].id]='keep';raw.frontChoices[fronts[0].id]='silent';raw.legacyChoice='silent';r=restoreRun(raw,profile);assert.equal(r.site,null);assert.equal(r.sitePending,false);assert.equal(r.echoSite,null);assert.equal(r.echoPending,false);assert.equal(r.front,null);assert.equal(r.legacySite,null);assert.equal(r.legacyPending,false);
+test('world restore keeps matched pending sites, drops stale ones, and ignores the retired echo/front/reply fields',()=>{
+  const profile=initialProfile(),raw=fresh(profile);raw.siteStep=1;raw.site={id:sites[1].id,x:1,y:2};raw.sitePending=true;Object.assign(raw,{echoStep:0,echoSite:{id:'witness',x:1,y:2},echoPending:true,frontStep:0,front:{id:'breach',x:1,y:2},legacySite:{x:1,y:2},legacyPending:true,legacyChoice:'share'});raw.legacyOrigin='preserve';
+  let r=restoreRun(raw,profile);assert.equal(r.sitePending,true);assert.equal(r.legacyOrigin,'preserve');assert.equal(r.legacyVariant,'');for(const key of ['echoStep','echoSite','echoPending','echoSeed','echoOutcomes','frontStep','front','frontChoices','legacySite','legacyPending','legacyChoice'])assert.equal(key in r,false,key);
+  raw.site.id='stale';raw.legacyOrigin='consume';raw.legacyVariant='hollow';r=restoreRun(raw,profile);assert.equal(r.site,null);assert.equal(r.sitePending,false);assert.equal(r.legacyVariant,'hollow');
+  raw.legacyOrigin='unknown';r=restoreRun(raw,profile);assert.equal(r.legacyOrigin,null);assert.equal(r.legacyVariant,'');
 });
 test('combat restore preserves the zero-HP guardian choice and validates live hazard sources',()=>{
   const profile=initialProfile(),raw=fresh(profile);raw.time=960;raw.bossChoiceId=42;raw.nextId=1;raw.enemies=[{id:42,kind:3,phase:3,x:1,y:2,hp:0,pushX:20,pushY:30},{id:7,kind:0,x:1,y:2,hp:10},{id:8,kind:0,x:1,y:2,hp:0}];raw.hazards=[{sourceId:7,x:1,y:2,fireAt:960,endAt:962},{sourceId:8,x:1,y:2,fireAt:960,endAt:962},{sourceId:99,x:1,y:2,fireAt:960,endAt:962}];
@@ -83,8 +84,8 @@ test('unsupported saves leave the session alone, malformed JSON reports failure,
 });
 
 test('resume priority is read-only and retains precedence when multiple pending events coexist',()=>{
-  const r=fresh();r.finalStep=3;r.journey.keystonePending=true;r.bossChoiceId=1;r.enemies=[{id:1,kind:3,phase:3}];Object.assign(r.npc,{secretPending:true,encounterPending:true});Object.assign(r,{sitePending:true,site:{},echoPending:true,echoSite:{},legacyPending:true,legacySite:{},relicPending:'coordinate',anomalyPending:true,pending:2});r.up.pulse=3;
-  const steps=[['finalchoice',()=>{r.finalStep=1;}],['finalintro',()=>{r.finalStep=2;}],['keystone',()=>{r.journey.keystonePending=false;}],['secret',()=>{r.npc.secretPending=false;}],['encounter',()=>{r.npc.encounterPending=false;}],['site',()=>{r.site=null;}],['echo',()=>{r.echoSite=null;}],['legacy',()=>{r.legacySite=null;}],['relic',()=>{r.relicPending=null;}],['anomaly',()=>{r.anomalyPending=false;}],['branch',()=>{r.branches.pulse='tracking';}],['levelup',()=>{r.pending=0;}],['playing',()=>{}]];
+  const r=fresh();r.finalStep=3;r.journey.keystonePending=true;r.bossChoiceId=1;r.enemies=[{id:1,kind:3,phase:3}];Object.assign(r.npc,{secretPending:true,encounterPending:true});Object.assign(r,{sitePending:true,site:{},relicPending:'coordinate',anomalyPending:true,pending:2});r.up.pulse=3;
+  const steps=[['finalchoice',()=>{r.finalStep=1;}],['finalintro',()=>{r.finalStep=2;}],['keystone',()=>{r.journey.keystonePending=false;}],['secret',()=>{r.npc.secretPending=false;}],['encounter',()=>{r.npc.encounterPending=false;}],['site',()=>{r.site=null;}],['relic',()=>{r.relicPending=null;}],['anomaly',()=>{r.anomalyPending=false;}],['branch',()=>{r.branches.pulse='tracking';}],['levelup',()=>{r.pending=0;}],['playing',()=>{}]];
   for(const [expected,next]of steps){const before=structuredClone(r);assert.equal(resumeMode(r),expected);assert.deepEqual(r,before);next();}assert.equal(resumeMode(null),null);
 });
 test('resume creates the final core before selecting subsequent pending UI and prepares growth on demand',()=>{

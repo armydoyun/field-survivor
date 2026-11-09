@@ -4,7 +4,7 @@ import { hasRecords } from '../core/profile.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../data/world-choices.js';
 import { timeText } from '../core/utils.js';
 import { VERSION } from '../core/config.js';
-import { finalEndings, endingTexts, signals, anomalies, sites as siteDefinitions, legacies, echoes } from '../data/world.js';
+import { finalEndings, endingTexts, signals, anomalies, sites as siteDefinitions, firstSignalAfterPreserve, witnessAfterRelease } from '../data/world.js';
 import { relicChoices } from '../world/effects.js';
 import { branchReady } from '../growth/build.js';
 import { upgrades, upgradeFamilies } from '../data/upgrades.js';
@@ -43,7 +43,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       return  modalHtml('PAUSED', '일시정지', '게임 시간과 전투가 멈췄습니다. 자동 저장 결과는 상단 저장 상태에서 확인할 수 있습니다.', actionHtml('resume', '계속하기', true) + actionHtml('menu', '제목 화면'));
     } else if (view.mode === 'encounter') {
       const witness = sessionState.profile.memory.witness, wasTaken = witness.taken > 0, wasHeard = witness.heard > 0;
-      const intro = witness.quiet ? '네가 말없이 서 있던 시간은 아직 남아 있어. 다른 시간은 전부 사라졌는데.' : wasTaken ? '전에는 내 말을 전부 연료로 바꿨지. 그래도 돌아왔네.' : wasHeard ? '너는 나를 기억하지 못해도, 나는 네가 멈췄던 순간을 기억해.' : '처음 보는 얼굴이네. 아니, 그저 처음이라고 믿는 얼굴인가.';
+      const intro = sessionState.run.legacyOrigin === 'release' ? witnessAfterRelease : witness.quiet ? '네가 말없이 서 있던 시간은 아직 남아 있어. 다른 시간은 전부 사라졌는데.' : wasTaken ? '전에는 내 말을 전부 연료로 바꿨지. 그래도 돌아왔네.' : wasHeard ? '너는 나를 기억하지 못해도, 나는 네가 멈췄던 순간을 기억해.' : '처음 보는 얼굴이네. 아니, 그저 처음이라고 믿는 얼굴인가.';
       const guardian = sessionState.profile.memory.guardian, trace = guardian.spared ? '감시자를 돌려보낸 선택도 여기 남아 있어.' : guardian.ended ? '감시자를 끝까지 분해한 명령도 여기 남아 있어.' : '';
       return decisionHtml('UNKNOWN CONTACT · 001','기록원',`${intro} ${trace} 나는 네가 지나가는 소리를 들었어. 한 번은 아주 가까웠고, 한 번은 여기까지 오지 않았지.`,[{id:'witness-hear',name:'이야기를 들어준다',effect:`즉시 HP 최대 ${witnessReward.heal} 회복 · 재생 +0.25/s (피격 후 3초간 +0.0625/s)`},{id:'witness-take',name:'기록을 추출한다',effect:`${witnessReward.gold}G · 이번 도전의 모든 무기 피해 +10%`}]);
     } else if (view.mode === 'secret') {
@@ -52,19 +52,14 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
     } else if (view.mode === 'signal') {
       const ev=signals[sessionState.run.signalStep], heard=sessionState.profile.memory.heard, burned=sessionState.profile.memory.burned;
       const trace=sessionState.run.signalStep===2 && heard+burned?`잡음 사이에 ${heard}개의 응답과 ${burned}개의 빈 주파수가 겹친다.`:'';
-      return decisionHtml('INCOMING SIGNAL',ev.title,`${ev.line} ${trace}`,[{id:'hear',name:'기억한다',effect:`최대 HP 기초값 +${signalReward.hp} · 즉시 HP 최대 ${signalReward.hp} 회복`},{id:'burn',name:'연료로 변환한다',effect:`신호 공격력 배율 +15%p · ${signalReward.goldBase+signalReward.goldStep*(sessionState.run.signalStep+1)}G`}]);
+      const line=sessionState.run.signalStep===0&&sessionState.run.legacyOrigin==='preserve'?firstSignalAfterPreserve:ev.line;
+      return decisionHtml('INCOMING SIGNAL',ev.title,`${line} ${trace}`,[{id:'hear',name:'기억한다',effect:`최대 HP 기초값 +${signalReward.hp} · 즉시 HP 최대 ${signalReward.hp} 회복`},{id:'burn',name:'연료로 변환한다',effect:`신호 공격력 배율 +15%p · ${signalReward.goldBase+signalReward.goldStep*(sessionState.run.signalStep+1)}G`}]);
     } else if (view.mode === 'anomaly') {
       const e=anomalies[sessionState.run.anomalyStep];
-      return decisionHtml(`ANOMALY ${String(sessionState.run.anomalyStep+1).padStart(2,'0')} / 03`,e.title,e.line,e.options.map(o=>({id:'anomaly-'+o.id,name:o.name,effect:o.effect})));
+      return decisionHtml(`FIELD SHIFT · 전장 변화 ${String(sessionState.run.anomalyStep+1).padStart(2,'0')} / 03`,e.title,e.line,e.options.map(o=>({id:'anomaly-'+o.id,name:o.name,effect:o.effect})));
     } else if (view.mode === 'site') {
       const e=siteDefinitions[sessionState.run.siteStep];
       return decisionHtml(`FIELD SITE ${String(sessionState.run.siteStep+1).padStart(2,'0')} / 03`,e.title,e.line,e.options.map(o=>({id:'site-'+o.id,name:o.name,effect:siteEffect(e,o.id)})));
-    } else if (view.mode === 'legacy') {
-      const e=legacies[sessionState.run.legacyOrigin];
-      return decisionHtml('THE COMPLETE LOOP',e.name,e.intro,e.options.map(o=>({id:'legacy-'+o.id,name:o.name,effect:o.desc})));
-    } else if (view.mode === 'echo') {
-      const e=echoes[sessionState.run.echoStep],source=sessionState.run.echoSeed[e.id],card=(id,text)=>{const [name,...effect]=text.split(' · ');return {id,name,effect:effect.join(' · ')};};
-      return decisionHtml('THE ARCHIVE',e.name,e.line[source],[card('echo-keep',e.keep),card('echo-use',e.use)]);
     } else if (view.mode === 'relic') {
       const site=siteDefinitions.find(s=>s.id===sessionState.run.relicPending),items=site?relicChoices(site.id):[];
       return decisionHtml('RELIC DISCOVERY','남겨진 두 개의 유물',`${site?.title||'탐사 지점'}. 손을 뻗자 두 장치가 서로 다른 박자로 울린다. 하나만 가져갈 수 있다.`,items.map(o=>({id:'relic-'+o.id,name:o.name,effect:o.desc})));

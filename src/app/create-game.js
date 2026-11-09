@@ -8,7 +8,6 @@ import { createActions } from './actions.js';
 import { createKeyboardInput } from '../input/keyboard.js';
 import { createSiteDecisions } from '../world/site-decisions.js';
 import { createStoryDecisions } from '../world/story-decisions.js';
-import { createEncounterDecisions } from '../world/encounter-decisions.js';
 import { createEndingDecisions } from '../world/ending-decisions.js';
 import { createPopulation } from '../combat/population.js';
 import { createCollisions } from '../combat/collisions.js';
@@ -74,9 +73,8 @@ export function createGame(sessionState = defaultSession, { createInspector, see
   const journey = createJourney({ sessionState, view, platform, progression, session, storage, screen, enemyRuntime, difficulty, statistics });
   const objectives = createObjectives({ sessionState, view, progression, feedback, session, storage, enemyRuntime, difficulty, screen });
   const storyDecisions=createStoryDecisions({ sessionState, statistics, combat });
-  const story = createStory({ sessionState, view, platform, screen, storage, session, decisions:storyDecisions, feedback, growthActions });
-  const encounterDecisions=createEncounterDecisions({ sessionState, statistics });
-  const encounters = createEncounters({ sessionState, view, platform, session, storage, screen, decisions:encounterDecisions, feedback, difficulty, enemyRuntime });
+  const story = createStory({ sessionState, view, platform, screen, storage, session, decisions:storyDecisions, feedback });
+  const encounters = createEncounters({ sessionState, platform, feedback, difficulty, enemyRuntime });
   const siteDecisions=createSiteDecisions({ sessionState, statistics, progression, enemyRuntime });
   const sites = createSites({ sessionState, view, platform, session, storage, screen, decisions:siteDecisions, feedback, growthActions });
   const pickups = createPickups({ sessionState, statistics, feedback, progression });
@@ -104,9 +102,9 @@ export function createGame(sessionState = defaultSession, { createInspector, see
   const display = createDisplay({ view, platform, screen, scene });
   const collisions = createCollisions({ inspector, sessionState, view, statistics, enemyRuntime, weapons, combat, feedback });
   const population = createPopulation({ sessionState, difficulty, enemyRuntime, encounters, feedback, onGuardianSpawned: story.recordGuardianArrival });
-  const update = createUpdate({ inspector, sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, encounters, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale });
+  const update = createUpdate({ inspector, sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale });
   const loop = createLoop({ inspector, sessionState, view, update, cameraView, scene, hud, storage, finale });
-  const actions = createActions({ view, buildGuide, growthActions, session, screen, storage, story, sites, encounters, journey, finale, objectives });
+  const actions = createActions({ view, buildGuide, growthActions, session, screen, storage, story, sites, journey, finale, objectives });
   const input = createKeyboardInput({ sessionState, view, platform, shop, buildGuide, menuInput, storage, growthActions, display, actions, session });
   const events = createEvents({ inspector, view, platform, shop, buildGuide, menuInput, storage, display, session, input, actions });
 

@@ -8,14 +8,12 @@ import { createProgression } from '../src/growth/progression.js';
 import { xpNeed } from '../src/growth/experience.js';
 import { createSiteDecisions } from '../src/world/site-decisions.js';
 import { createStoryDecisions } from '../src/world/story-decisions.js';
-import { createEncounterDecisions } from '../src/world/encounter-decisions.js';
 import { createEndingDecisions } from '../src/world/ending-decisions.js';
 import { createSites } from '../src/world/sites.js';
 import { createStory } from '../src/world/story.js';
-import { createEncounters } from '../src/world/encounters.js';
 import { createFinale } from '../src/world/finale.js';
 import { createModalContent } from '../src/ui/modal-content.js';
-import { sites, relics, anomalies, legacies, echoes, fronts } from '../src/data/world.js';
+import { sites, relics, anomalies, startEffects, startScenes, firstSignalAfterPreserve, witnessAfterRelease } from '../src/data/world.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../src/data/world-choices.js';
 import { endingTexts, endingScenes } from '../src/data/world.js';
 import { GUARDIAN_SALVAGE, ENEMY_LIMIT, GUARDIAN_REACH, GUARDIAN_YIELD } from '../src/core/config.js';
@@ -24,7 +22,7 @@ function state(){const s={profile:initialProfile(),run:null,replaceRun:r=>{s.run
 function harness(s=state()){
   const statistics=createStatistics({sessionState:s}),progression=createProgression({sessionState:s,statistics}),spawned=[];
   const enemyRuntime={spawnEnemy(kind){const e={id:spawned.length+1,kind,hp:10,maxHp:10};spawned.push(e);s.run.enemies.push(e);return e;},promoteElite:e=>{e.elite=true;}};
-  return {s,statistics,progression,spawned,enemyRuntime,site:createSiteDecisions({sessionState:s,statistics,progression,enemyRuntime}),story:createStoryDecisions({sessionState:s,statistics}),encounter:createEncounterDecisions({sessionState:s,statistics})};
+  return {s,statistics,progression,spawned,enemyRuntime,site:createSiteDecisions({sessionState:s,statistics,progression,enemyRuntime}),story:createStoryDecisions({sessionState:s,statistics})};
 }
 const snapshot=s=>structuredClone({run:s.run,profile:s.profile});
 function noChange(s,action){const before=snapshot(s);assert.ok(!action());assert.deepEqual(snapshot(s),before);}
@@ -93,15 +91,12 @@ test('a yielding guardian is returned by standing still nearby, dismantled with 
   t=setup();t.e.x+=2;for(let i=0;i<40;i++)t.story.tickGuardian(.1,false);assert.equal(t.h.s.run.guardianFate.spare,0);assert.equal(t.story.dismantleGuardian(),false);t.e.x-=2;assert.equal(t.story.dismantleGuardian(),true);assert.equal(t.h.s.run.guardianFate.end,1);
   t=setup();t.ui.view.mode='paused';assert.equal(t.story.dismantleGuardian(),false);t.ui.view.mode='playing';t.h.s.run.time=t.e.yieldUntil;t.story.tickGuardian(.1,true);assert.deepEqual(t.h.s.run.guardianFate,{spare:0,end:0});assert.equal(t.h.s.run.enemies.length,0);
 });
-test('all legacy choices and nonresponse record once and clamp HP using the committed choice',()=>{
-  for(const [origin,def]of Object.entries(legacies))for(const choice of [...def.options.map(o=>o.id),'silent']){const h=harness(),{s}=h;s.run.legacyOrigin=origin;s.run.legacySite={x:0,y:0};s.run.player.hp=200;noChange(s,()=>h.story.chooseLegacy('invalid'));assert.equal(h.story.chooseLegacy(choice),true);assert.equal(s.run.legacyChoice,choice);assert.equal(s.profile.memory.legacies[origin][choice],1);assert.equal(s.run.player.hp,Math.min(200,h.statistics.stats().maxHp));assert.equal(s.run.legacySite,null);noChange(s,()=>h.story.chooseLegacy(choice));}
-});
-test('echo restoration, conversion and nonresponse preserve origin and duplicate guards',()=>{
-  for(const [index,e]of echoes.entries())for(const choice of ['keep','use','silent']){const h=harness(),{s}=h;s.run.echoStep=index;s.run.echoSite={id:e.id};s.run.echoSeed[e.id]='none';s.run.echoPending=true;s.run.player.hp=200;
-    noChange(s,()=>h.encounter.finishEcho('invalid'));assert.equal(h.encounter.finishEcho(choice),true);assert.equal(s.run.echoOutcomes[e.id],choice);assert.equal(s.profile.memory.echoes[e.id][choice],1);assert.equal(s.run.echoPending,false);assert.equal(s.run.echoStep,index+1);assert.equal(s.run.player.hp,choice==='silent'?200:h.statistics.stats().maxHp);noChange(s,()=>h.encounter.finishEcho(choice));}
-});
-test('front path choices and nonresponse do not depend on physical position or a modal',()=>{
-  for(const [index,front]of fronts.entries())for(const choice of [...front.paths.map(o=>o.id),'silent']){const h=harness(),{s}=h;s.run.frontStep=index;s.run.front={id:front.id};noChange(s,()=>h.encounter.resolveFront('invalid'));assert.equal(h.encounter.resolveFront(choice),true);assert.equal(s.run.frontChoices[front.id],choice);assert.equal(s.profile.memory.fronts[front.id][choice],1);assert.equal(s.run.front,null);noChange(s,()=>h.encounter.resolveFront(choice));}
+test('the previous ending becomes a start scene: witness timing, hollow absence and changed first lines',()=>{
+  const spawnAt=(origin,variant='')=>{const h=harness(),ui=screens(h.s,'playing');h.s.run.legacyOrigin=origin;h.s.run.legacyVariant=variant;const story=createStory({...ui,session:{record(){}},decisions:h.story,feedback:{}});for(const t of [10,startEffects.dividedWitnessAt,startEffects.witnessAt-1,startEffects.witnessAt,300]){h.s.run.time=t;story.spawnWitness();if(h.s.run.npc.spawned)return t;}return null;};
+  assert.equal(spawnAt(null),startEffects.witnessAt);assert.equal(spawnAt('divided'),startEffects.dividedWitnessAt);assert.equal(spawnAt('consume','hollow'),null);assert.equal(spawnAt('consume'),startEffects.witnessAt);
+  const h=harness(),s=h.s,view={mode:'signal'},content=createModalContent({sessionState:s,view,route:()=>null});s.run.signalStep=0;assert.ok(!content.buildModal().includes(firstSignalAfterPreserve));s.run.legacyOrigin='preserve';assert.ok(content.buildModal().includes(firstSignalAfterPreserve));s.run.signalStep=1;assert.ok(!content.buildModal().includes(firstSignalAfterPreserve));
+  view.mode='encounter';assert.ok(!content.buildModal().includes(witnessAfterRelease));s.run.legacyOrigin='release';assert.ok(content.buildModal().includes(witnessAfterRelease));
+  for(const id of ['preserve','consume','divided','release','hollow'])assert.ok(startScenes[id].line&&startScenes[id].change,id);
 });
 test('final encounter commits phase, clears transient entities and spawns its core once',()=>{
   const s=state(),r=s.run;r.finalStep=1;r.time=1800;for(const field of ['enemies','bullets','shots','hazards'])r[field]=[{}];let spawns=0;
@@ -133,7 +128,7 @@ test('ending scenes follow the witness, guardians and the lost coordinate; the h
 });
 test('decision factories follow replacement state and reject missing runs without touching previous sessions',()=>{
   const h=harness(),previous=h.s.run,other=state();h.s.profile=other.profile;h.s.run=other.run;assert.equal(h.story.chooseSignal('burn'),true);assert.equal(previous.signalStep,0);assert.equal(other.run.signalStep,1);h.s.run=null;
-  for(const action of [()=>h.site.chooseSite('take'),()=>h.site.chooseRelic('mirror'),()=>h.story.chooseWitness('hear'),()=>h.story.acknowledgeSilence(),()=>h.story.chooseBoss('spare'),()=>h.story.chooseSignal('burn'),()=>h.story.chooseAnomaly('keep'),()=>h.story.chooseLegacy('silent'),()=>h.encounter.finishEcho('silent'),()=>h.encounter.resolveFront('silent')])noChange(h.s,action);
+  for(const action of [()=>h.site.chooseSite('take'),()=>h.site.chooseRelic('mirror'),()=>h.story.chooseWitness('hear'),()=>h.story.acknowledgeSilence(),()=>h.story.chooseBoss('spare'),()=>h.story.chooseSignal('burn'),()=>h.story.chooseAnomaly('keep')])noChange(h.s,action);
 });
 function screens(s,mode){const calls=[],view={mode},keys=new Set(['KeyD']),screen={setMode:next=>{calls.push(next);view.mode=next;}},storage={save:()=>calls.push('save')};return {sessionState:s,view,platform:{keys},screen,storage,calls};}
 test('story workflow blocks wrong-screen commands and double clicks without consuming the next signal',()=>{
@@ -142,9 +137,6 @@ test('story workflow blocks wrong-screen commands and double clicks without cons
 test('site workflow advances to relic then resumes growth and does not save rejected choices',()=>{
   const h=harness(),ui=screens(h.s,'site');prepareSite(h.s,0);const flow=createSites({...ui,decisions:h.site,feedback:{ring:()=>ui.calls.push('ring')},growthActions:{openUpgrade:()=>ui.calls.push('growth')}});
   flow.chooseSite('invalid');assert.deepEqual(ui.calls,[]);flow.chooseSite('keep');assert.deepEqual(ui.calls,['relic','save']);h.s.run.pending=1;flow.chooseRelic(relics.find(r=>r.site===sites[0].id).id);assert.deepEqual(ui.calls,['relic','save','ring','growth','save']);
-});
-test('automatic echo and legacy nonresponse save without resuming a paused screen',()=>{
-  const h=harness(),ui=screens(h.s,'paused');h.s.run.legacyOrigin='preserve';h.s.run.legacySite={};const story=createStory({...ui,decisions:h.story});assert.equal(story.chooseLegacy('silent'),true);assert.deepEqual(ui.calls,['save']);h.s.run.echoSite={id:echoes[0].id};h.s.run.echoSeed[echoes[0].id]='none';const encounter=createEncounters({...ui,decisions:h.encounter});assert.equal(encounter.finishEcho('silent'),true);assert.deepEqual(ui.calls,['save','save']);assert.equal(ui.view.mode,'paused');
 });
 test('ending workflow stores result, clears input and saves the completed state after screen transition',()=>{
   const s=state(),ui=screens(s,'finalchoice');prepareRoute(s.run,4);const decisions=createEndingDecisions({sessionState:s}),flow=createFinale({...ui,decisions});flow.chooseFinale('release');assert.deepEqual(ui.calls,[]);flow.chooseFinale('preserve');assert.equal(ui.view.lastResult.endingId,'preserve');assert.equal(ui.platform.keys.size,0);assert.equal(s.run,null);assert.deepEqual(ui.calls,['ending','save']);flow.chooseFinale('preserve');assert.deepEqual(ui.calls,['ending','save']);
@@ -166,7 +158,7 @@ test('choice descriptions and applied immediate rewards read the same definition
 });
 test('world choice modules exclude UI, feedback and storage while workflow choices exclude reward mutation',()=>{
   const read=name=>readFileSync(new URL('../src/'+name,import.meta.url),'utf8');
-  for(const file of ['world/site-decisions.js','world/story-decisions.js','world/encounter-decisions.js','world/ending-decisions.js']){const source=read(file);assert.doesNotMatch(source,/\b(?:view|platform|screen|feedback|storage|document|window|localStorage|session)\b/,file);assert.doesNotMatch(source,/from ['"][^'"]*(?:ui|render|app)\//,file);}
-  for(const file of ['world/sites.js','world/story.js','world/encounters.js','world/finale.js']){const source=read(file);for(const m of source.matchAll(/ {2}function (?:choose\w+|acknowledgeSilence|finishEcho|resolveFront)\([^]*?(?=\n {2}function |\n {2}return \{)/g)){assert.doesNotMatch(m[0],/sessionState\.(?:run|profile)[\w.]*\s*(?:=(?!=)|\+\+|\+=)/,file);assert.doesNotMatch(m[0],/\b(?:rewardGold|dropXp|reserveXp|appendRecord|killEnemy)\s*\(/,file);}}
+  for(const file of ['world/site-decisions.js','world/story-decisions.js','world/ending-decisions.js']){const source=read(file);assert.doesNotMatch(source,/\b(?:view|platform|screen|feedback|storage|document|window|localStorage|session)\b/,file);assert.doesNotMatch(source,/from ['"][^'"]*(?:ui|render|app)\//,file);}
+  for(const file of ['world/sites.js','world/story.js','world/encounters.js','world/finale.js']){const source=read(file);for(const m of source.matchAll(/ {2}function (?:choose\w+|acknowledgeSilence)\([^]*?(?=\n {2}function |\n {2}return \{)/g)){assert.doesNotMatch(m[0],/sessionState\.(?:run|profile)[\w.]*\s*(?:=(?!=)|\+\+|\+=)/,file);assert.doesNotMatch(m[0],/\b(?:rewardGold|dropXp|reserveXp|appendRecord|killEnemy)\s*\(/,file);}}
   assert.doesNotMatch(read('ui/modals.js'),/sites\.siteEffect/);assert.doesNotMatch(read('world/ending-decisions.js'),/journey\.episodeTitle/);
 });

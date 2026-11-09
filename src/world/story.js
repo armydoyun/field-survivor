@@ -1,8 +1,8 @@
 import { canInteractInWorld } from '../core/view-policy.js';
-import { signals, anomalies, legacies, guardianLines } from '../data/world.js';
+import { signals, anomalies, guardianLines, startEffects } from '../data/world.js';
 import { W, H, GUARDIAN_REACH, GUARDIAN_STILL } from '../core/config.js';
 
-export function createStory({ sessionState, view, platform, screen, storage, session, decisions, feedback, growthActions }) {
+export function createStory({ sessionState, view, platform, screen, storage, session, decisions, feedback }) {
   const { keys } = platform;
 
   function recordGuardianArrival(guardian){
@@ -48,7 +48,8 @@ export function createStory({ sessionState, view, platform, screen, storage, ses
 
   function spawnWitness() {
     const p = sessionState.run.player, npc = sessionState.run.npc;
-    if (npc.spawned || sessionState.run.time < 65) return;
+    // 직전 결말의 여파: 두 개의 목소리 → 기록원이 일찍 온다, 빈 껍질 → 이번 판에는 오지 않는다.
+    if (npc.spawned || sessionState.run.legacyVariant === 'hollow' || sessionState.run.time < (sessionState.run.legacyOrigin === 'divided' ? startEffects.dividedWitnessAt : startEffects.witnessAt)) return;
     npc.spawned = true; npc.state = 'waiting'; npc.x = p.x + (p.x < W / 2 ? 142 : -142); npc.y = p.y + (p.y < H / 2 ? 78 : -78);
     session.record('알 수 없는 점 하나가 전장에 나타났다. 적들과는 다른 신호다.');
   }
@@ -76,21 +77,5 @@ export function createStory({ sessionState, view, platform, screen, storage, ses
 
   function chooseAnomaly(choice){if(view.mode!=='anomaly'||!decisions.chooseAnomaly(choice))return;screen.setMode('playing');storage.save();}
 
-  function spawnLegacy() {
-    if (!sessionState.run?.legacyOrigin || sessionState.run.legacyChoice || sessionState.run.finalStep || sessionState.run.time < 180) return;
-    if (sessionState.run.time >= 540) { if (sessionState.run.legacySite) chooseLegacy('silent'); return; }
-    if (!sessionState.run.legacySite) { const p = sessionState.run.player; sessionState.run.legacySite = { x: p.x+205, y: p.y-95 }; session.record(`지난 결말의 답장 · ${legacies[sessionState.run.legacyOrigin].name}이 나타났다.`); }
-  }
-
-  function meetLegacy() {
-    if (!canInteractInWorld(view) || !sessionState.run?.legacySite || (sessionState.run.player.x-sessionState.run.legacySite.x)**2+(sessionState.run.player.y-sessionState.run.legacySite.y)**2 > 72**2) return false;
-    sessionState.run.legacyPending = true; keys.clear(); screen.setMode('legacy'); storage.save(); return true;
-  }
-
-  function chooseLegacy(choice){
-    if((choice!=='silent'&&view.mode!=='legacy')||!decisions.chooseLegacy(choice))return false;
-    if(view.mode==='legacy'){if(sessionState.run.pending)growthActions.openUpgrade();else screen.setMode('playing');}storage.save();return true;
-  }
-
-  return { recordGuardianArrival, tickGuardian, dismantleGuardian, tickWitness, openSignal, spawnWitness, meetWitness, chooseWitness, revealSilence, acknowledgeSilence, chooseSignal, openAnomaly, chooseAnomaly, spawnLegacy, meetLegacy, chooseLegacy };
+  return { recordGuardianArrival, tickGuardian, dismantleGuardian, tickWitness, openSignal, spawnWitness, meetWitness, chooseWitness, revealSilence, acknowledgeSilence, chooseSignal, openAnomaly, chooseAnomaly };
 }

@@ -9,7 +9,7 @@ import { createMockBrowser } from './mock-browser.js';
 function actionFixture(){
   const calls=[],view={mode:'playing',newConfirmReturn:'paused'},fn=name=>(...args)=>calls.push([name,...args]);
   const method=(prefix,names)=>Object.fromEntries(names.map(name=>[name,fn(prefix+'.'+name)]));
-  const deps={view,buildGuide:method('guide',['toggleBuildGuide','openUpgradeInfo']),growthActions:method('growth',['toggleFusion','chooseFusion','chooseUpgrade','chooseBranch','rerollUpgrade']),session:method('session',['startFresh','resume','resetAllRecords']),storage:method('storage',['save']),story:method('story',['chooseSignal','chooseBoss','chooseWitness','acknowledgeSilence','chooseAnomaly','chooseLegacy','meetWitness']),sites:method('sites',['chooseSite','chooseRelic','meetSite']),encounters:method('encounters',['finishEcho','meetEcho','meetFront']),journey:method('journey',['chooseKeystone']),finale:method('finale',['beginFinale','chooseFinale']),objectives:method('objectives',['meetObjective']),screen:{setMode:mode=>{calls.push(['mode',mode]);view.mode=mode;}}};
+  const deps={view,buildGuide:method('guide',['toggleBuildGuide','openUpgradeInfo']),growthActions:method('growth',['toggleFusion','chooseFusion','chooseUpgrade','chooseBranch','rerollUpgrade']),session:method('session',['startFresh','resume','resetAllRecords']),storage:method('storage',['save']),story:method('story',['chooseSignal','chooseWitness','acknowledgeSilence','chooseAnomaly','meetWitness','dismantleGuardian']),sites:method('sites',['chooseSite','chooseRelic','meetSite']),journey:method('journey',['chooseKeystone']),finale:method('finale',['beginFinale','chooseFinale']),objectives:method('objectives',['meetObjective']),screen:{setMode:mode=>{calls.push(['mode',mode]);view.mode=mode;}}};
   return {calls,view,deps,actions:createActions(deps)};
 }
 function withBrowser(callback){
@@ -29,8 +29,9 @@ test('every exact overlay action reaches its existing workflow with unchanged ar
   const h=actionFixture();h.actions.dispatch('menu');assert.deepEqual(h.calls,[['mode','menu'],['storage.save']]);
 });
 test('prefix routes preserve complete suffixes and exact actions win before fusion/final prefixes',()=>{
-  const routes=[['fusion-','growth.chooseFusion'],['anomaly-','story.chooseAnomaly'],['site-','sites.chooseSite'],['relic-','sites.chooseRelic'],['echo-','encounters.finishEcho'],['branch-','growth.chooseBranch'],['keystone-','journey.chooseKeystone'],['final-','finale.chooseFinale'],['legacy-','story.chooseLegacy']];
+  const routes=[['fusion-','growth.chooseFusion'],['anomaly-','story.chooseAnomaly'],['site-','sites.chooseSite'],['relic-','sites.chooseRelic'],['branch-','growth.chooseBranch'],['keystone-','journey.chooseKeystone'],['final-','finale.chooseFinale']];
   for(const [prefix,method]of routes){const h=actionFixture();assert.equal(h.actions.dispatch(prefix+'test-with-hyphens'),true);assert.deepEqual(h.calls,[[method,'test-with-hyphens']]);}
+  for(const retired of ['echo-keep','legacy-share']){const h=actionFixture();assert.equal(h.actions.dispatch(retired),false);assert.deepEqual(h.calls,[]);}
   const h=actionFixture();h.actions.dispatch('fusion-guide');h.actions.dispatch('fusion-close');h.actions.dispatch('final-enter');assert.deepEqual(h.calls,[['guide.toggleBuildGuide',true],['growth.toggleFusion'],['finale.beginFinale']]);
 });
 test('guarded screen actions do nothing outside their allowed screen and unknown IDs never invoke object prototypes',()=>{
@@ -43,10 +44,9 @@ test('overlay click precedence is detail information then upgrade choice then an
   }
   const h=actionFixture();h.actions.overlayClick({target:{closest:()=>null}});assert.deepEqual(h.calls,[]);
 });
-test('world interaction keeps site, objective, witness, echo, front and legacy priority with short circuiting',()=>{
-  const cases=[['site',['site']],['objective',['site','objective']],['witness',['site','objective','witness']],['echo',['site','objective','witness','echo']],['front',['site','objective','witness','echo','front']],['none',['site','objective','witness','echo','front','legacy']]];
-  for(const [winner,expected]of cases){const h=actionFixture(),calls=[],meet=name=>()=>{calls.push(name);if(name==='witness'&&winner==='witness')h.view.mode='encounter';return name===winner;};h.deps.sites.meetSite=meet('site');h.deps.objectives.meetObjective=meet('objective');h.deps.story.meetWitness=meet('witness');h.deps.encounters.meetEcho=meet('echo');h.deps.encounters.meetFront=meet('front');h.deps.story.meetLegacy=meet('legacy');h.deps.story.dismantleGuardian=()=>false;h.actions.interact();assert.deepEqual(calls,expected);h.view.mode='paused';h.actions.interact();assert.deepEqual(calls,expected);}
-  const h=actionFixture(),calls=[];h.deps.story.dismantleGuardian=()=>{calls.push('guardian');return true;};h.deps.sites.meetSite=()=>{calls.push('site');return true;};h.actions.interact();assert.deepEqual(calls,['guardian']);
+test('world interaction keeps guardian, site, objective and witness priority with short circuiting',()=>{
+  const cases=[['guardian',['guardian']],['site',['guardian','site']],['objective',['guardian','site','objective']],['none',['guardian','site','objective','witness']]];
+  for(const [winner,expected]of cases){const h=actionFixture(),calls=[],meet=name=>()=>{calls.push(name);return name===winner;};h.deps.story.dismantleGuardian=meet('guardian');h.deps.sites.meetSite=meet('site');h.deps.objectives.meetObjective=meet('objective');h.deps.story.meetWitness=meet('witness');h.actions.interact();assert.deepEqual(calls,expected);h.view.mode='paused';h.actions.interact();assert.deepEqual(calls,expected);}
 });
 test('F9 closes auxiliary screens in order and works before privacy/IME guards, while repeats only prevent default',()=>withBrowser(env=>{
   const h=keyFixture(env);Object.assign(h.view,{panic:true,shopOpen:true,skillInfoOpen:true,buildOpen:true});const e=press(h,'F9',{isComposing:true});assert.equal(e.prevented,1);assert.deepEqual(h.calls,[['shop',false],['closeInfo'],['guide',false],['hide']]);h.calls.length=0;assert.equal(press(h,'F9',{repeat:true}).prevented,1);assert.deepEqual(h.calls,[]);

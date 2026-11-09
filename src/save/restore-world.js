@@ -1,6 +1,6 @@
 import { makeJourney } from '../core/run.js';
 import { n, integer } from '../core/utils.js';
-import { episodeKinds, anomalies, sites, legacies, echoes, fronts, objectives, relics, signals } from '../data/world.js';
+import { episodeKinds, anomalies, sites, objectives, relics, signals, finalEndings } from '../data/world.js';
 import { keystones } from '../data/progression.js';
 import { HARVEST_CAP, RUN_END, W, H } from '../core/config.js';
 import { relicChoices } from '../world/effects.js';
@@ -32,22 +32,9 @@ export function restoreWorld(r,raw,_profile){
   }
   r.anomalyWardAt = n(raw.anomalyWardAt, 0, 0, 1e7);
   r.siteDecisions = {}; for (const site of sites) if (site.options.some(o => o.id === raw.siteDecisions?.[site.id])) r.siteDecisions[site.id] = raw.siteDecisions[site.id];
-  r.legacyOrigin = Object.hasOwn(legacies, raw.legacyOrigin) ? raw.legacyOrigin : null;
-  const savedLegacy = legacies[r.legacyOrigin]; r.legacyChoice = savedLegacy && [...savedLegacy.options.map(x => x.id), 'silent'].includes(raw.legacyChoice) ? raw.legacyChoice : null;
-  r.legacySite = savedLegacy && !r.legacyChoice && raw.legacySite && Number.isFinite(raw.legacySite.x) && Number.isFinite(raw.legacySite.y) ? { x: n(raw.legacySite.x, 0, -1e7, 1e7), y: n(raw.legacySite.y, 0, -1e7, 1e7) } : null;
-  r.legacyPending = !!r.legacySite && raw.legacyPending === true;
-  r.echoSeed = {}; for (const e of echoes) r.echoSeed[e.id] = Object.hasOwn(e.line, raw.echoSeed?.[e.id]) ? raw.echoSeed[e.id] : '';
-  r.echoOutcomes = {}; for (const e of echoes) if (['keep','use','silent'].includes(raw.echoOutcomes?.[e.id])) r.echoOutcomes[e.id] = raw.echoOutcomes[e.id];
-  r.echoStep = integer(raw.echoStep, 0, 0, echoes.length);
-  const echo = echoes[r.echoStep], spot = raw.echoSite;
-  if (echo && spot?.id === echo.id && r.echoSeed[echo.id] && Number.isFinite(spot.x) && Number.isFinite(spot.y) && !r.echoOutcomes[echo.id]) r.echoSite = { id: echo.id, x: n(spot.x, 0, -1e7, 1e7), y: n(spot.y, 0, -1e7, 1e7) };
-  r.echoPending = !!r.echoSite && raw.echoPending === true;
-  r.frontChoices = {}; for (const f of fronts) if ([...f.paths.map(p => p.id), 'silent'].includes(raw.frontChoices?.[f.id])) r.frontChoices[f.id] = raw.frontChoices[f.id];
-  r.frontStep = integer(raw.frontStep, 0, 0, fronts.length);
-  const frontDef = fronts[r.frontStep], oldFront = raw.front;
-  if (frontDef && !r.frontChoices[frontDef.id] && oldFront?.id === frontDef.id && Number.isFinite(oldFront.x) && Number.isFinite(oldFront.y)) {
-    r.front = { id: frontDef.id, x: n(oldFront.x, 0, -1e7, 1e7), y: n(oldFront.y, 0, -1e7, 1e7) };
-  }
+  // 직전 결말의 여파(시작 장면)만 남긴다. 잔향 · 전선 · 답장 필드는 서사 재설계 5단계에서 폐지했고 이전 저장값은 무시한다.
+  r.legacyOrigin = finalEndings.some(e => e.id === raw.legacyOrigin) ? raw.legacyOrigin : null;
+  r.legacyVariant = r.legacyOrigin === 'consume' && raw.legacyVariant === 'hollow' ? 'hollow' : '';
   r.objectiveOutcomes = {}; for (const task of objectives) if (['complete','failed','ignored'].includes(raw.objectiveOutcomes?.[task.id])) r.objectiveOutcomes[task.id] = raw.objectiveOutcomes[task.id];
   r.guardianFate = { spare: integer(raw.guardianFate?.spare,0,0,1000), end: integer(raw.guardianFate?.end,0,0,1000) }; r.guardianOrder = ['spare','end'].includes(raw.guardianOrder) ? raw.guardianOrder : ''; r.guardianMeet = integer(raw.guardianMeet, 0, 0, 3);
   r.objectiveStep = integer(raw.objectiveStep, 0, 0, objectives.length);

@@ -82,7 +82,7 @@ export function createDebugCommands(context, settings) {
   wrap(context.combat,'hurtPlayer',(next,...args)=>settings.godMode?undefined:next(...args));
   wrap(context.combat,'damage',(next,...args)=>settings.blockEnemyDamage?undefined:next(...args));
   wrap(screen,'setMode',(next,mode)=>!settings.choices&&['branch','levelup'].includes(mode)?undefined:next(mode));
-  for(const [object,names]of [[context.story,['spawnWitness','spawnLegacy','tickWitness','openSignal','openAnomaly']],[context.sites,['spawnSite']],[context.objectives,['spawnObjective','updateObjective']],[context.encounters,['spawnEcho','spawnFront']],[context.journey,['journeyTick']],[context.finale,['openFinale']]])for(const name of names)wrap(object,name,(next,...args)=>settings.worldEvents?next(...args):false);
+  for(const [object,names]of [[context.story,['spawnWitness','tickWitness','openSignal','openAnomaly']],[context.sites,['spawnSite']],[context.objectives,['spawnObjective','updateObjective']],[context.journey,['journeyTick']],[context.finale,['openFinale']]])for(const name of names)wrap(object,name,(next,...args)=>settings.worldEvents?next(...args):false);
   inspector.advance=(dt,next)=>{
     let remaining=inspector.held?1/60:dt*settings.timeScale,total=0;
     while(remaining>1e-9&&canControlLiveCombat(view)){const step=Math.min(.035,remaining);next(step);total+=step;remaining-=step;}return total;

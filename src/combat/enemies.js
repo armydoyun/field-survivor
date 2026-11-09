@@ -4,7 +4,8 @@ import { clamp } from '../core/utils.js';
 import { refreshSlow, advancePush } from './control.js';
 import { incomingScale } from './rules.js';
 import { canWindup } from './hostile-attacks.js';
-import { clockFrozen, hasRelic, anomalyActive, frontEffect } from '../world/effects.js';
+import { clockFrozen, hasRelic, anomalyActive } from '../world/effects.js';
+import { startEffects } from '../data/world.js';
 
 export function createEnemyBehavior({ stats, paceAt, movementVector, spawnEnemy, moveGuardian, moveCore, attacks, ring, hurtPlayer, random = Math.random }) {
   const { enemyShot, groundMark, enemyProjectileScale } = attacks;
@@ -51,7 +52,7 @@ export function createEnemyBehavior({ stats, paceAt, movementVector, spawnEnemy,
     if(!(e.eliteAttack?.kind==='leap'&&e.eliteAttack.elapsed>=e.eliteAttack.warn))advancePush(e,dt);
     if(e.eliteAttack?.kind==='leap'&&e.eliteAttack.elapsed<e.eliteAttack.warn){e.eliteAttack.sx=e.x;e.eliteAttack.sy=e.y;}
     const p = run.player, ex = p.x - e.x, ey = p.y - e.y, distance = Math.hypot(ex, ey) || 1, nx = ex / distance, ny = ey / distance;
-    const speed = e.speed * (anomalyActive('clock', 'rush',run) ? 1.12 : 1) * (run.time < (e.slowUntil || 0) ? 1 - (e.slowAmount || 0) : 1) * (frontEffect('legacy','save',run) ? 1.07 : 1);
+    const speed = e.speed * (anomalyActive('clock', 'rush',run) ? 1.12 : 1) * (run.time < (e.slowUntil || 0) ? 1 - (e.slowAmount || 0) : 1) * (run.legacyOrigin === 'consume' && run.time < startEffects.consumeUntil ? startEffects.consumeSpeed : 1);
     e.flash = Math.max(0, (e.flash || 0) - dt); e.aiTimer -= dt;
     if(e.elite&&e.kind!==3&&eliteTick(run,e,dt,speed,distance,nx,ny)){if(e.eliteAttack?.kind!=='leap')enemyContact(run,e);return;}
     if (e.kind === 3) { moveGuardian(run,profile,e,dt,speed,distance,nx,ny); return;

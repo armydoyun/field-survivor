@@ -1,7 +1,7 @@
 import { commitRunResult } from '../core/run-lifecycle.js';
 import { endingReward } from '../data/world-choices.js';
-import { signals, anomalies, sites, objectives, echoes, fronts, legacies, relics, finalEndings, endingTexts, endingScenes } from '../data/world.js';
-import { frontOption, episodeTitle } from './effects.js';
+import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes } from '../data/world.js';
+import { episodeTitle } from './effects.js';
 import { appendRecord } from '../core/profile.js';
 import { routeAxes, routeEnding, releaseOpen, endingVariant } from './route.js';
 
@@ -53,9 +53,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     for(const relic of relics)if(r.relics.includes(relic.id))lines.push(`유물 · '${relic.name}'에 기록원이 남겨 둔 흔적`);
     for(const event of anomalies)if(r.anomalyChoices[event.id])lines.push(`${event.title} · ${event.options.find(o=>o.id===r.anomalyChoices[event.id]).name}`);
     for(const task of objectives)if(r.objectiveOutcomes[task.id])lines.push(`${task.name} · ${r.objectiveOutcomes[task.id]==='complete'?'완수':r.objectiveOutcomes[task.id]==='ignored'?'미응답':'실패'}`);
-    for(const e of echoes)if(r.echoOutcomes[e.id])lines.push(`${e.name} · ${r.echoOutcomes[e.id]==='keep'?'복원':r.echoOutcomes[e.id]==='use'?'재사용':'미응답'}`);
-    for(const front of fronts)if(r.frontChoices?.[front.id])lines.push(`${front.title} · ${r.frontChoices[front.id]==='silent'?'미응답':frontOption(front,r.frontChoices[front.id]).name}`);
-    if(r.legacyOrigin){const old=legacies[r.legacyOrigin],selected=old.options.find(x=>x.id===r.legacyChoice);lines.push(`지난 결말 '${old.name}' · ${r.legacyChoice==='silent'?'응답하지 않음':selected?selected.name:'열리지 않음'}`);}
+    if(r.legacyOrigin)lines.push(`지난 결말의 여파 · ${startScenes[r.legacyVariant||r.legacyOrigin].change}`);
     for(const x of r.journey.outcomes)lines.push(`${episodeTitle(x.kind)} · ${x.success?'회수 완료':'연결 소실'}`);
     return lines;
   }
@@ -78,7 +76,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     const memory = sessionState.profile.memory;
     record(`최종 회수 · ${ending.name}${variant==='hollow'?' · 빈 껍질':''}`);
     memory.endings[id]++; if (finalEndings.every(e=>memory.endings[e.id]>0)) record('모든 결말이 모였다. 기록 장치가 작동한 이유는 제목 화면의 결말 기록에서 확인할 수 있다.');
-    memory.lastResolution = { ending: id, threads: result.threads.slice(0, 40), scenes: result.scenes };
+    memory.lastResolution = { ending: id, variant, threads: result.threads.slice(0, 40), scenes: result.scenes };
     return commitRunResult(sessionState,result);
   }
 

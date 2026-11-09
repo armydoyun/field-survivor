@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { initialProfile, hydrateProfile, appendRecord } from '../src/core/profile.js';
-import { createRun, echoSeed, makeJourney } from '../src/core/run.js';
+import { createRun, makeJourney } from '../src/core/run.js';
 import * as state from '../src/core/state.js';
 import { VERSION, W, H, FIRST_GUARDIAN, HARVEST_CAP, SAVE_KEY } from '../src/core/config.js';
 
@@ -17,7 +17,7 @@ test('independent profiles and runs own their mutable records and collections', 
   const next = create(a);
   assert.equal(next.rerolls, 3); assert.equal(next.player.x, W / 2); assert.equal(next.player.y, H / 2);
   assert.equal(next.xpNext, 24); assert.equal(next.nextBoss, FIRST_GUARDIAN); assert.equal(next.harvestBudget, HARVEST_CAP);
-  assert.deepEqual(next.echoSeed, { witness: 'heard', guardian: '', field: '' });
+  assert.equal(next.echoSeed, undefined); assert.equal(next.legacyVariant, '');
 });
 test('journey generation has explicit randomness and preserves supplied plans', () => {
   let calls = 0;
@@ -32,16 +32,12 @@ test('journey generation has explicit randomness and preserves supplied plans', 
   assert.equal(createRun(profile, { journey, maxHp: 100, xpNext: 24 }).journey, journey);
   assert.equal(journey.plan, plan);
 });
-test('echo seed resolves ties and gives completed objectives precedence over site records', () => {
+test('a new run carries the previous ending and its hollow variant as the start scene only', () => {
   const p = initialProfile();
-  p.memory.witness.heard = p.memory.witness.taken = 1;
-  p.memory.guardian.spared = p.memory.guardian.ended = 1;
-  Object.values(p.memory.sites)[0].take = 2;
-  assert.deepEqual(echoSeed(p), { witness: 'heard', guardian: 'spared', field: 'taken' });
-  Object.values(p.memory.objectives)[0].failed = 1;
-  assert.equal(echoSeed(p).field, 'lost');
-  Object.values(p.memory.objectives)[0].complete = 1;
-  assert.equal(echoSeed(p).field, 'rescued');
+  assert.equal(createRun(p, { maxHp: 100, xpNext: 24 }).legacyOrigin, null);
+  p.memory.lastResolution = { ending: 'consume', variant: 'hollow', threads: [], scenes: [] };
+  const r = createRun(p, { maxHp: 100, xpNext: 24 }); assert.equal(r.legacyOrigin, 'consume'); assert.equal(r.legacyVariant, 'hollow');
+  for (const key of ['legacySite', 'legacyChoice', 'legacyPending', 'echoOutcomes', 'frontChoices']) assert.equal(key in r, false, key);
 });
 test('profile hydration retains save validation, whitelist filtering and size limits', () => {
   const p = initialProfile(), raw = {

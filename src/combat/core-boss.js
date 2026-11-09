@@ -1,7 +1,6 @@
 import { refreshSlow } from './control.js';
 import { hazardHit } from '../math/geometry.js';
 import { incomingScale } from './rules.js';
-import { frontEffect } from '../world/effects.js';
 import { appendRecord } from '../core/profile.js';
 import { coreLines } from '../data/world.js';
 
@@ -35,10 +34,10 @@ export function createCoreBoss({ spawnEnemy, finalRating, hurtPlayer, healPlayer
       if(run.time>=a.fireAt&&run.time<=a.endAt){const dx=p.x-a.x,dy=p.y-a.y,co=Math.cos(a.angle),si=Math.sin(a.angle),x=dx*co+dy*si,y=-dx*si+dy*co;
         const hit=!a.blocked&&(a.kind==='sweep'?hazardHit({...a,shape:'beam'},p,run.time):a.kind==='ring'?Math.abs(Math.hypot(dx,dy)-110)<23:a.kind==='voice'?Math.abs(Math.hypot(dx,dy)-70)<23||Math.abs(Math.hypot(dx,dy)-150)<23:Math.abs(x)<23||Math.abs(y)<23);
         if(hit&&c.shields>0){c.shields--;a.blocked=true;appendRecord(profile,run,coreLines.blocked.replace('{left}',c.shields));}
-        else if(hit)hurtPlayer(Math.round((c.phase?18:14)*incomingScale(run.time)*(frontEffect('threshold','expose',run)?1.12:1)),run);
+        else if(hit)hurtPlayer(Math.round((c.phase?18:14)*incomingScale(run.time)),run);
       }
       if(run.time>a.endAt){c.attack=null;c.next=run.time+(c.phase?.95:1.8)+(run.objectiveOutcomes.relay==='complete'?.32:0);}
-    } else if(run.time>=c.next){const tell=1.1+(frontEffect('threshold','shield',run)?.28:0)+(run.objectiveOutcomes.courier==='complete'?.23:0)+(c.phase&&run.npc?.state==='heard'?CORE_PAYOFF.witnessTell:0),pool=c.phase?(burned(run)>=CORE_PAYOFF.voiceAt?['cross','ring','sweep','voice']:['cross','ring','sweep']):['cross','ring'],kind=pool[c.cycle++%pool.length],sweep=kind==='sweep';c.attack={kind,x:sweep?e.x:p.x,y:sweep?e.y:p.y,angle:sweep?Math.atan2(p.y-e.y,p.x-e.x)-Math.PI/4:run.guardianOrder==='end'?Math.PI/4:0,turn:sweep?Math.PI/2:0,length:400,width:24,fireAt:run.time+tell,endAt:run.time+tell+(sweep?.9:.24)};e.phase=1;}
+    } else if(run.time>=c.next){const tell=1.1+(run.objectiveOutcomes.courier==='complete'?.23:0)+(c.phase&&run.npc?.state==='heard'?CORE_PAYOFF.witnessTell:0),pool=c.phase?(burned(run)>=CORE_PAYOFF.voiceAt?['cross','ring','sweep','voice']:['cross','ring','sweep']):['cross','ring'],kind=pool[c.cycle++%pool.length],sweep=kind==='sweep';c.attack={kind,x:sweep?e.x:p.x,y:sweep?e.y:p.y,angle:sweep?Math.atan2(p.y-e.y,p.x-e.x)-Math.PI/4:run.guardianOrder==='end'?Math.PI/4:0,turn:sweep?Math.PI/2:0,length:400,width:24,fireAt:run.time+tell,endAt:run.time+tell+(sweep?.9:.24)};e.phase=1;}
     if(Math.hypot(p.x-e.x,p.y-e.y)<e.radius+11)hurtPlayer(Math.round(29*incomingScale(run.time)),run);
   }
 

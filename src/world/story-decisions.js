@@ -1,5 +1,5 @@
 import { signalReward, witnessReward, anomalyDuration } from '../data/world-choices.js';
-import { signals, anomalies, legacies, guardianLines } from '../data/world.js';
+import { signals, anomalies, guardianLines } from '../data/world.js';
 import { GUARDIAN_SALVAGE } from '../core/config.js';
 import { appendRecord } from '../core/profile.js';
 
@@ -68,14 +68,5 @@ export function createStoryDecisions({ sessionState, statistics, combat }) {
     return true;
   }
 
-  function chooseLegacy(choice) {
-    if (!sessionState.run?.legacyOrigin || sessionState.run.legacyChoice || !sessionState.run.legacySite || ![...legacies[sessionState.run.legacyOrigin].options.map(x=>x.id),'silent'].includes(choice)) return false;
-    const origin = sessionState.run.legacyOrigin, def = legacies[origin], option = def.options.find(x=>x.id===choice);
-    sessionState.run.legacyChoice = choice; sessionState.run.legacySite = null; sessionState.run.legacyPending = false; sessionState.profile.memory.legacies[origin][choice]++;
-    sessionState.run.player.hp = Math.min(sessionState.run.player.hp, statistics.stats().maxHp);
-    record(`지난 결말의 답장 · ${def.name} / ${option?.name || '응답하지 않음'}`);
-    return true;
-  }
-
-  return { chooseWitness, acknowledgeSilence, yieldingGuardian, chooseBoss, guardianLeaves, chooseSignal, chooseAnomaly, chooseLegacy };
+  return { chooseWitness, acknowledgeSilence, yieldingGuardian, chooseBoss, guardianLeaves, chooseSignal, chooseAnomaly };
 }

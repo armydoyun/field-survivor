@@ -1,6 +1,6 @@
 import { hazardHit } from '../math/geometry.js';
 import { incomingScale } from './rules.js';
-import { anomalyActive, frontEffect } from '../world/effects.js';
+import { anomalyActive } from '../world/effects.js';
 
 function advanceEnemyBullet(b,dt){
   let rest=dt;const age=b.age||0;
@@ -36,7 +36,7 @@ export function createHostileAttacks({ lateCombat, pressureProfile, hurtPlayer, 
   function tickHazards(run) {
     const p=run.player;
     run.hazards=run.hazards.filter(h=>h.endAt>run.time&&run.enemies.some(e=>e.id===h.sourceId&&e.hp>0&&!(e.kind===3&&e.phase===3)));
-    for(const h of run.hazards)if(run.time>=h.fireAt){inspector?.hazard(h,run.time);if(hazardHit(h,p,run.time))hurtPlayer(Math.round(h.damage*incomingScale(run.time)*(h.boss&&frontEffect('threshold','expose',run)?1.12:1)),run);}
+    for(const h of run.hazards)if(run.time>=h.fireAt){inspector?.hazard(h,run.time);if(hazardHit(h,p,run.time))hurtPlayer(Math.round(h.damage*incomingScale(run.time)),run);}
   }
 
   return { enemyProjectileScale, shotScaleFor, enemyShot, groundMark, tickHazards };
