@@ -13,6 +13,7 @@
     "test:release": "node --test tests/release.test.js",
     "test:build": "node tools/build-check.mjs",
     "test:ci": "npm test && npm run test:build",
+    "bench:route": "node tools/route-benchmark.mjs",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write tools",

@@ -146,6 +146,10 @@ test('burned signals strengthen the core and add the voice pattern; heard signal
   const cc=core.ensureCore(x,w.profile);for(const node of x.enemies)node.hp=0;const fb=w.spawnEnemy(x,3);fb.final=true;fb.x=x.player.x-240;fb.y=x.player.y;core.moveCore(x,w.profile,fb,.1);assert.deepEqual(healed,[30]);
   x.time=cc.next;core.moveCore(x,w.profile,fb,.01);assert.ok(Math.abs(cc.attack.fireAt-x.time-1.4)<1e-9);
 });
+test('the voice attack hits a player who stays at its centre, unlike the ring attack', () => {
+  for(const [kind,hitsAtCentre]of [['voice',true],['ring',false]]){const h=harness(),r=h.run;const c=h.core.ensureCore(r,h.profile);for(const node of r.enemies)node.hp=0;const boss=h.spawnEnemy(r,3);boss.final=true;boss.x=r.player.x-240;boss.y=r.player.y;h.core.moveCore(r,h.profile,boss,.1);h.hits.length=0;
+    c.attack={kind,x:r.player.x,y:r.player.y,angle:0,fireAt:r.time,endAt:r.time+.24};h.core.moveCore(r,h.profile,boss,.01);assert.equal(h.hits.length>0,hitsAtCentre,kind);}
+});
 test('final core spawn belongs to its module and is guarded against duplicates and wrong phases', () => {
   const h=harness(),r=h.run;h.core.spawnFinalCore(r,h.profile);assert.equal(r.enemies.length,0);
   r.finalStep=2;h.core.spawnFinalCore(r,h.profile);assert.equal(r.enemies.filter(e=>e.final).length,1);const boss=r.enemies.find(e=>e.final);assert.equal(boss.maxHp,10000);assert.equal(boss.radius,42);

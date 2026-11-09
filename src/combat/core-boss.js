@@ -10,6 +10,8 @@ import { coreLines } from '../data/world.js';
 //   태운 신호 1개당 중심핵 HP +6%, 2개 이상이면 2단계에 '목소리' 공격 추가. 기억한 신호 1개당 2단계 진입 시 HP 15 회복.
 //   기록원을 들었다면 2단계 공격 예고 +0.3초.
 export const CORE_PAYOFF = Object.freeze({ maxShields: 3, baseNodes: 2, maxNodes: 5, burnHp: .06, voiceAt: 2, heardHeal: 15, witnessTell: .3 });
+// 목소리 공격: 플레이어 위치의 원판 + 바깥 고리. 고리 공격(ring)과 달리 제자리에 서 있으면 맞는다.
+export const VOICE = Object.freeze({ core: 40, ring: 120, width: 23 });
 const burned = run => (run.signalChoices || []).filter(x => x === 'burn').length;
 const heard = run => (run.signalChoices || []).filter(x => x === 'hear').length;
 export const coreHpScale = run => 1 + CORE_PAYOFF.burnHp * burned(run);
@@ -32,7 +34,7 @@ export function createCoreBoss({ spawnEnemy, finalRating, hurtPlayer, healPlayer
     const d=Math.hypot(p.x-e.x,p.y-e.y)||1, speed=24*(run.time<(e.slowUntil||0)?1-(e.slowAmount||0):1);if(d>160){e.x+=(p.x-e.x)/d*speed*dt;e.y+=(p.y-e.y)/d*speed*dt;}
     if(c.attack){const a=c.attack;e.phase=run.time<a.fireAt?1:4;
       if(run.time>=a.fireAt&&run.time<=a.endAt){const dx=p.x-a.x,dy=p.y-a.y,co=Math.cos(a.angle),si=Math.sin(a.angle),x=dx*co+dy*si,y=-dx*si+dy*co;
-        const hit=!a.blocked&&(a.kind==='sweep'?hazardHit({...a,shape:'beam'},p,run.time):a.kind==='ring'?Math.abs(Math.hypot(dx,dy)-110)<23:a.kind==='voice'?Math.abs(Math.hypot(dx,dy)-70)<23||Math.abs(Math.hypot(dx,dy)-150)<23:Math.abs(x)<23||Math.abs(y)<23);
+        const hit=!a.blocked&&(a.kind==='sweep'?hazardHit({...a,shape:'beam'},p,run.time):a.kind==='ring'?Math.abs(Math.hypot(dx,dy)-110)<23:a.kind==='voice'?Math.hypot(dx,dy)<VOICE.core||Math.abs(Math.hypot(dx,dy)-VOICE.ring)<VOICE.width:Math.abs(x)<23||Math.abs(y)<23);
         if(hit&&c.shields>0){c.shields--;a.blocked=true;appendRecord(profile,run,coreLines.blocked.replace('{left}',c.shields));}
         else if(hit)hurtPlayer(Math.round((c.phase?18:14)*incomingScale(run.time)),run);
       }
