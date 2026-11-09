@@ -67,6 +67,7 @@ export function createWeaponView({ sessionState, renderState, platform, primitiv
         for(let i=0;i<4;i++)primitives.skillCircle(wave.x,wave.y,r,color,true,1.5,i*Math.PI/2+.12,i*Math.PI/2+1.1);
         ctx.globalAlpha=(t)*renderState.opacity; primitives.drawShape(wave.x,wave.y,4+t*3,color,4);
       }
+      else if(wave.kind==='pop'){const r=wave.radius*(1.45-.45*t);ctx.globalAlpha=(t*.85)*renderState.opacity;ctx.strokeStyle=color;ctx.lineWidth=.8+2.4*t;ctx.beginPath();ctx.arc(wave.x,wave.y,r,0,Math.PI*2);ctx.stroke();}
       else if(wave.kind==='muzzle'){ctx.globalAlpha=(t*.5)*renderState.opacity;primitives.drawShape(wave.x,wave.y,4+6*t,color,4);}
       else{
         ctx.globalAlpha=(t*.7)*renderState.opacity; ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.beginPath();

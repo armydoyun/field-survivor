@@ -16,7 +16,8 @@ function context(){
 }
 const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const item of Object.values(value))freeze(item);}return value;};
 test('all original and higher motifs have an explicit shared palette, with bounded interior opacity',()=>{
- for(const f of fusionRecipes)assert.ok(fusionStyle[f.code]?.every(v=>typeof v==='string'));assert.ok(skillStyle.fill<=.05);assert.ok(skillStyle.band<=.08);
+ for(const f of fusionRecipes)assert.ok(fusionStyle[f.code]?.every(v=>typeof v==='string'));// 영역 면은 적·탄환을 가리지 않을 만큼만 칠한다. 이펙트 개선(SKILL-VISUAL-DESIGN.md)에서 상한을 5%→10%, 띠 8%→14%로 올렸다.
+ assert.ok(skillStyle.fill<=.1);assert.ok(skillStyle.band<=.14);
  for(const r of [{enemies:[],shots:[],fusionStates:{}},{enemies:Array(120),shots:[],fusionStates:{}},{enemies:[],shots:[],fusionStates:{f:{effects:Array(150)}}}])assert.equal(skillDetail(r),!r.enemies.length&&!Object.keys(r.fusionStates).length);
  assert.equal(skillDetail({enemies:[],shots:[],fusionStates:{}},true),false);
 });

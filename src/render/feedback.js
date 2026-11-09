@@ -14,8 +14,8 @@ export function createFeedback({ sessionState, platform, primitives, weaponView,
 
   function impact(x, y, color, crit = false) {
     if (sessionState.run.fx.length > 270) return;
-    for (let i = 0, count = crit ? 5 : 2; i < count; i++) {
-      const a = (i * 2.39996 + x * .071 + y * .037 + sessionState.run.time * 4.9) % (Math.PI * 2), speed = crit ? 125 : 85, life = crit ? .23 : .14;
+    for (let i = 0, count = crit ? 8 : 4; i < count; i++) {
+      const a = (i * 2.39996 + x * .071 + y * .037 + sessionState.run.time * 4.9) % (Math.PI * 2), speed = crit ? 175 : 125, life = crit ? .3 : .2;
       sessionState.run.fx.push({ x, y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, life, max: life, color, streak: true });
     }
   }
@@ -52,12 +52,13 @@ export function createFeedback({ sessionState, platform, primitives, weaponView,
   function showEnemyHit(enemy,amount,crit){
     const r=sessionState.run;if(hitOwner!==r){hitOwner=r;damageLabels=new WeakMap();}
     const old=damageLabels.get(enemy),color=crit?'#ffe1a0':'#dce7e8';
-    if(old&&r.time-old.at<.09&&r.popups.includes(old.label)){old.amount+=amount;old.label.value=String(Math.round(old.amount));if(crit)old.label.color=color;}
-    else if(r.popups.length<(primitives.visualDetail()?60:28)){const label={x:enemy.x,y:enemy.y-enemy.radius-8,value:String(Math.round(amount)),color,life:.48};r.popups.push(label);damageLabels.set(enemy,{at:r.time,amount,label});}
-    if(crit&&primitives.visualDetail()){ring(enemy.x,enemy.y,enemy.radius+10,'#ffe1a0',.12);burst(enemy.x,enemy.y,'#ffe1a0',2);}if(r.fx.length<220&&primitives.visualDetail())impact(enemy.x,enemy.y,crit?'#ffe1a0':'#e5f0e7',crit);
+    if(old&&r.time-old.at<.09&&r.popups.includes(old.label)){old.amount+=amount;old.label.value=String(Math.round(old.amount));if(crit){old.label.color=color;old.label.crit=true;}}
+    else if(r.popups.length<(primitives.visualDetail()?60:28)){const label={x:enemy.x,y:enemy.y-enemy.radius-8,value:String(Math.round(amount)),color,life:.55,crit,hit:true};r.popups.push(label);damageLabels.set(enemy,{at:r.time,amount,label});}
+    if(crit&&primitives.visualDetail()){ring(enemy.x,enemy.y,enemy.radius+10,'#ffe1a0',.16,'pop');burst(enemy.x,enemy.y,'#ffe1a0',4);}
+    else if(primitives.visualDetail()&&r.waves.length<60)ring(enemy.x,enemy.y,enemy.radius+4,'#eef7f2',.1,'pop');if(r.fx.length<220&&primitives.visualDetail())impact(enemy.x,enemy.y,crit?'#ffe1a0':'#e5f0e7',crit);
   }
 
-  function showEnemyDeath(enemy){burst(enemy.x,enemy.y,enemyType[enemy.kind].color,enemy.kind===3?24:9,'debris');}
+  function showEnemyDeath(enemy){const color=enemyType[enemy.kind].color,boss=enemy.kind===3;burst(enemy.x,enemy.y,color,boss?36:14,'debris');burst(enemy.x,enemy.y,'#f4fbf6',boss?10:4);ring(enemy.x,enemy.y,enemy.radius+(boss?40:16),color,boss?.4:.24,'pop');}
 
   function showUpgrade(id){const family=upgradeFamilies[id],color=family==='생존'?'#a2e7bb':family==='제어'?'#a5d7f4':family==='탐사'?'#9fe6dd':family==='무기'?'#cdb6ec':'#f3d4a1';sessionState.run.waves=sessionState.run.waves.filter(w=>w.kind!=='upgrade');ring(sessionState.run.player.x,sessionState.run.player.y,36,color,.28,'upgrade');}
 
@@ -65,12 +66,13 @@ export function createFeedback({ sessionState, platform, primitives, weaponView,
     for (const fx of sessionState.run.fx) {
       if (Math.abs(fx.x-cx)>W/2+15 || Math.abs(fx.y-cy)>H/2+15) continue;
       const fade = Math.max(0, Math.min(1, fx.life / fx.max)); ctx.globalAlpha = fade;
-      if (fx.streak) { const len = Math.hypot(fx.vx, fx.vy) || 1; ctx.strokeStyle = fx.color; ctx.lineWidth = fade > .45 ? 1.5 : 1;
-        ctx.beginPath(); ctx.moveTo(fx.x, fx.y); ctx.lineTo(fx.x - fx.vx / len * 7 * fade, fx.y - fx.vy / len * 7 * fade); ctx.stroke();
-      } else if(fx.kind==='debris'&&detail){ctx.save();ctx.translate(fx.x,fx.y);ctx.rotate(cameraView.reducedMotion()?0:Math.atan2(fx.vy,fx.vx)+(1-fade)*1.4);ctx.fillStyle=fx.color;ctx.globalAlpha=fade*.8;ctx.beginPath();ctx.moveTo(-2-fade*2,-1);ctx.lineTo(2+fade*2,0);ctx.lineTo(-1,2+fade);ctx.closePath();ctx.fill();ctx.restore();}else {ctx.fillStyle=fx.color;const size=1+fade*2;ctx.fillRect(fx.x-size/2,fx.y-size/2,size,size);if(detail&&fade>.6){ctx.strokeStyle=fx.color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(fx.x-3,fx.y);ctx.lineTo(fx.x+3,fx.y);ctx.moveTo(fx.x,fx.y-3);ctx.lineTo(fx.x,fx.y+3);ctx.stroke();}}
+      if (fx.streak) { const len = Math.hypot(fx.vx, fx.vy) || 1; ctx.strokeStyle = fx.color; ctx.lineWidth = fade > .45 ? 2.2 : 1.3;
+        ctx.beginPath(); ctx.moveTo(fx.x, fx.y); ctx.lineTo(fx.x - fx.vx / len * 12 * fade, fx.y - fx.vy / len * 12 * fade); ctx.stroke();
+      } else if(fx.kind==='debris'&&detail){ctx.save();ctx.translate(fx.x,fx.y);ctx.rotate(cameraView.reducedMotion()?0:Math.atan2(fx.vy,fx.vx)+(1-fade)*1.4);ctx.fillStyle=fx.color;ctx.globalAlpha=fade*.8;ctx.beginPath();ctx.moveTo(-3-fade*3,-1.5);ctx.lineTo(3+fade*3,0);ctx.lineTo(-1.5,3+fade*1.5);ctx.closePath();ctx.fill();ctx.restore();}else {ctx.fillStyle=fx.color;const size=1+fade*2;ctx.fillRect(fx.x-size/2,fx.y-size/2,size,size);if(detail&&fade>.6){ctx.strokeStyle=fx.color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(fx.x-3,fx.y);ctx.lineTo(fx.x+3,fx.y);ctx.moveTo(fx.x,fx.y-3);ctx.lineTo(fx.x,fx.y+3);ctx.stroke();}}
     }
-    ctx.textAlign = 'center'; ctx.font = 'bold 12px system-ui';
-    for (const text of sessionState.run.popups) { if (Math.abs(text.x-cx)>W/2+80 || Math.abs(text.y-cy)>H/2+20) continue; ctx.globalAlpha = Math.min(1, text.life * 2.5); ctx.fillStyle = text.color; ctx.fillText(text.value, text.x, text.y); }
+    ctx.textAlign = 'center'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#0b161e';
+    for (const text of sessionState.run.popups) { if (Math.abs(text.x-cx)>W/2+80 || Math.abs(text.y-cy)>H/2+20) continue; const pop = text.hit ? Math.max(0, text.life - .4) * 4 : 0;
+      ctx.font = `bold ${Math.round((text.crit ? 17 : text.hit ? 13 : 12) * (1 + pop * .25))}px system-ui`; ctx.globalAlpha = Math.min(1, text.life * 2.5); ctx.lineWidth = 3; ctx.strokeText(text.value, text.x, text.y); ctx.fillStyle = text.color; ctx.fillText(text.value, text.x, text.y); }
   }
 
   return { markSkillAttack, skillAttackVisual, drawFeedback, showUpgrade, ring, impact, burst, popup, addSkillEcho, tickSkillEchoes, retireSkillField, drawSkillEchoes, tickWeaponEffects, tickCombatFeedback, showPlayerHit, showEnemyHit, showEnemyDeath };
