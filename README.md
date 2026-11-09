@@ -34,3 +34,18 @@
 측정 CPU 시간에는 모의 DOM/Canvas가 사용된다. Canvas 래스터에서 전체 스킬·시간 흐름·복합 배치의 가독성을 검토했다. 실제 브라우저 레이아웃·GPU FPS는 검증하지 못했다. 수치는 첫 구현 기준이며 후반 성장 속도·생존 난이도·체감 밸런스의 최종 확정판은 아니다.
 
 상세 동작은 [FUSION-REDESIGN.md](FUSION-REDESIGN.md), 수정 위치는 [DEVELOPMENT.md](DEVELOPMENT.md), 테스트 조작은 [DEBUG-LAB.md](DEBUG-LAB.md)를 참고한다.
+
+## 빌드와 자동 검사 (GitHub Actions)
+
+```bash
+npm install          # 처음 한 번 (esbuild · ESLint · Prettier · Playwright)
+npm test             # node:test 전체
+npm run lint         # ESLint (경고도 실패)
+npm run build        # → deploy/index.html
+npm run test:build   # 배포본을 Chromium에서 file://로 열어 새 게임을 진행해 봄
+```
+
+- `tools/build.mjs`가 esbuild로 `src/main.js`부터 import를 따라 모든 모듈을 묶고 압축한 뒤, `tools/inline-html.mjs`가 `index.html`의 `<link>`·`<script type="module">` 자리에 넣어 한 파일짜리 오프라인 배포본을 만든다. `file://`로 더블클릭해도 열린다. 개발 실험실(`src/debug/`) 모듈이 섞이면 빌드가 실패한다.
+- `deploy/`는 빌드 결과라 git에 올리지 않는다.
+- 모든 브랜치에 push하면 `.github/workflows/test.yml`이 돈다: **lint**, **test (node)**, **test (browser)**가 따로 돌고, 모두 통과하면 **build**가 배포본을 실행 페이지의 **Artifacts → field-survivor-deploy-<커밋 SHA>**에 올린다.
+- 로컬에서 Playwright가 받은 브라우저 대신 이미 설치된 Chromium을 쓰려면 `CHROMIUM_PATH=/경로/chrome npm run test:build`.
