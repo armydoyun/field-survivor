@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { initialProfile } from '../src/core/profile.js';
+import { initialProfile, hydrateProfile } from '../src/core/profile.js';
 import { createRun } from '../src/core/run.js';
 import { createStatistics } from '../src/core/statistics.js';
 import { createProgression } from '../src/growth/progression.js';
@@ -13,7 +13,8 @@ import { createSites } from '../src/world/sites.js';
 import { createStory } from '../src/world/story.js';
 import { createFinale } from '../src/world/finale.js';
 import { createModalContent } from '../src/ui/modal-content.js';
-import { sites, relics, anomalies, startEffects, startScenes, firstSignalAfterPreserve, witnessAfterRelease } from '../src/data/world.js';
+import { sites, relics, anomalies, startEffects, startScenes, firstSignalAfterPreserve, witnessAfterRelease, deathLines, truthPieces, truthFound, truthReveal } from '../src/data/world.js';
+import { createSession } from '../src/core/session.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../src/data/world-choices.js';
 import { endingTexts, endingScenes } from '../src/data/world.js';
 import { GUARDIAN_SALVAGE, ENEMY_LIMIT, GUARDIAN_REACH, GUARDIAN_YIELD } from '../src/core/config.js';
@@ -161,4 +162,21 @@ test('world choice modules exclude UI, feedback and storage while workflow choic
   for(const file of ['world/site-decisions.js','world/story-decisions.js','world/ending-decisions.js']){const source=read(file);assert.doesNotMatch(source,/\b(?:view|platform|screen|feedback|storage|document|window|localStorage|session)\b/,file);assert.doesNotMatch(source,/from ['"][^'"]*(?:ui|render|app)\//,file);}
   for(const file of ['world/sites.js','world/story.js','world/encounters.js','world/finale.js']){const source=read(file);for(const m of source.matchAll(/ {2}function (?:choose\w+|acknowledgeSilence)\([^]*?(?=\n {2}function |\n {2}return \{)/g)){assert.doesNotMatch(m[0],/sessionState\.(?:run|profile)[\w.]*\s*(?:=(?!=)|\+\+|\+=)/,file);assert.doesNotMatch(m[0],/\b(?:rewardGold|dropXp|reserveXp|appendRecord|killEnemy)\s*\(/,file);}}
   assert.doesNotMatch(read('ui/modals.js'),/sites\.siteEffect/);assert.doesNotMatch(read('world/ending-decisions.js'),/journey\.episodeTitle/);
+});
+test('death is part of the story: deaths and the phase are remembered, the witness and game over screen respond',()=>{
+  const s=state(),view={mode:'playing'},calls=[];s.run.time=1000;
+  const session=createSession({sessionState:s,view,platform:{keys:new Set()},screen:{setMode:m=>calls.push(m)},storage:{save:()=>calls.push('save')}});
+  session.finish();assert.equal(s.profile.memory.deaths,1);assert.equal(s.profile.memory.lastDeathPhase,'세계의 반응');assert.equal(s.run,null);assert.deepEqual(calls,['gameover','save']);assert.ok(s.profile.memory.archive.includes(deathLines.gameover));
+  s.profile.memory.witness.met=1;const content=createModalContent({sessionState:s,view:{mode:'gameover',lastResult:{time:1000,kills:1,gold:2,level:3}},route:()=>null});const over=content.buildModal();assert.ok(over.includes(deathLines.gameover));assert.ok(over.includes(deathLines.witness[0].line));
+  s.profile.memory.deaths=4;s.run=createRun(s.profile,{maxHp:100,xpNext:xpNeed(1)});const talk=createModalContent({sessionState:s,view:{mode:'encounter'},route:()=>null}).buildModal();assert.ok(talk.includes("또 '세계의 반응'에서 멈췄구나"));
+  const hydrated=initialProfile();hydrateProfile(hydrated,{memory:{deaths:7,lastDeathPhase:'없는 단계'}});assert.equal(hydrated.memory.deaths,7);assert.equal(hydrated.memory.lastDeathPhase,'');
+});
+test('truth pieces open one by one from endings and the stillness secret, and the full truth only when all are found',()=>{
+  const s=state(),view={mode:'ledger'},content=createModalContent({sessionState:s,view,route:()=>null}),count=()=>Number(/진실 조각 (\d)\//.exec(content.buildModal())[1]);
+  assert.equal(count(),0);assert.ok(!content.buildModal().includes(truthReveal));
+  s.profile.memory.witness.quiet=true;assert.equal(count(),1);
+  for(const [i,id]of ['preserve','consume','divided'].entries()){s.profile.memory.endings[id]=1;assert.equal(count(),i+2);assert.ok(!content.buildModal().includes(truthReveal));}
+  s.profile.memory.endings.release=2;assert.equal(count(),truthPieces.length);assert.ok(content.buildModal().includes(truthReveal));
+  const fresh=state();prepareRoute(fresh.run,4);createEndingDecisions({sessionState:fresh}).chooseFinale('preserve');assert.ok(fresh.profile.memory.archive.includes(truthFound));
+  const again=state();again.profile.memory.endings.preserve=1;prepareRoute(again.run,4);createEndingDecisions({sessionState:again}).chooseFinale('preserve');assert.ok(!again.profile.memory.archive.includes(truthFound));
 });

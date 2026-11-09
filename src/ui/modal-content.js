@@ -4,7 +4,7 @@ import { hasRecords } from '../core/profile.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../data/world-choices.js';
 import { timeText } from '../core/utils.js';
 import { VERSION } from '../core/config.js';
-import { finalEndings, endingTexts, signals, anomalies, sites as siteDefinitions, firstSignalAfterPreserve, witnessAfterRelease } from '../data/world.js';
+import { finalEndings, endingTexts, signals, anomalies, sites as siteDefinitions, firstSignalAfterPreserve, witnessAfterRelease, deathLines, truthPieces, truthReveal } from '../data/world.js';
 import { relicChoices } from '../world/effects.js';
 import { branchReady } from '../growth/build.js';
 import { upgrades, upgradeFamilies } from '../data/upgrades.js';
@@ -30,8 +30,11 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
     } else if (view.mode === 'keystone') {
       return  decisionHtml('FINAL FORM','남은 하나의 자리','무기들의 진동이 하나의 박자로 겹친다.',keystoneOptions().map(x=>({id:'keystone-'+x.id,name:x.name,effect:x.desc})));
     } else if (view.mode === 'ledger') {
-      const m=sessionState.profile.memory, last=m.lastResolution, discovered=finalEndings.filter(x=>m.endings[x.id]>0), complete=discovered.length===finalEndings.length;
-      const epilogue = complete ? '<div class="closure-reveal"><strong>최종 기록 · 장치의 진실</strong><p>이 전장은 사람들의 실패를 재생하는 감옥이자, 결정을 태워 작동하는 기록 장치였다. 신호는 지워진 생존자의 목소리, 감시자는 그 기록을 지키는 마지막 경계, 기록원은 지워지기를 거부한 증인이었다. 분실된 좌표는 출구의 조각이었다. 보존은 증언을 후대에 남기고, 연소는 현재의 생존을 위해 이름을 희생하며, 해방은 누구도 다음 사람의 운명을 독점하지 못하게 만든다. 어느 길도 지난 선택을 없애지는 않는다.</p></div>' : `<p class="muted">기록 장치에 빈 슬롯이 ${finalEndings.length-discovered.length}개 남아 있다.</p>`;
+      const m=sessionState.profile.memory, last=m.lastResolution;
+      // 진실 조각: 결말 4개와 정지 비밀이 하나씩 연다. 모두 모이면 전체 진실이 열린다.
+      const found=truthPieces.filter(x=>x.id==='stillness'?m.witness.quiet:m.endings[x.id]>0), allFound=found.length===truthPieces.length;
+      const pieces=truthPieces.map(x=>found.includes(x)?`<li>${htmlEscape(x.text)}</li>`:`<li class="muted">잠김 · ${htmlEscape(x.unlock)}</li>`).join('');
+      const epilogue = `<div class="closure-reveal"><strong>진실 조각 ${found.length}/${truthPieces.length}</strong><ul>${pieces}</ul>${allFound?`<p>${htmlEscape(truthReveal)}</p>`:''}</div>`;
       const summary=`<div class="summary">${finalEndings.map(x=>`<span>${x.name} <strong>${m.endings[x.id]}회</strong></span>`).join('')}</div>`;
       const recordLines=(last?.threads||[]).map(line=>`<li>${htmlEscape(line)}</li>`).join('');
       return modalHtml('ECHO ARCHIVE · CONCLUSION','결말과 남겨진 사람들','전투에서 내린 선택과 지나친 선택은 사라지지 않습니다. 마지막 도전의 기록과 발견한 결말을 다시 읽을 수 있습니다.',actionHtml('ledger-back','제목 화면으로',true),summary+epilogue+sceneHtml(last?.scenes)+(last?`<details class="ending-ledger" open><summary>마지막 결말 · ${finalEndings.find(x=>x.id===last.ending)?.name} · ${last.threads.length}건</summary><ul>${recordLines}</ul></details>`:''),true);
@@ -43,7 +46,8 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       return  modalHtml('PAUSED', '일시정지', '게임 시간과 전투가 멈췄습니다. 자동 저장 결과는 상단 저장 상태에서 확인할 수 있습니다.', actionHtml('resume', '계속하기', true) + actionHtml('menu', '제목 화면'));
     } else if (view.mode === 'encounter') {
       const witness = sessionState.profile.memory.witness, wasTaken = witness.taken > 0, wasHeard = witness.heard > 0;
-      const intro = sessionState.run.legacyOrigin === 'release' ? witnessAfterRelease : witness.quiet ? '네가 말없이 서 있던 시간은 아직 남아 있어. 다른 시간은 전부 사라졌는데.' : wasTaken ? '전에는 내 말을 전부 연료로 바꿨지. 그래도 돌아왔네.' : wasHeard ? '너는 나를 기억하지 못해도, 나는 네가 멈췄던 순간을 기억해.' : '처음 보는 얼굴이네. 아니, 그저 처음이라고 믿는 얼굴인가.';
+      const deaths = sessionState.profile.memory.deaths, deathLine = deathLines.witness.filter(x => deaths >= x.from).at(-1)?.line.replace('{phase}', sessionState.profile.memory.lastDeathPhase || '이 벌판').replace('{count}', deaths);
+      const intro = sessionState.run.legacyOrigin === 'release' ? witnessAfterRelease : deathLine && deaths >= 3 ? deathLine : witness.quiet ? '네가 말없이 서 있던 시간은 아직 남아 있어. 다른 시간은 전부 사라졌는데.' : wasTaken ? '전에는 내 말을 전부 연료로 바꿨지. 그래도 돌아왔네.' : wasHeard ? '너는 나를 기억하지 못해도, 나는 네가 멈췄던 순간을 기억해.' : '처음 보는 얼굴이네. 아니, 그저 처음이라고 믿는 얼굴인가.';
       const guardian = sessionState.profile.memory.guardian, trace = guardian.spared ? '감시자를 돌려보낸 선택도 여기 남아 있어.' : guardian.ended ? '감시자를 끝까지 분해한 명령도 여기 남아 있어.' : '';
       return decisionHtml('UNKNOWN CONTACT · 001','기록원',`${intro} ${trace} 나는 네가 지나가는 소리를 들었어. 한 번은 아주 가까웠고, 한 번은 여기까지 오지 않았지.`,[{id:'witness-hear',name:'이야기를 들어준다',effect:`즉시 HP 최대 ${witnessReward.heal} 회복 · 재생 +0.25/s (피격 후 3초간 +0.0625/s)`},{id:'witness-take',name:'기록을 추출한다',effect:`${witnessReward.gold}G · 이번 도전의 모든 무기 피해 +10%`}]);
     } else if (view.mode === 'secret') {
@@ -86,7 +90,8 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       return  modalHtml('ENDING · THE LOOP', view.lastResult?.variant === 'hollow' ? `${ending.name} · 빈 껍질` : ending.name, intro, actionHtml('menu', '기록으로 돌아가기', true) + actionHtml('new', '새로운 도전') + actionHtml('ledger-open', '이 결말의 기록 열람'), summary+sceneHtml(view.lastResult?.scenes)+epilogue, true);
     } else if (view.mode === 'gameover') {
       const r = view.lastResult || { time: 0, kills: 0, gold: 0, level: 1 }, summary = `<div class="summary"><span>생존 <strong>${timeText(r.time)}</strong></span><span>레벨 <strong>${r.level}</strong></span><span>처치 <strong>${r.kills}</strong></span><span>획득 <strong>${r.gold} G</strong></span></div>`;
-      return  modalHtml('RUN COMPLETE', '게임 오버', `획득한 골드는 영구 보유됩니다. 신호를 기억한 횟수 ${sessionState.profile.memory.heard}회, 연료로 바꾼 횟수 ${sessionState.profile.memory.burned}회. 다음 도전에도 기록은 남습니다.`, actionHtml('menu', '성장 화면으로', true) + actionHtml('new', '바로 재도전'), summary);
+      const deaths = sessionState.profile.memory.deaths, witnessLine = sessionState.profile.memory.witness.met ? deathLines.witness.filter(x => deaths >= x.from).at(-1)?.line.replace('{phase}', sessionState.profile.memory.lastDeathPhase || '이 벌판').replace('{count}', deaths) : '';
+      return  modalHtml('RUN COMPLETE', '게임 오버', `${deathLines.gameover}${witnessLine ? ` 기록원의 목소리가 들린다. "${witnessLine}"` : ''} 획득한 골드는 영구 보유됩니다.`, actionHtml('menu', '성장 화면으로', true) + actionHtml('new', '바로 재도전'), summary);
     }
   }
 

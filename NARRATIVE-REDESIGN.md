@@ -261,7 +261,7 @@
 | **3. 감시자 단일 인물화** | 고정 3회 + 빈 껍질, 멈춤/E 판정, 증표, 누적 대사 | `combat/population.js`, `combat/health.js`, `combat/guardians.js`, `world/story.js`, `input/keyboard.js` | 멈춤 판정 · 자동 무기 무효 · 시간 초과 |
 | **4. 결말 전투 회수** | 방패, 노드 수, 신호 연동 HP·패턴, 기록원 등장 | `combat/core-boss.js`, `core/difficulty.js`, `render/` | 증표·연소 수에 따른 중심핵 변화 |
 | **5. 이벤트 정리** | 전선·잔향 제거, 이상 현상 개칭·교체, 답장 → 시작 장면 | `world/encounters.js`, `world/story.js`, `data/world.js`, `save/restore-world.js` | 저장 호환(제거된 필드 무시) |
-| **6. 죽음·메타** | `deaths`, 게임 오버 화면, 진실 조각 4개 | `core/profile.js`, `core/session.js`, `ui/modal-content.js` | 프로필 hydrate |
+| **6. 죽음·메타** | `deaths`, 게임 오버 화면, 진실 조각 5개(결말 4개 + 정지 비밀) | `core/profile.js`, `core/session.js`, `ui/modal-content.js` | 프로필 hydrate |
 | **7. 밸런스 측정** | 축 극단 모의 측정 도구, 수치 조정 | `tools/` | — |
 
 ---

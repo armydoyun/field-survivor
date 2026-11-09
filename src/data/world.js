@@ -126,4 +126,25 @@ const coreLines = {
   voice: '태운 신호들이 중심핵의 목소리가 되어 겹겹이 퍼진다.'
 };
 
-export { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };
+// 죽음은 이야기의 일부다(NARRATIVE-REDESIGN.md 5.5절). 쓰러질 때마다 엔진에 기록 한 장이 더해진다.
+const deathLines = {
+  gameover: '엔진에 기록 한 장이 더해졌다.',
+  witness: [
+    { from: 1, line: '쓰러진 기록이 하나 더 들어왔어. 너도 알고 있지?' },
+    { from: 3, line: "또 '{phase}'에서 멈췄구나. 거기는 원래 다들 멈춰." },
+    { from: 8, line: "{count}번째야. 엔진이 네 이름을 외우기 시작했어. 그래도 '{phase}'는 지나갈 수 있어." }
+  ]
+};
+
+// 진실은 조각으로 드러난다(NARRATIVE-REDESIGN.md 1·2절). 결말 4개와 정지 비밀이 하나씩 연다.
+const truthPieces = [
+  { id: 'stillness', unlock: '기록원 옆에서 멈춰 있기', text: '기록원은 이 장치를 만든 사람이다. 그는 자기 이름만은 연료로 넣지 않았고, 멈춰 있던 시간만 셀 수 있게 되었다.' },
+  { id: 'preserve', unlock: '남겨진 목소리', text: '신호는 지워지기 직전의 목소리다. 보존된 문장은 다음 사람에게 읽힌다.' },
+  { id: 'consume', unlock: '식지 않는 엔진', text: '엔진은 이름을 태워 시간을 되감는다. 태울수록 뜨거워지고, 그만큼 중심핵도 강해진다.' },
+  { id: 'divided', unlock: '두 개의 목소리', text: '쓰러질 때마다 엔진에 기록 한 장이 더해진다. 너도 처음부터 그 기록 중 하나였다.' },
+  { id: 'release', unlock: '열린 문', text: '감시자는 먼저 들어온 도전자의 기록을 담은 껍질이다. 돌려보낼 때마다 이름을 되찾고, 분실된 좌표는 처음부터 문을 가리키고 있었다.' }
+];
+const truthFound = '진실 조각을 하나 찾았다. 제목 화면의 결말 기록에서 읽을 수 있다.';
+const truthReveal = '이 전장은 실패를 재생하는 감옥이자, 결정을 태워 시간을 되감는 기록 장치였다. 보존은 증언을 다음 사람에게 남기고, 연소는 지금의 생존을 위해 이름을 희생하며, 고르지 않은 사람은 다음 반복으로 넘어간다. 열린 문은 누구도 다음 사람의 운명을 독점하지 못하게 만든다. 어느 길도 지난 선택을 없애지는 않는다.';
+
+export { deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };

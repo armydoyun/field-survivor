@@ -1,6 +1,6 @@
 import { commitRunResult } from '../core/run-lifecycle.js';
 import { endingReward } from '../data/world-choices.js';
-import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes } from '../data/world.js';
+import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes, truthFound } from '../data/world.js';
 import { episodeTitle } from './effects.js';
 import { appendRecord } from '../core/profile.js';
 import { routeAxes, routeEnding, releaseOpen, endingVariant } from './route.js';
@@ -75,7 +75,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     const result = { time: r.time, kills: r.kills, gold: r.gold + endingReward, level: r.level, ending: ending.name, endingId: id, variant, threads: threadResolution(r), scenes: endingSceneList(id, r) };
     const memory = sessionState.profile.memory;
     record(`최종 회수 · ${ending.name}${variant==='hollow'?' · 빈 껍질':''}`);
-    memory.endings[id]++; if (finalEndings.every(e=>memory.endings[e.id]>0)) record('모든 결말이 모였다. 기록 장치가 작동한 이유는 제목 화면의 결말 기록에서 확인할 수 있다.');
+    if (!memory.endings[id]) record(truthFound); memory.endings[id]++; if (finalEndings.every(e=>memory.endings[e.id]>0)) record('모든 결말이 모였다. 기록 장치가 작동한 이유는 제목 화면의 결말 기록에서 확인할 수 있다.');
     memory.lastResolution = { ending: id, variant, threads: result.threads.slice(0, 40), scenes: result.scenes };
     return commitRunResult(sessionState,result);
   }

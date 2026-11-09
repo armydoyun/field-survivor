@@ -2,7 +2,8 @@ import { canPauseGame, canResetRecords } from './view-policy.js';
 import { commitRunStart, commitRunResult } from './run-lifecycle.js';
 import { makeRandomState, nextRandom, newSeed } from './random.js';
 import { appendRecord } from './profile.js';
-import { startScenes } from '../data/world.js';
+import { startScenes, deathLines } from '../data/world.js';
+import { phases } from '../data/progression.js';
 import { makeJourney, createRun } from './run.js';
 import { xpNeed } from '../growth/experience.js';
 import { branchReady } from '../growth/build.js';
@@ -42,6 +43,7 @@ export function createSession({ sessionState, view, platform, statistics, screen
   }
 
   function finish() {
+    const r=sessionState.run;if(r){const memory=sessionState.profile.memory;memory.deaths++;memory.lastDeathPhase=phases.filter(x=>r.time>=x.at).at(-1).name;record(deathLines.gameover);}
     const result=commitRunResult(sessionState);if(!result)return;view.lastResult=result; keys.clear(); screen.setMode('gameover'); storage.save();
   }
 
