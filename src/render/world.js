@@ -39,7 +39,7 @@ export function createWorldView({ sessionState, platform, cameraView, primitives
       primitives.drawShape(npc.x, npc.y, 9, '#22323b', 4); primitives.drawShape(npc.x, npc.y, 4.5, npc.state === 'heard' ? '#8dd6b8' : '#ffe1a8', 4);
       ctx.textAlign = 'center'; ctx.font = 'bold 12px system-ui'; ctx.fillStyle = '#f7e5c4';
       if (near && npc.state === 'waiting') ctx.fillText('E · 대화', npc.x, npc.y - 29);
-      if (near && npc.state === 'heard' && !sessionState.profile.memory.witness.quiet && npc.still > 1) {
+      if (near && npc.state === 'heard' && !npc.silenced && npc.still > 1) {
         ctx.fillStyle = '#c7eadc'; ctx.fillText('···', npc.x, npc.y - 29);
       }
     }

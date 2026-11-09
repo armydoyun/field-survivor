@@ -17,6 +17,7 @@ import { createFinale } from '../src/world/finale.js';
 import { createModalContent } from '../src/ui/modal-content.js';
 import { sites, relics, anomalies, legacies, echoes, fronts } from '../src/data/world.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../src/data/world-choices.js';
+import { endingTexts, endingScenes } from '../src/data/world.js';
 import { GUARDIAN_SALVAGE, GEM_LIMIT, ENEMY_LIMIT } from '../src/core/config.js';
 import { rewardGold } from '../src/growth/rewards.js';
 
@@ -29,7 +30,9 @@ function harness(s=state()){
 const snapshot=s=>structuredClone({run:s.run,profile:s.profile});
 function noChange(s,action){const before=snapshot(s);assert.ok(!action());assert.deepEqual(snapshot(s),before);}
 function prepareSite(s,index){s.run.siteStep=index;s.run.site={id:sites[index].id};s.run.sitePending=true;}
-function prepareRelease(r){r.finalStep=3;r.journey.outcomes=[{slot:0,kind:'relay',success:true},{slot:2,kind:'hunt',success:true}];r.echoOutcomes.witness='keep';}
+// 해방 경로: 감시자 분해 0 · 돌려보냄 2 · 기록원을 듣고 옆에서 멈춤 · 기억 축 0 이상(기록원 +1)
+function prepareRelease(r){r.finalStep=3;r.time=1800;r.guardianFate={spare:2,end:0};r.npc.state='heard';r.npc.silenced=true;}
+function prepareRoute(r,memory){r.finalStep=3;r.time=1800;const choices=[...Array(Math.abs(memory)).fill(memory>0?'hear':'burn')];r.signalChoices=choices.slice(0,3);const rest=choices.slice(3);if(rest.length){r.npc.state=memory>0?'heard':'taken';rest.shift();}for(const [i,site]of sites.entries())if(rest[i])r.siteDecisions[site.id]=memory>0?'keep':'take';}
 
 // Each suite operates without DOM, mode, storage, rendering or the application bootstrap.
 test('all six site choices retain exact rewards, HP order, enemy patterns and single commitment',()=>{
@@ -96,13 +99,29 @@ test('final encounter commits phase, clears transient entities and spawns its co
   const s=state(),r=s.run;r.finalStep=1;r.time=1800;for(const field of ['enemies','bullets','shots','hazards'])r[field]=[{}];let spawns=0;
   const d=createEndingDecisions({sessionState:s,enemyRuntime:{spawnFinalCore:()=>{assert.equal(r.finalStep,2);assert.equal(r.enemies.length,0);spawns++;}}});assert.equal(d.beginFinale(),true);assert.equal(r.nextBoss,5400);assert.equal(r.bossChoiceId,0);assert.equal(spawns,1);noChange(s,()=>d.beginFinale());
 });
-test('release eligibility requires two successful episodes including slot 2 and a used/restored echo',()=>{
-  const s=state(),d=createEndingDecisions({sessionState:s});prepareRelease(s.run);assert.equal(d.canRelease(),true);
-  for(const mutate of [r=>{r.journey.outcomes=r.journey.outcomes.slice(1);},r=>{r.journey.outcomes[1].slot=1;},r=>{r.journey.outcomes[1].success=false;},r=>{r.echoOutcomes.witness='silent';}]){const fresh=state();prepareRelease(fresh.run);mutate(fresh.run);const x=createEndingDecisions({sessionState:fresh});assert.equal(x.canRelease(),false);noChange(fresh,()=>x.chooseFinale('release'));}
+test('memory axis decides the confirmable ending and every other ending ID is rejected',()=>{
+  for(let memory=-7;memory<=7;memory++){const s=state();prepareRoute(s.run,memory);const d=createEndingDecisions({sessionState:s}),expected=memory>=3?'preserve':memory<=-3?'consume':'divided';
+    assert.equal(d.route().axes.memory,memory);assert.equal(d.route().ending,expected);assert.equal(d.route().release,false);
+    for(const id of ['preserve','consume','divided','release','invalid'].filter(x=>x!==expected))noChange(s,()=>d.chooseFinale(id));
+    assert.equal(d.chooseFinale(expected).endingId,expected);}
+});
+test('release opens only with no dismantled guardian, two returns, this run\'s stillness and a non-negative memory axis',()=>{
+  const s=state();prepareRelease(s.run);assert.equal(createEndingDecisions({sessionState:s}).route().release,true);
+  for(const mutate of [r=>{r.guardianFate.end=1;},r=>{r.guardianFate.spare=1;},r=>{r.npc.silenced=false;},r=>{r.signalChoices=['burn','burn'];}]){const fresh=state();prepareRelease(fresh.run);mutate(fresh.run);const x=createEndingDecisions({sessionState:fresh});assert.equal(x.route().release,false);noChange(fresh,()=>x.chooseFinale('release'));}
+  const permanent=state();prepareRelease(permanent.run);permanent.run.npc.silenced=false;permanent.profile.memory.witness.quiet=true;assert.equal(createEndingDecisions({sessionState:permanent}).route().release,false);
 });
 test('each ending settles rewards and records once before clearing the run and returns display data',()=>{
-  for(const id of ['preserve','consume','release']){const s=state();prepareRelease(s.run);s.run.gold=123;s.run.time=1800;s.run.kills=20;s.profile.gold=10;s.profile.bestTime=2000;
-    const d=createEndingDecisions({sessionState:s});noChange(s,()=>d.chooseFinale('invalid'));const result=d.chooseFinale(id);assert.equal(result.gold,523);assert.equal(result.endingId,id);assert.equal(result.scenes.length,3);assert.ok(result.threads.length>0);assert.equal(s.profile.gold,533);assert.equal(s.profile.bestTime,2000);assert.equal(s.profile.bestKills,20);assert.equal(s.profile.memory.endings[id],1);assert.equal(s.profile.memory.lastResolution.ending,id);assert.equal(s.run,null);noChange(s,()=>d.chooseFinale(id));}
+  for(const [id,prepare]of [['preserve',r=>prepareRoute(r,4)],['consume',r=>prepareRoute(r,-4)],['divided',r=>prepareRoute(r,0)],['release',prepareRelease]]){const s=state();prepare(s.run);s.run.gold=123;s.run.time=1800;s.run.kills=20;s.profile.gold=10;s.profile.bestTime=2000;
+    const d=createEndingDecisions({sessionState:s});noChange(s,()=>d.chooseFinale('invalid'));const result=d.chooseFinale(id);assert.equal(result.gold,523);assert.equal(result.endingId,id);assert.equal(result.scenes.length,3);assert.ok(result.scenes.every(x=>typeof x==='string'&&x.length>10));assert.ok(result.scenes[2].endsWith(endingTexts[id].tail));assert.ok(result.threads.length>0);assert.equal(s.profile.gold,533);assert.equal(s.profile.bestTime,2000);assert.equal(s.profile.bestKills,20);assert.equal(s.profile.memory.endings[id],1);assert.equal(s.profile.memory.lastResolution.ending,id);assert.equal(s.run,null);noChange(s,()=>d.chooseFinale(id));}
+});
+test('ending scenes follow the witness, guardians and the lost coordinate; the hollow variant needs dismantling and extraction',()=>{
+  const scenes=(prepare,id)=>{const s=state();prepare(s.run);return createEndingDecisions({sessionState:s}).chooseFinale(id);};
+  let result=scenes(r=>{prepareRoute(r,4);r.npc.state='heard';r.guardianFate={spare:1,end:0};r.siteDecisions.coordinate='keep';},'preserve');
+  assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.heard.preserve,endingScenes.guardian.spared]);assert.ok(result.scenes[2].startsWith(endingScenes.exit.keep));assert.equal(result.variant,'');
+  result=scenes(r=>{prepareRoute(r,-6);r.guardianFate={spare:0,end:3};},'consume');assert.equal(result.variant,'hollow');assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.hollow,endingScenes.guardian.hollow]);
+  result=scenes(r=>{prepareRoute(r,-6);r.guardianFate={spare:0,end:2};},'consume');assert.equal(result.variant,'');assert.equal(result.scenes[0],endingScenes.witness.taken);
+  result=scenes(r=>{prepareRelease(r);r.siteDecisions.coordinate='keep';},'release');assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.release,endingScenes.guardian.release]);assert.ok(result.scenes[2].startsWith(endingScenes.exit.release));
+  result=scenes(r=>{prepareRoute(r,0);r.time=1800;},'divided');assert.ok(result.scenes[2].includes('지나친 표식 3개'));
 });
 test('decision factories follow replacement state and reject missing runs without touching previous sessions',()=>{
   const h=harness(),previous=h.s.run,other=state();h.s.profile=other.profile;h.s.run=other.run;assert.equal(h.story.chooseSignal('burn'),true);assert.equal(previous.signalStep,0);assert.equal(other.run.signalStep,1);h.s.run=null;
@@ -120,10 +139,20 @@ test('automatic echo and legacy nonresponse save without resuming a paused scree
   const h=harness(),ui=screens(h.s,'paused');h.s.run.legacyOrigin='preserve';h.s.run.legacySite={};const story=createStory({...ui,decisions:h.story});assert.equal(story.chooseLegacy('silent'),true);assert.deepEqual(ui.calls,['save']);h.s.run.echoSite={id:echoes[0].id};h.s.run.echoSeed[echoes[0].id]='none';const encounter=createEncounters({...ui,decisions:h.encounter});assert.equal(encounter.finishEcho('silent'),true);assert.deepEqual(ui.calls,['save','save']);assert.equal(ui.view.mode,'paused');
 });
 test('ending workflow stores result, clears input and saves the completed state after screen transition',()=>{
-  const s=state(),ui=screens(s,'finalchoice');prepareRelease(s.run);const decisions=createEndingDecisions({sessionState:s}),flow=createFinale({...ui,decisions});flow.chooseFinale('release');assert.equal(ui.view.lastResult.endingId,'release');assert.equal(ui.platform.keys.size,0);assert.equal(s.run,null);assert.deepEqual(ui.calls,['ending','save']);flow.chooseFinale('release');assert.deepEqual(ui.calls,['ending','save']);
+  const s=state(),ui=screens(s,'finalchoice');prepareRoute(s.run,4);const decisions=createEndingDecisions({sessionState:s}),flow=createFinale({...ui,decisions});flow.chooseFinale('release');assert.deepEqual(ui.calls,[]);flow.chooseFinale('preserve');assert.equal(ui.view.lastResult.endingId,'preserve');assert.equal(ui.platform.keys.size,0);assert.equal(s.run,null);assert.deepEqual(ui.calls,['ending','save']);flow.chooseFinale('preserve');assert.deepEqual(ui.calls,['ending','save']);
+});
+test('standing still for 4.5 seconds on the final screen opens the release ending only on the release route',()=>{
+  const run=(prepare,inputs)=>{const s=state(),ui=screens(s,'finalchoice');prepare(s.run);const flow=createFinale({...ui,decisions:createEndingDecisions({sessionState:s})});let t=1000;flow.watchStillness(t);
+    for(const step of inputs){t+=step.after;if(step.input)ui.view.inputSeen=true;flow.watchStillness(t);}return ui;};
+  let ui=run(prepareRelease,[{after:4499}]);assert.deepEqual(ui.calls,[]);
+  ui=run(prepareRelease,[{after:4500}]);assert.equal(ui.view.lastResult.endingId,'release');assert.deepEqual(ui.calls,['ending','save']);
+  ui=run(prepareRelease,[{after:3000,input:true},{after:3000}]);assert.deepEqual(ui.calls,[]);
+  ui=run(prepareRelease,[{after:3000,input:true},{after:4500}]);assert.equal(ui.view.lastResult.endingId,'release');
+  ui=run(r=>prepareRoute(r,4),[{after:60000}]);assert.deepEqual(ui.calls,[]);
+  const paused=state(),other=screens(paused,'paused');prepareRelease(paused.run);const flow=createFinale({...other,decisions:createEndingDecisions({sessionState:paused})});flow.watchStillness(0);flow.watchStillness(9000);assert.deepEqual(other.calls,[]);assert.equal(other.view.finalStillSince,null);
 });
 test('choice descriptions and applied immediate rewards read the same definitions',()=>{
-  const h=harness(),s=h.s,view={mode:'site'},content=createModalContent({sessionState:s,view,canRelease:()=>false});
+  const h=harness(),s=h.s,view={mode:'site'},content=createModalContent({sessionState:s,view,route:()=>({ending:'preserve',release:false})});
   for(const [i,site]of sites.entries()){s.run.siteStep=i;const html=content.buildModal();for(const reward of Object.values(siteRewards[site.id])){if(reward.gold)assert.ok(html.includes(reward.gold+'G'));if(reward.xp)assert.ok(html.includes('EXP +'+reward.xp));if(reward.enemies)assert.ok(html.includes(reward.enemies.length+'마리'));}}
   view.mode='signal';s.run.signalStep=1;const signal=content.buildModal();assert.ok(signal.includes('+'+signalReward.hp));assert.ok(signal.includes((signalReward.goldBase+2*signalReward.goldStep)+'G'));view.mode='finalchoice';assert.ok(content.buildModal().includes(endingReward+'G'));assert.equal(witnessReward.gold,150);
 });

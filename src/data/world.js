@@ -60,7 +60,10 @@ const legacies = {
     { id: 'ignite', name: '엔진에 다시 점화한다', desc: '피해 +18% · 최대 HP -20' }] },
   release: { name: '열린 문 너머의 발자국', intro: '문턱에 발자국이 여럿 겹쳐 있다. 어느 쪽이 바깥으로 향하는지는 분명하지 않다.', options: [
     { id: 'open', name: '통로를 더 넓힌다', desc: '이동 속도 +20% · 받는 피해 +10%' },
-    { id: 'anchor', name: '뒤에 남아 길을 지킨다', desc: '최대 HP +25 · 이동 속도 -10%' }] }
+    { id: 'anchor', name: '뒤에 남아 길을 지킨다', desc: '최대 HP +25 · 이동 속도 -10%' }] },
+  divided: { name: '되풀이되는 두 목소리', intro: '수신기에서 두 목소리가 동시에 말한다. 하나는 기억하라고, 하나는 태우라고.', options: [
+    { id: 'listen', name: '두 목소리를 모두 듣는다', desc: '최대 HP +20 · 피해 -5%' },
+    { id: 'choose', name: '한 목소리만 고른다', desc: '피해 +10% · 최대 HP -10' }] }
 };
 
 // Each field site offers two distinct relics; effects are run-only, discoveries are remembered.
@@ -73,8 +76,43 @@ const relics = [
   { id: 'ember', site: 'archive', name: '잿빛 파편', desc: '처치 수 12의 배수마다 반경 170에 공통 공격력 ×1.4 광역 피해' }
 ];
 
-const finalEndings = [{ id: 'preserve', name: '남겨진 목소리' }, { id: 'consume', name: '식지 않는 엔진' }, { id: 'release', name: '열린 문' }];
+// 결말은 경로가 정한다(src/world/route.js). release는 경로 조건 + 마지막 화면에서 멈춤으로만 열린다.
+const finalEndings = [{ id: 'preserve', name: '남겨진 목소리' }, { id: 'consume', name: '식지 않는 엔진' }, { id: 'divided', name: '두 개의 목소리' }, { id: 'release', name: '열린 문' }];
+
+// 결말 장면은 도입 + 기록원 + 감시자 + 출구 블록을 조합한다(NARRATIVE-REDESIGN.md 4.3절).
+const endingTexts = {
+  preserve: { confirm: '마지막 문장을 봉인한다', prompt: '제어판 위에 네가 지키려 한 문장들이 겹쳐 있다.', intro: '장치의 빛은 꺼졌지만 목소리는 남았다. 너는 마지막 문장을 봉인했다. 문은 열리지 않았고, 너는 그 문장 옆에 남기로 했다.', tail: '문장 옆에 이름을 적을 자리가 남았다.' },
+  consume: { confirm: '모든 기록을 엔진에 넣는다', prompt: '제어판이 뜨겁다. 네가 태운 기록들이 아직 그 안에서 타고 있다.', intro: '엔진이 문을 밀어 올렸다. 따뜻한 공기가 먼저 나갔고, 너는 빈 기록함을 지나 뒤따랐다. 발음할 수 없는 이름 하나가 입안에 남았다.', tail: '불빛은 그 자리를 지나 엔진으로 흘렀다.' },
+  divided: { confirm: '아무것도 정하지 않고 손을 뗀다', prompt: '제어판 위에서 지킨 문장과 태운 문장이 반쯤씩 겹쳐 있다.', intro: '너는 제어판에서 손을 뗐다. 엔진은 잠시 멈췄다가, 다시 돌기 시작했다. 어느 쪽도 고르지 않은 기록은 다음 반복의 첫 줄이 된다.', tail: '엔진은 다음 사람을 기다린다. 아마 너를.' },
+  release: { confirm: '', prompt: '', intro: '접속이 끊기자 엔진이 멎었다. 문이 열렸다. 감시자와 기록원이 네 뒤를 따랐다. 처음으로, 되감기지 않는 발소리였다.', tail: '이제 그 길을 닫으라는 명령은 도착하지 않는다.' },
+  hollow: { intro: '엔진이 문을 밀어 올렸다. 뒤를 돌아봤지만 따라오는 소리는 없었다. 벌판에는 이름 하나 남지 않았다.' }
+};
+
+const endingScenes = {
+  witness: {
+    release: '기록원이 수신기를 내려놓았다. "네가 서 있던 시간을 셌어. 이제 그걸로 충분해." 그는 처음으로 문 쪽으로 걸었다.',
+    heard: { preserve: '기록원은 봉인된 문장 옆에 남았다. 네가 들어 준 이야기가 맨 위에 적혀 있다.', consume: '기록원의 목소리는 끝까지 들렸다. 엔진이 그것마저 삼키기 전까지는.', divided: '기록원이 말했다. "다음에는 조금 더 오래 서 있어 줘."' },
+    taken: '기록원의 목소리는 이제 엔진의 소음 속에서만 들린다. 네가 추출한 파형이 그 안에서 돌고 있다.',
+    hollow: '기록원은 어디에도 없다. 수신기만 빈 원 안에 남았다.',
+    none: '길가의 기록원은 끝내 말을 걸지 않았다. 수신기의 불빛만 너를 따라왔다.'
+  },
+  guardian: {
+    release: '감시자가 처음으로 이름을 말했다. 너는 그 이름을 들은 마지막 사람이 아니게 되었다.',
+    spared: '돌려보낸 감시자가 방패를 내렸다. 방패 안쪽에 사람이 지나갈 틈이 생겼다.',
+    ended: '빈 껍질들이 같은 방향으로 돌아섰다. 네가 분해한 명령이 그들을 움직인다.',
+    hollow: '껍질들은 더 이상 아무 명령도 기다리지 않는다.',
+    mixed: '돌려보낸 껍질과 분해한 껍질이 나란히 섰다. 어느 쪽도 너를 막지 않았다.',
+    none: '감시자의 명령은 아무 이름도 덧붙이지 않은 채 반복된다.'
+  },
+  exit: {
+    release: '분실된 좌표가 문 위치와 겹쳤다. 출구는 처음부터 거기 있었다.',
+    keep: '복구한 좌표가 벌판 끝을 가리킨다. 아직 누구도 그 끝까지 걸어가지 않았다.',
+    take: '좌표의 핵심은 네 주머니에 있다. 그것이 어디를 가리켰는지는 이제 아무도 모른다.',
+    none: '분실된 좌표는 끝내 흙 속에 남았다.',
+    silence: '지나친 표식 {count}개가 아직 깜박인다.'
+  }
+};
 
 const episodeKinds = ['relay','gates','hunt'];
 
-export { signals, anomalies, sites, objectives, echoes, fronts, legacies, relics, finalEndings, episodeKinds };
+export { signals, anomalies, sites, objectives, echoes, fronts, legacies, relics, finalEndings, endingTexts, endingScenes, episodeKinds };

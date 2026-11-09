@@ -21,7 +21,7 @@ export function restoreJourney(raw,time) {
   return j;
 }
 
-export function restoreWorld(r,raw,profile){
+export function restoreWorld(r,raw,_profile){
   r.anomalyStep = integer(raw.anomalyStep, 0, 0, anomalies.length);
   r.anomalyPending = raw.anomalyPending === true && r.anomalyStep < anomalies.length;
   r.anomalyChoices = {}; r.anomalyUntil = {};
@@ -73,6 +73,6 @@ export function restoreWorld(r,raw,profile){
   r.logs = Array.isArray(raw.logs) ? raw.logs.filter(x => typeof x === 'string').slice(-6).map(x => x.slice(0, 110)) : [];
   const npc = raw.npc;
   if (npc && typeof npc === 'object' && ['none', 'waiting', 'heard', 'taken'].includes(npc.state)) {
-    r.npc = { spawned: !!npc.spawned, state: npc.state, x: n(npc.x, W / 2, -1e7, 1e7), y: n(npc.y, H / 2, -1e7, 1e7), still: n(npc.still, 0, 0, 4.5), encounterPending: !!npc.encounterPending && npc.state === 'waiting', secretPending: !!npc.secretPending && npc.state === 'heard' && !profile.memory.witness.quiet };
+    r.npc = { spawned: !!npc.spawned, state: npc.state, x: n(npc.x, W / 2, -1e7, 1e7), y: n(npc.y, H / 2, -1e7, 1e7), still: n(npc.still, 0, 0, 4.5), encounterPending: !!npc.encounterPending && npc.state === 'waiting', secretPending: !!npc.secretPending && npc.state === 'heard' && !npc.silenced, silenced: !!npc.silenced && npc.state === 'heard' };
   }
 }

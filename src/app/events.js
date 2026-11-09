@@ -7,7 +7,11 @@ export function createEvents({ view, platform, shop, buildGuide, menuInput, stor
     if (unbind) return unbind;
     const listeners = [];
     const listen = (target, type, handler, options) => { target.addEventListener(type, handler, options); listeners.push([target, type, handler, options]); };
-    listen(window, 'keydown',event=>{if(!inspector?.keydown(event))input.keydown(event);});
+    const touched = () => { view.inputSeen = true; };
+    listen(window, 'keydown',event=>{touched();if(!inspector?.keydown(event))input.keydown(event);});
+    listen(window, 'pointerdown', touched);
+    listen(window, 'pointermove', touched);
+    listen(window, 'wheel', touched, { passive: true });
 
     listen(window, 'keyup',input.keyup);
 

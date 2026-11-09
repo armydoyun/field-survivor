@@ -10,7 +10,7 @@ export function createStory({ sessionState, view, platform, screen, storage, ses
   function tickWitness(dt,moving){
     const p=sessionState.run.player;
     const npc = sessionState.run.npc;
-    if (npc.state === 'heard' && !sessionState.profile.memory.witness.quiet) {
+    if (npc.state === 'heard' && !npc.silenced) {
       if (!moving && Math.hypot(p.x - npc.x, p.y - npc.y) < 72) npc.still += dt;
       else npc.still = 0;
       if (npc.still >= 4.5) { revealSilence(); return true; }
@@ -38,7 +38,7 @@ export function createStory({ sessionState, view, platform, screen, storage, ses
   function chooseWitness(choice){if(view.mode!=='encounter'||!decisions.chooseWitness(choice))return;screen.setMode('playing');storage.save();}
 
   function revealSilence() {
-    if (!canInteractInWorld(view) || sessionState.run.npc.state !== 'heard' || sessionState.profile.memory.witness.quiet) return;
+    if (!canInteractInWorld(view) || sessionState.run.npc.state !== 'heard' || sessionState.run.npc.silenced) return;
     sessionState.run.npc.secretPending = true; keys.clear(); screen.setMode('secret'); storage.save();
   }
 

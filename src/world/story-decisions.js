@@ -23,8 +23,9 @@ export function createStoryDecisions({ sessionState, statistics, difficulty, com
 
   function acknowledgeSilence() {
     if (!sessionState.run?.npc?.secretPending) return false;
-    sessionState.run.npc.secretPending = false; const witness = sessionState.profile.memory.witness;
-    if (!witness.quiet) {
+    sessionState.run.npc.secretPending = false; sessionState.run.npc.silenced = true; const witness = sessionState.profile.memory.witness;
+    if (witness.quiet) record('숨겨진 기록 · 이번에도 멈춰 있던 시간이 저장되었다.');
+    else {
       witness.quiet = true; sessionState.run.player.hp = Math.min(statistics.stats().maxHp, sessionState.run.player.hp + witnessReward.silenceHeal);
       record('숨겨진 기록 · 아무것도 하지 않은 시간이 처음으로 저장되었다. 영구 최대 HP +10.');
     }

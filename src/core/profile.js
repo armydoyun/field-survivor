@@ -19,7 +19,7 @@ const anomalyDefault = () => ({ clock: { hold: 0, rush: 0 }, border: { ward: 0, 
 
 const initialProfile = () => ({ gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), echoes: echoDefault(), fronts: frontDefault(), legacies: legacyDefault(), lastResolution: null } });
 
-const initialEndings = () => ({ preserve: 0, consume: 0, release: 0 });
+const initialEndings = () => Object.fromEntries(finalEndings.map(e => [e.id, 0]));
 
 const initialWitness = () => ({ met: 0, heard: 0, taken: 0, quiet: false });
 

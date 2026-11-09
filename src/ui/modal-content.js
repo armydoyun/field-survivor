@@ -4,7 +4,7 @@ import { hasRecords } from '../core/profile.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../data/world-choices.js';
 import { timeText } from '../core/utils.js';
 import { VERSION, GUARDIAN_SALVAGE } from '../core/config.js';
-import { finalEndings, signals, anomalies, sites as siteDefinitions, legacies, echoes } from '../data/world.js';
+import { finalEndings, endingTexts, signals, anomalies, sites as siteDefinitions, legacies, echoes } from '../data/world.js';
 import { guardianMood } from '../combat/guardians.js';
 import { rewardGold } from '../growth/rewards.js';
 import { relicChoices } from '../world/effects.js';
@@ -13,7 +13,7 @@ import { upgrades, upgradeFamilies } from '../data/upgrades.js';
 import { branches } from '../data/specializations.js';
 import { canReroll } from '../growth/cards.js';
 
-export function createModalContent({ sessionState, view, keystoneOptions, rewardXp, fusionHtml, growthMetrics, canRelease }) {
+export function createModalContent({ sessionState, view, keystoneOptions, rewardXp, fusionHtml, growthMetrics, route }) {
 
   function siteEffect(site,id){
     const reward=siteRewards[site.id][id],up=sessionState.run.up,extra=(key,amount)=>Math.min(amount,upgrades.find(x=>x.id===key).max-(up[key]||0));
@@ -32,8 +32,8 @@ export function createModalContent({ sessionState, view, keystoneOptions, reward
     } else if (view.mode === 'keystone') {
       return  decisionHtml('FINAL FORM','남은 하나의 자리','무기들의 진동이 하나의 박자로 겹친다.',keystoneOptions().map(x=>({id:'keystone-'+x.id,name:x.name,effect:x.desc})));
     } else if (view.mode === 'ledger') {
-      const m=sessionState.profile.memory, last=m.lastResolution, discovered=finalEndings.filter(x=>m.endings[x.id]>0), complete=discovered.length===3;
-      const epilogue = complete ? '<div class="closure-reveal"><strong>최종 기록 · 장치의 진실</strong><p>이 전장은 사람들의 실패를 재생하는 감옥이자, 결정을 태워 작동하는 기록 장치였다. 신호는 지워진 생존자의 목소리, 감시자는 그 기록을 지키는 마지막 경계, 기록원은 지워지기를 거부한 증인이었다. 분실된 좌표는 출구의 조각이었다. 보존은 증언을 후대에 남기고, 연소는 현재의 생존을 위해 이름을 희생하며, 해방은 누구도 다음 사람의 운명을 독점하지 못하게 만든다. 어느 길도 지난 선택을 없애지는 않는다.</p></div>' : `<p class="muted">기록 장치에 빈 슬롯이 ${3-discovered.length}개 남아 있다.</p>`;
+      const m=sessionState.profile.memory, last=m.lastResolution, discovered=finalEndings.filter(x=>m.endings[x.id]>0), complete=discovered.length===finalEndings.length;
+      const epilogue = complete ? '<div class="closure-reveal"><strong>최종 기록 · 장치의 진실</strong><p>이 전장은 사람들의 실패를 재생하는 감옥이자, 결정을 태워 작동하는 기록 장치였다. 신호는 지워진 생존자의 목소리, 감시자는 그 기록을 지키는 마지막 경계, 기록원은 지워지기를 거부한 증인이었다. 분실된 좌표는 출구의 조각이었다. 보존은 증언을 후대에 남기고, 연소는 현재의 생존을 위해 이름을 희생하며, 해방은 누구도 다음 사람의 운명을 독점하지 못하게 만든다. 어느 길도 지난 선택을 없애지는 않는다.</p></div>' : `<p class="muted">기록 장치에 빈 슬롯이 ${finalEndings.length-discovered.length}개 남아 있다.</p>`;
       const summary=`<div class="summary">${finalEndings.map(x=>`<span>${x.name} <strong>${m.endings[x.id]}회</strong></span>`).join('')}</div>`;
       const recordLines=(last?.threads||[]).map(line=>`<li>${htmlEscape(line)}</li>`).join('');
       return modalHtml('ECHO ARCHIVE · CONCLUSION','결말과 남겨진 사람들','전투에서 내린 선택과 지나친 선택은 사라지지 않습니다. 마지막 도전의 기록과 발견한 결말을 다시 읽을 수 있습니다.',actionHtml('ledger-back','제목 화면으로',true),summary+epilogue+sceneHtml(last?.scenes)+(last?`<details class="ending-ledger" open><summary>마지막 결말 · ${finalEndings.find(x=>x.id===last.ending)?.name} · ${last.threads.length}건</summary><ul>${recordLines}</ul></details>`:''),true);
@@ -54,7 +54,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, reward
       return decisionHtml('UNKNOWN CONTACT · 001','기록원',`${intro} ${trace} 나는 네가 지나가는 소리를 들었어. 한 번은 아주 가까웠고, 한 번은 여기까지 오지 않았지.`,[{id:'witness-hear',name:'이야기를 들어준다',effect:`즉시 HP 최대 ${witnessReward.heal} 회복 · 재생 +0.25/s (피격 후 3초간 +0.0625/s)`},{id:'witness-take',name:'기록을 추출한다',effect:`${witnessReward.gold}G · 이번 도전의 모든 무기 피해 +10%`}]);
     } else if (view.mode === 'secret') {
       const line = sessionState.profile.memory.witness.taken ? '한 번은 나를 부품으로 만들었지. 그런데도 이번에는 기다려 주었어.' : '이 세상은 네가 쓰러진 시간만 세고 있었어. 네가 가만히 있었던 순간은 한 번도 세지 않았지.';
-      return  modalHtml('HIDDEN RECORD · 000', '아무것도 하지 않은 시간', `${line} 지금은 달라. 네가 서 있던 4.5초가 여기에 남았어. 이번 도전에도 남고, 다음에도 사라지지 않을 거야.`, actionHtml('silence', `기억으로 남긴다 · HP 최대 ${witnessReward.silenceHeal} 회복 / 영구 최대 HP +10(즉시 적용)`, true));
+      return  modalHtml('HIDDEN RECORD · 000', '아무것도 하지 않은 시간', `${line} 지금은 달라. 네가 서 있던 4.5초가 여기에 남았어. 이번 도전에도 남고, 다음에도 사라지지 않을 거야.`, actionHtml('silence', sessionState.profile.memory.witness.quiet ? '기억으로 남긴다' : `기억으로 남긴다 · HP 최대 ${witnessReward.silenceHeal} 회복 / 영구 최대 HP +10(즉시 적용)`, true));
     } else if (view.mode === 'signal') {
       const ev=signals[sessionState.run.signalStep], heard=sessionState.profile.memory.heard, burned=sessionState.profile.memory.burned;
       const trace=sessionState.run.signalStep===2 && heard+burned?`잡음 사이에 ${heard}개의 응답과 ${burned}개의 빈 주파수가 겹친다.`:'';
@@ -86,13 +86,15 @@ export function createModalContent({ sessionState, view, keystoneOptions, reward
       const voice=sessionState.profile.memory.witness.heard?'잡음 속에서 기록원의 목소리가 들린다.':sessionState.profile.memory.witness.taken?'추출한 기록의 빈 주파수가 울린다.':'발자국 소리가 멎는다.';
       return modalHtml('THE LOOP · 30:00','마지막 신호',`${voice} 벌판의 모든 선이 한 점으로 모인다. 중심핵 안에서 누군가 네 발소리를 세고 있다.`,actionHtml('final-enter','중심핵과 마주한다',true));
     } else if (view.mode === 'finalchoice') {
-      const choices=[{id:'final-preserve',name:'기억을 보존한다',effect:''},{id:'final-consume',name:'기록을 태운다',effect:''}];if(canRelease())choices.push({id:'final-release',name:'접속을 놓아준다',effect:''});
-      return decisionHtml('THE LOOP · DECISION','반복의 중심','중심핵의 빛이 멎는다. 제어판에는 네가 지나온 흔적이 겹쳐 있다. 손을 대자, 아직 따뜻하다.',choices.map(o=>({...o,effect:`결말 보상 · ${endingReward}G`})));
+      const current=route?.()||{ending:'divided',release:false},text=endingTexts[current.ending],seen=finalEndings.filter(x=>sessionState.profile.memory.endings[x.id]>0).length;
+      // 해방 힌트는 결말을 2개 이상 본 뒤에만 직접 말한다. 그 전에는 기록원이 기다리는 모습만 보인다.
+      const witness=current.release?(seen>=2?' 기록원이 속삭인다. "누르지 마. 네가 서 있던 시간을 기억해."':' 기록원이 무언가를 기다리듯 너를 본다.'):'';
+      return decisionHtml('THE LOOP · DECISION','반복의 중심',`중심핵의 빛이 멎는다. ${text.prompt}${witness}`,[{id:'final-'+current.ending,name:text.confirm,effect:`결말 보상 · ${endingReward}G`}]);
     } else if (view.mode === 'ending') {
-      const ending = finalEndings.find(x => x.id === view.lastResult?.endingId) || finalEndings[0], texts = { preserve: '장치의 빛은 꺼졌지만 목소리는 남았다. 너는 마지막 문장을 봉인하고 문을 열었다. 바깥에서는 아직 누구도 그 이름들을 부르지 않는다.', consume: '엔진이 문을 밀어 올렸다. 따뜻한 공기가 먼저 나갔고, 너는 빈 기록함을 지나 뒤따랐다. 발음할 수 없는 이름 하나가 입안에 남았다.', release: '접속이 끊기자 문이 열렸다. 감시자는 안쪽에 남았고 기록원은 말을 멈췄다. 너는 길을 건넜다. 뒤에서 따라오는 발소리가 누구의 것인지는 알 수 없다.' };
+      const ending = finalEndings.find(x => x.id === view.lastResult?.endingId) || finalEndings[0], intro = (view.lastResult?.variant === 'hollow' ? endingTexts.hollow : endingTexts[ending.id]).intro;
       const summary = `<div class="summary"><span>생존 <strong>${timeText(view.lastResult?.time || 0)}</strong></span><span>획득 <strong>${view.lastResult?.gold || 0} G</strong></span></div>`;
-      const receipts=view.lastResult?.threads||[], epilogue=receipts.length?`<details class="ending-ledger" open><summary>이번 도전에서 회수된 선택 · ${receipts.length}건</summary><ul>${receipts.map(line=>`<li>${htmlEscape(line)}</li>`).join('')}</ul></details>`:'<p class="ending-ledger-empty">이번 도전에서 추가로 회수할 선택 기록은 없었습니다.</p>';
-      return  modalHtml('ENDING · THE LOOP', ending.name, texts[view.lastResult?.endingId] || texts.preserve, actionHtml('menu', '기록으로 돌아가기', true) + actionHtml('new', '새로운 도전') + actionHtml('ledger-open', '이 결말의 기록 열람'), summary+sceneHtml(view.lastResult?.scenes)+epilogue, true);
+      const receipts=view.lastResult?.threads||[], epilogue=receipts.length?`<details class="ending-ledger"><summary>세부 기록 · ${receipts.length}건</summary><ul>${receipts.map(line=>`<li>${htmlEscape(line)}</li>`).join('')}</ul></details>`:'<p class="ending-ledger-empty">이번 도전에서 추가로 회수할 선택 기록은 없었습니다.</p>';
+      return  modalHtml('ENDING · THE LOOP', view.lastResult?.variant === 'hollow' ? `${ending.name} · 빈 껍질` : ending.name, intro, actionHtml('menu', '기록으로 돌아가기', true) + actionHtml('new', '새로운 도전') + actionHtml('ledger-open', '이 결말의 기록 열람'), summary+sceneHtml(view.lastResult?.scenes)+epilogue, true);
     } else if (view.mode === 'gameover') {
       const r = view.lastResult || { time: 0, kills: 0, gold: 0, level: 1 }, summary = `<div class="summary"><span>생존 <strong>${timeText(r.time)}</strong></span><span>레벨 <strong>${r.level}</strong></span><span>처치 <strong>${r.kills}</strong></span><span>획득 <strong>${r.gold} G</strong></span></div>`;
       return  modalHtml('RUN COMPLETE', '게임 오버', `획득한 골드는 영구 보유됩니다. 신호를 기억한 횟수 ${sessionState.profile.memory.heard}회, 연료로 바꾼 횟수 ${sessionState.profile.memory.burned}회. 다음 도전에도 기록은 남습니다.`, actionHtml('menu', '성장 화면으로', true) + actionHtml('new', '바로 재도전'), summary);
