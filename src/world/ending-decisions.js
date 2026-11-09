@@ -22,7 +22,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     if(r.npc.state==='heard')lines.push(f('기록원이 직접 전한 이야기'));else if(r.npc.state==='taken')lines.push(f('기록원에게서 추출한 파형'));
     if(sessionState.profile.memory.witness.quiet)lines.push('멈춰 있던 4.5초의 기록은 시스템도 더는 지울 수 없는 증거가 되었다.');
     if(r.guardianFate.spare||r.guardianFate.end)lines.push(f(r.guardianFate.spare&&r.guardianFate.end?'놓아준 감시자와 분해한 감시자의 증언':r.guardianFate.spare?'살려 보낸 감시자의 응답':'분해된 감시자의 마지막 명령'));
-    else if(sessionState.profile.memory.guardian.spared||sessionState.profile.memory.guardian.ended)lines.push('이전 도전에서 선택했던 감시자의 운명이 중심핵의 공격 패턴을 바꾸었다.');
+    else if(sessionState.profile.memory.guardian.spared||sessionState.profile.memory.guardian.ended)lines.push('이전 도전에서 선택했던 감시자의 운명은 이번 도전의 감시자에게 이어졌다.');
     for(const event of anomalies)if(r.anomalyChoices[event.id])lines.push(f(`${event.title}에서 내린 '${event.options.find(o=>o.id===r.anomalyChoices[event.id]).name}' 선택`));
     for(const site of sites)if(r.siteDecisions[site.id])lines.push(f(`${site.title}에서 ${r.siteDecisions[site.id]==='keep'?'남긴':'가져간'} 기록`));
     for(const task of objectives)if(r.objectiveOutcomes[task.id])lines.push(f(r.objectiveOutcomes[task.id]==='complete'?`${task.name}에서 회수한 기록`:r.objectiveOutcomes[task.id]==='ignored'?`${task.name}에 응답하지 않은 침묵`:`${task.name}의 소실 신호와 실패한 작전 기록`));
@@ -32,7 +32,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
       const old = legacies[r.legacyOrigin], selected = old.options.find(x=>x.id===r.legacyChoice);
       lines.push(r.legacyChoice === 'silent' ? `지난 결말 '${old.name}'에 응답하지 않았다. 중심핵은 그 침묵까지 하나의 선택으로 기록했다.` : selected ? `지난 결말 '${old.name}'에 돌아와 '${selected.name}'을 선택했다. 그 대가와 변화가 이번 생존에도 남았다.` : `지난 결말 '${old.name}'의 답장은 아직 열리지 않은 채 다음 길을 기다린다.`);
     }
-    for(const relic of relics)if(r.relics.includes(relic.id))lines.push(f(`'${relic.name}'에 남아 있던 제작자의 흔적`));
+    for(const relic of relics)if(r.relics.includes(relic.id))lines.push(f(`'${relic.name}'에 기록원이 남겨 둔 흔적`));
     for (const site of sites) if (r.time >= site.at && !r.siteDecisions[site.id]) lines.push(`${site.title}의 표식은 끝내 선택받지 못했다. 다음 도전에서도 좌표의 흔적은 사라지지 않는다.`);
     for (const x of r.journey.outcomes) lines.push(`${episodeTitle(x.kind)} · ${x.success?'회수 완료':'연결 소실'}`);
     return lines;

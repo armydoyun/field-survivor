@@ -59,12 +59,12 @@ test('witness and silence results are independent of screens and clamp after per
     if(choice==='hear'){s.run.npc.secretPending=true;assert.equal(h.story.acknowledgeSilence(),true);assert.equal(s.profile.memory.witness.quiet,true);assert.equal(s.run.player.hp,110);noChange(s,()=>h.story.acknowledgeSilence());}
   }
 });
-test('signal routes preserve ordered gold, HP, chapter selection and final exhaustion',()=>{
-  for(const [route,chapter]of [[['hear','hear','hear'],'새벽의 기록'],[['burn','burn','burn'],'식지 않는 엔진'],[['hear','burn','burn'],'식지 않는 엔진'],[['burn','hear','hear'],'새벽의 기록']]){
+test('signal routes preserve ordered gold, HP and final exhaustion without the retired chapter memory',()=>{
+  for(const route of [['hear','hear','hear'],['burn','burn','burn'],['hear','burn','burn'],['burn','hear','hear']]){
     const h=harness(),{s}=h;s.run.player.hp=50;let gold=0,heard=0;
     noChange(s,()=>h.story.chooseSignal('invalid'));
     for(const [i,choice]of route.entries()){assert.equal(h.story.chooseSignal(choice),true);if(choice==='burn')gold+=100+30*i;else heard++;}
-    assert.equal(s.run.gold,gold);assert.equal(s.run.player.hp,50+heard*20);assert.equal(s.run.signalHp,heard*20);assert.deepEqual(s.run.signalChoices,route);assert.ok(s.profile.memory.chapters.includes(chapter));noChange(s,()=>h.story.chooseSignal('hear'));
+    assert.equal(s.run.gold,gold);assert.equal(s.run.player.hp,50+heard*20);assert.equal(s.run.signalHp,heard*20);assert.deepEqual(s.run.signalChoices,route);assert.equal(s.profile.memory.chapters,undefined);noChange(s,()=>h.story.chooseSignal('hear'));
   }
 });
 test('every anomaly option retains duration, ward timing, HP clamp and exactly one memory increment',()=>{

@@ -48,11 +48,6 @@ export function createStoryDecisions({ sessionState, statistics, difficulty, com
     const event = signals[sessionState.run.signalStep]; sessionState.run.signalChoices.push(choice); sessionState.run.signalStep++;
     if (choice === 'hear') { sessionState.run.signalHp += signalReward.hp; sessionState.run.player.hp = Math.min(statistics.stats().maxHp, sessionState.run.player.hp + signalReward.hp); sessionState.profile.memory.heard++; record(`${event.title} · 목소리를 기억했다.`); }
     else { sessionState.run.signalPower++; sessionState.run.gold += signalReward.goldBase + signalReward.goldStep * sessionState.run.signalStep; sessionState.profile.memory.burned++; record(`${event.title} · 신호를 연료로 바꿨다.`); }
-    if (sessionState.run.signalStep === signals.length) {
-      const chapter = sessionState.run.signalHp >= 40 ? '새벽의 기록' : sessionState.run.signalPower >= 2 ? '식지 않는 엔진' : '두 개의 목소리';
-      if (!sessionState.profile.memory.chapters.includes(chapter)) sessionState.profile.memory.chapters.push(chapter);
-      record(`기록의 결말 · ${chapter}. 목소리는 사라지지 않고 다음 시작을 기다린다.`);
-    }
     return true;
   }
 

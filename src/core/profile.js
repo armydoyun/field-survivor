@@ -17,7 +17,7 @@ const siteDefault = () => Object.fromEntries(sites.map(site => [site.id, { keep:
 
 const anomalyDefault = () => ({ clock: { hold: 0, rush: 0 }, border: { ward: 0, harvest: 0 }, echo: { keep: 0, erase: 0 } });
 
-const initialProfile = () => ({ gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, chapters: [], witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), echoes: echoDefault(), fronts: frontDefault(), legacies: legacyDefault(), lastResolution: null } });
+const initialProfile = () => ({ gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), echoes: echoDefault(), fronts: frontDefault(), legacies: legacyDefault(), lastResolution: null } });
 
 const initialEndings = () => ({ preserve: 0, consume: 0, release: 0 });
 
@@ -28,7 +28,7 @@ function hydrateProfile(profile, p) {
   for (const item of shopItems) profile.perks[item.id] = integer(p.perks?.[item.id], 0, 0, item.max);
   profile.memory.heard = integer(p.memory?.heard, 0, 0, 10000); profile.memory.burned = integer(p.memory?.burned, 0, 0, 10000);
   profile.memory.archive = Array.isArray(p.memory?.archive) ? p.memory.archive.filter(x => typeof x === 'string').slice(-8).map(x => x.slice(0, 110)) : [];
-  profile.memory.chapters = Array.isArray(p.memory?.chapters) ? p.memory.chapters.filter(x => ['새벽의 기록', '식지 않는 엔진', '두 개의 목소리'].includes(x)).slice(0, 3) : [];
+  // v2.6.27 이전의 신호 챕터(memory.chapters)는 최종 결말과 이름이 겹쳐 폐지했다. 저장값은 읽지 않는다.
   const witness = p.memory?.witness; if (witness && typeof witness === 'object') profile.memory.witness = { met: integer(witness.met, 0, 0, 99999), heard: integer(witness.heard, 0, 0, 99999), taken: integer(witness.taken, 0, 0, 99999), quiet: witness.quiet === true };
   const guardian = p.memory?.guardian; if (guardian && typeof guardian === 'object') profile.memory.guardian = { spared: integer(guardian.spared, 0, 0, 99999), ended: integer(guardian.ended, 0, 0, 99999) };
   const savedSites = p.memory?.sites;

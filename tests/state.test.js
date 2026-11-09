@@ -58,7 +58,7 @@ test('profile hydration retains save validation, whitelist filtering and size li
   assert.equal(p.perks.health, 0); assert.ok(p.perks.power > 0 && p.perks.power < 1e9); assert.equal(p.perks.unknown, undefined);
   assert.equal(p.memory.heard, 10000); assert.deepEqual(p.memory.witness, { met: 0, heard: 2, taken: 0, quiet: false });
   assert.equal(p.memory.archive.length, 8); assert.ok(p.memory.archive.every(x => x.length <= 110));
-  assert.deepEqual(p.memory.chapters, ['새벽의 기록']); assert.equal(p.memory.fusions.fleet, 4); assert.equal(p.memory.fusions.unknown, undefined);
+  assert.equal(p.memory.chapters, undefined); assert.equal(p.memory.fusions.fleet, 4); assert.equal(p.memory.fusions.unknown, undefined);
   assert.equal(p.memory.endings.preserve, 99999); assert.equal(p.memory.lastResolution, null);
   assert.doesNotThrow(() => hydrateProfile(initialProfile(), {}));
 });
