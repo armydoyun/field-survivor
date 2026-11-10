@@ -10,7 +10,7 @@ import { branchReady } from '../growth/build.js';
 import { upgrades, upgradeFamilies } from '../data/upgrades.js';
 import { branches } from '../data/specializations.js';
 import { canReroll } from '../growth/cards.js';
-import { loadouts, unlockedLoadouts, START_WEAPON_LEVEL } from '../data/loadouts.js';
+import { loadouts, unlockedLoadouts, startWeaponLevel } from '../data/loadouts.js';
 
 // 이번 판의 축 위치(NARRATIVE-REDESIGN.md 3.3절). 기억 축 −7(연소) ~ +7(보존)과 감시자 결정.
 function routeAxisHtml(axes){
@@ -39,7 +39,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       // 시작 무기: 열린 것만 고를 수 있고, 잠긴 것은 여는 조건을 보여 준다.
       const memory=sessionState.profile.memory,open=new Set(unlockedLoadouts(memory)),label=id=>weaponLabel(id,upgrades.find(u=>u.id===id)?.name||id);
       const locked=loadouts.filter(l=>!open.has(l.id)).map(l=>`<li>${label(l.id)} · ${htmlEscape(l.unlock)}</li>`).join('');
-      const cards=loadouts.filter(l=>open.has(l.id)).map((l,i)=>`<div class="option-card"><button type="button" class="option" data-action="start-${l.id}"><span class="option-level"><kbd>${i+1}</kbd></span><strong>${label(l.id)}</strong><span class="option-desc">${l.id==='pulse'?'기본 사격으로 시작':`Lv${START_WEAPON_LEVEL}로 시작 · 펄스 휴면`}</span></button></div>`).join('');
+      const cards=loadouts.filter(l=>open.has(l.id)).map((l,i)=>`<div class="option-card"><button type="button" class="option" data-action="start-${l.id}"><span class="option-level"><kbd>${i+1}</kbd></span><strong>${label(l.id)}</strong><span class="option-desc">${l.id==='pulse'?'기본 사격으로 시작':`Lv${startWeaponLevel(l.id)}로 시작 · 펄스 휴면`}</span></button></div>`).join('');
       return modalHtml('NEW RUN · LOADOUT','시작 무기','이번 판을 어떤 무기로 시작할지 고릅니다. 펄스가 아닌 무기로 시작하면 레벨업에서 펄스를 고르기 전까지 기본 사격이 쉽니다.',actionHtml('loadout-back','돌아가기'),`<div class="option-grid decision-grid" data-count="${open.size}">${cards}</div>`+(locked?`<details class="ending-ledger"><summary>잠긴 시작 무기 · ${loadouts.length-open.size}</summary><ul>${locked}</ul></details>`:''),true);
     } else if (view.mode === 'keystone') {
       return  decisionHtml('FINAL FORM','남은 하나의 자리','무기들의 진동이 하나의 박자로 겹친다.',keystoneOptions().map(x=>({id:'keystone-'+x.id,name:x.name,effect:x.desc})));

@@ -6,7 +6,7 @@ import { writeFileSync } from "node:fs";
 import { createMockBrowser } from "../tests/mock-browser.js";
 import { createDebugGame } from "../src/debug/create-debug-game.js";
 import { paceAt } from "../src/core/difficulty.js";
-import { START_WEAPON_LEVEL } from "../src/data/loadouts.js";
+import { startWeaponLevel } from "../src/data/loadouts.js";
 
 // 근거리 시작 무기와 봇이 다가갈 거리(균열은 사거리 약 220 안).
 const CLOSE_RANGE = new Map([
@@ -96,7 +96,7 @@ export function autoplay({
   objectives = true,
   planner = true,
   startWeapon = "pulse",
-  startLevel = START_WEAPON_LEVEL,
+  startLevel = null,
 } = {}) {
   const env = createMockBrowser({ observers: true }),
     descriptors = new Map();
@@ -133,11 +133,11 @@ export function autoplay({
       settings: { autoSpawn: true, worldEvents: true, choices: true, godMode: false, timeScale },
     });
     const t = app.tools;
-    // 시작 무기(새 게임의 시작 무기 선택과 같은 상태): 그 무기 START_WEAPON_LEVEL + 펄스 휴면.
+    // 시작 무기(새 게임의 시작 무기 선택과 같은 상태): 그 무기 시작 레벨(startWeaponLevel) + 펄스 휴면.
     if (startWeapon !== "pulse") {
       const data = JSON.parse(t.snapshot());
       data.run.startWeapon = startWeapon;
-      data.run.up[startWeapon] = startLevel;
+      data.run.up[startWeapon] = startLevel ?? startWeaponLevel(startWeapon);
       t.loadSnapshot(JSON.stringify(data));
     }
     t.hold(false);

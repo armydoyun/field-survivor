@@ -4,7 +4,7 @@ import { makeRandomState, nextRandom, newSeed } from './random.js';
 import { appendRecord } from './profile.js';
 import { startScenes, deathLines } from '../data/world.js';
 import { phases } from '../data/progression.js';
-import { unlockedLoadouts, START_WEAPON_LEVEL } from '../data/loadouts.js';
+import { unlockedLoadouts, startWeaponLevel } from '../data/loadouts.js';
 import { makeJourney, createRun } from './run.js';
 import { xpNeed } from '../growth/experience.js';
 import { branchReady } from '../growth/build.js';
@@ -35,7 +35,7 @@ export function createSession({ sessionState, view, platform, statistics, screen
     const run = createRun(sessionState.profile, { journey:journey ?? makeJourney(undefined,rng ? ()=>nextRandom(rng) : Math.random), maxHp:statistics.maxHpFor(null), xpNext:xpNeed(1) });
     if (rng) run.rng = rng;
     // 펄스 시작은 이전과 같은 판 상태를 만든다(필드 없음). 다른 무기로 시작할 때만 기록한다.
-    if (startWeapon !== 'pulse') { run.startWeapon = startWeapon; run.up[startWeapon] = START_WEAPON_LEVEL; }
+    if (startWeapon !== 'pulse') { run.startWeapon = startWeapon; run.up[startWeapon] = startWeaponLevel(startWeapon); }
     return run;
   }
 

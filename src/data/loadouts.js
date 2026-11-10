@@ -11,7 +11,9 @@ export const loadouts = Object.freeze([
   { id: 'mine', unlock: '모두 합쳐 3번 쓰러지기', open: m => (m.deaths || 0) >= 3 },
 ]);
 // 펄스가 아닌 시작 무기는 Lv1이면 첫 2분 처치가 펄스의 1/10 수준이다(균열 10 대 105, AUTOPLAY 측정).
-// 시작 레벨로 초반만 맞춘다. 10분 레벨은 이미 펄스와 같은 범위다.
-export const START_WEAPON_LEVEL = 2;
+// 시작 레벨로 초반을 맞춘다. 9분 처치 · 레벨이 펄스(처치 925 · Lv15)의 ±25% 안에 들도록 무기별로 둔다.
+// 연쇄 · 창은 Lv2에서 처치가 30% 넘게 적어 Lv3. 위성은 Lv1이어도 Lv21이지만 받은 피해가 펄스의 3배라 그대로 둔다.
+export const START_WEAPON_LEVELS = Object.freeze({ chain: 3, lance: 3 });
+export const startWeaponLevel = id => START_WEAPON_LEVELS[id] ?? 2;
 
 export const unlockedLoadouts = memory => loadouts.filter(l => l.open(memory)).map(l => l.id);
