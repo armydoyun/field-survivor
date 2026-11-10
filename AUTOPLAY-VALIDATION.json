@@ -1,0 +1,20 @@
+{
+  "version": "2.6.27",
+  "note": "Bot autoplay with mock DOM/Canvas. Not human play.",
+  "runs": [
+    {
+      "seed": 42,
+      "policy": "preserve",
+      "death": null,
+      "finale": null,
+      "timeline": [],
+      "decisions": {
+        "fusion": 399880
+      },
+      "final": {
+        "level": 1,
+        "kills": 5
+      }
+    }
+  ]
+}

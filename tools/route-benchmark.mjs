@@ -100,6 +100,7 @@ export function simulate(build, route, limit = LIMIT) {
       build: build.id,
       route: route.id,
       coreHp: core.maxHp,
+      power: Math.round(start.journey.core?.power || 0),
       nodes: start.enemies.filter(e => e.coreNode).length,
       nodeHp: start.enemies.find(e => e.coreNode)?.maxHp || 0,
       shields: start.journey.core?.shields || 0,
