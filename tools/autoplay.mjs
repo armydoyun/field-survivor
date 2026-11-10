@@ -96,7 +96,7 @@ export function autoplay({
       decisions = {};
     let frame = 0,
       minute = 0,
-      damage = 0,
+      damage = 0, virtualDeaths = 0, pool = Infinity, lastTime = 0,
       lastHp = t.report().hp,
       run = JSON.parse(t.snapshot()).run,
       stuck = 0,
@@ -109,7 +109,15 @@ export function autoplay({
       env.__inspect.flushFrame(1000 + frame * FRAME_MS);
       const report = t.report(),
         mode = report.mode;
-      if (report.hp < lastHp) damage += lastHp - report.hp;
+      const lost = report.hp < lastHp ? lastHp - report.hp : 0;
+      damage += lost;
+      // 가상 HP 통: 실제 최대 HP · 재생으로 버틴다고 보고 0이 될 때마다 가상 사망 1회(생존 보상의 가치를 잰다).
+      if (report.mode === "playing") {
+        const dt = Math.max(0, report.time - lastTime);
+        pool = Math.min(report.maxHp, pool + (report.regen || 0) * dt) - lost;
+        if (pool <= 0) { virtualDeaths++; pool = report.maxHp; }
+      }
+      lastTime = report.time || lastTime;
       if (immortal && report.hp > 0 && report.hp < report.maxHp && report.mode === "playing") t.setHp(report.maxHp);
       lastHp = immortal && report.mode === "playing" ? report.maxHp : report.hp;
       if (finale && (mode === "ending" || (finale.thresholdAt && report.time === 0))) {
@@ -277,6 +285,7 @@ export function autoplay({
             maxHp: Math.round(report.maxHp),
             hp: Math.round(p.hp),
             damageTaken: Math.round(damage),
+            virtualDeaths,
             kills: run.kills,
             enemies: run.enemies.length,
             weapons: Object.fromEntries(WEAPONS.filter(w => run.up[w]).map(w => [w, run.up[w]])),
@@ -307,7 +316,7 @@ export function autoplay({
       timeline,
       decisions,
       trace,
-      final: { level: run.level, kills: run.kills, objectives: { ...(run.objectiveOutcomes || {}) } },
+      final: { level: run.level, kills: run.kills, virtualDeaths, objectives: { ...(run.objectiveOutcomes || {}) } },
     };
   } finally {
     app?.dispose();
