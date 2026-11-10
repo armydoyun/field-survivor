@@ -1,6 +1,8 @@
-# FIELD SURVIVOR v2.6.27 — SKILL VISUAL DESIGN SOURCE
+# FIELD SURVIVOR v2.7.0
 
-기본 융합 16종과 상위융합 6종(기반별 16개 제작 경로)을 새 설계로 구현했다. ESM 소스이며 외부 런타임 라이브러리와 번들 파일은 없다.
+선택이 결말을 정하는 서바이버. ESM 소스이며 외부 런타임 라이브러리는 없다. 단일 파일 배포본은 `npm run build`로 만든다.
+
+변경 내역은 [CHANGELOG.md](CHANGELOG.md). v2.6.27까지의 융합 · 그래픽 설계는 아래 절과 [FUSION-REDESIGN.md](FUSION-REDESIGN.md) · [SKILL-VISUAL-DESIGN.md](SKILL-VISUAL-DESIGN.md)에 있다.
 
 ## 스킬 밸런스 1차 조정
 
