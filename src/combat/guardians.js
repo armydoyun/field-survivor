@@ -1,6 +1,7 @@
 import { enemyType } from '../data/enemies.js';
 import { segmentHit } from '../math/geometry.js';
 import { incomingScale } from './rules.js';
+import { GUARDIAN_TRIAL, GUARDIAN_YIELD } from '../core/config.js';
 
 const guardianMood = (profile,r) => r?.guardianOrder || (profile.memory.guardian.spared > profile.memory.guardian.ended ? 'spare' : profile.memory.guardian.ended > profile.memory.guardian.spared ? 'end' : '');
 
@@ -23,8 +24,15 @@ export function createGuardians({ attacks, movementVector, hurtPlayer, random = 
 
   function recoverGuardian(run,profile,e) {e.phase=4;e.guardianAttack=null;e.aiTimer=(guardianMood(profile,run)==='spare'?1.65:guardianMood(profile,run)==='end'?1.05:1.35)+(run.objectiveOutcomes.relay==='complete'?.2:0);}
 
+  // 시험을 버텼다: 공격과 공격 사이(대기 · 회복)에 감시자가 먼저 무기를 내린다. 처치와 같은 선택(돌려보냄 · 분해)으로 이어진다.
+  function trialOver(run,e){
+    if(!e.named||run.guardianMeetAt==null||(e.phase!==0&&e.phase!==4))return false;
+    return run.time>=run.guardianMeetAt+GUARDIAN_TRIAL[Math.max(0,Math.min(GUARDIAN_TRIAL.length,run.guardianMeet||1)-1)];
+  }
+
   function moveGuardian(run,profile,e,dt,speed,distance,nx,ny) {
     if(e.phase===3)return;
+    if(trialOver(run,e)){e.hp=0;e.phase=3;e.guardianAttack=null;e.trialYield=true;run.bossChoiceId=e.id;e.yieldUntil=run.time+GUARDIAN_YIELD;e.yieldStill=0;return;}
     const a=e.guardianAttack,p=run.player,mood=guardianMood(profile,run),broken=mood==='end',returned=mood==='spare';
     if(e.phase===0){e.x+=nx*speed*dt;e.y+=ny*speed*dt;if(e.aiTimer<=0&&distance<540)startGuardianAttack(run,profile,e);}
     else if(e.phase===4){if(e.aiTimer<=0){e.phase=0;e.aiTimer=run.time<360?1.3:.9;}}

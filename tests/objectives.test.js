@@ -32,3 +32,14 @@ test('a completed hunt keeps other enemies and pays its reward once', () => {
   assert.deepEqual(h.run.enemies.map(e => e.id), [6]);
   assert.equal(h.o.closeObjective(true), false);
 });
+
+test('the relay keeps syncing slowly while contested, unwinds when left, and reinforces on the softened cadence', async () => {
+  const { RELAY } = await import('../src/world/objectives.js');
+  const h = harness(), r = h.run, index = objectives.findIndex(x => x.id === 'relay');
+  r.objectiveStep = index; r.time = 300; r.objective = { id: 'relay', phase: 1, x: 0, y: 0, left: 52, progress: 0, reinforceAt: 1e9 }; r.player = { x: 0, y: 0, hp: 100 };
+  r.enemies = [{ id: 1, kind: 0, hp: 10, x: 20, y: 0 }];
+  h.o.updateObjective(1); assert.ok(Math.abs(r.objective.progress - RELAY.contested) < 1e-9);
+  r.enemies = []; h.o.updateObjective(1); assert.ok(Math.abs(r.objective.progress - (RELAY.contested + 1)) < 1e-9);
+  r.player = { x: 500, y: 0, hp: 100 }; h.o.updateObjective(1); assert.ok(Math.abs(r.objective.progress - (RELAY.contested + 1 - RELAY.decay)) < 1e-9);
+  assert.equal(RELAY.reinforce, 12);
+});

@@ -96,11 +96,31 @@ export function fusionPlan(run) {
   return best ? { recipe: best, materials: best.needs } : { recipe: null, materials: [] };
 }
 
-function chooseUpgrade(choices, up, maxWeapons, plan = null) {
+// 회복 동선(v3.0): HP가 70% 아래면 600px 안의 회복 · 방패 보급을 줍는다. 방패는 300px 안이면 언제든.
+function healPickup(run) {
+  const p = run.player,
+    low = p.hp < (run.maxHpSeen || p.hp) * 0.7;
+  let best = null,
+    bestD = Infinity;
+  for (const q of run.pickups || []) {
+    const d = Math.hypot(q.x - p.x, q.y - p.y),
+      want = (q.type === "heal" && low && d < 600) || (q.type === "shield" && d < 300);
+    if (want && d < bestD) {
+      best = q;
+      bestD = d;
+    }
+  }
+  return best;
+}
+
+// 생존 카드(v3.0): HP가 절반 아래면 최대 HP · 재생 · 방어를 무기보다 먼저 고른다(사람의 판단 어림).
+const SURVIVAL = ["vitality", "regen", "armor"];
+function chooseUpgrade(choices, up, maxWeapons, plan = null, hpRatio = 1) {
   const owned = WEAPONS.filter(w => (up[w] || 0) > 0),
     wanted = new Set((plan?.materials || []).map(([w]) => w));
   const score = id => {
     if (id.startsWith("fusion_")) return 100;
+    if (hpRatio < 0.5 && SURVIVAL.includes(id)) return 97 - SURVIVAL.indexOf(id);
     const w = WEAPONS.indexOf(id);
     if (w >= 0 && wanted.has(id) && (up[id] || 0) < 5) return 95 - (up[id] || 0);
     if (w >= 0) return (up[id] || 0) > 0 ? 80 - (up[id] || 0) : owned.length < maxWeapons ? 60 - w : 5;
@@ -175,6 +195,7 @@ export function autoplay({
       damage = 0,
       virtualDeaths = 0,
       sources = {},
+      guardianLog = [],
       pool = Infinity,
       lastTime = 0,
       lastHp = t.report().hp,
@@ -233,7 +254,14 @@ export function autoplay({
         decisions[mode] = (decisions[mode] || 0) + 1;
         if (mode === "levelup") {
           run = JSON.parse(t.snapshot()).run;
-          const pick = chooseUpgrade(run.choices || [], run.up, maxWeapons, planner ? fusionPlan(run) : null);
+          const hpNow = t.report(),
+            pick = chooseUpgrade(
+              run.choices || [],
+              run.up,
+              maxWeapons,
+              planner ? fusionPlan(run) : null,
+              hpNow.maxHp ? hpNow.hp / hpNow.maxHp : 1
+            );
           if (pick) click("choice", pick);
           continue;
         }
@@ -284,6 +312,17 @@ export function autoplay({
       lastMode = "playing";
       if (frame % 4 === 0) {
         run = JSON.parse(t.snapshot()).run;
+        run.maxHpSeen = report.maxHp;
+        // 감시자 등장 · 무기 내림 시각(난이도 진단용).
+        for (const e of run.enemies)
+          if (e.kind === 3 && e.named && !guardianLog.some(g => g.id === e.id))
+            guardianLog.push({
+              id: e.id,
+              spawn: +run.time.toFixed(1),
+              hp: Math.round(e.maxHp || e.hp),
+              level: run.level,
+            });
+        for (const g of guardianLog) if (g.yield == null && run.bossChoiceId === g.id) g.yield = +run.time.toFixed(1);
         const p = run.player;
         // 무기를 내린 감시자: 정책대로 멈추거나 E
         const yielding = run.enemies.find(e => e.id === run.bossChoiceId && e.phase === 3);
@@ -407,7 +446,8 @@ export function autoplay({
               : null) ||
             (objectives ? run.objective : null) ||
             (run.npc?.spawned && run.npc.state === "waiting" ? run.npc : null) ||
-            (run.stoker?.state === "waiting" ? run.stoker : null);
+            (run.stoker?.state === "waiting" ? run.stoker : null) ||
+            healPickup(run);
         if (goal && near < 6 && Math.hypot(goal.x - p.x, goal.y - p.y) > 40) {
           const gx = goal.x - p.x,
             gy = goal.y - p.y,
@@ -536,6 +576,7 @@ export function autoplay({
       decisions,
       trace,
       sources,
+      guardians: guardianLog,
       final: {
         stoker: run.stoker?.state ?? null,
         level: run.level,

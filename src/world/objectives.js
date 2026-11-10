@@ -2,6 +2,9 @@ import { canInteractInWorld } from '../core/view-policy.js';
 import { runRandom } from '../core/random.js';
 import { objectives } from '../data/world.js';
 import { ENEMY_LIMIT } from '../core/config.js';
+
+// 붕괴된 중계기 동기화(v3.0 완화): 경합 중 진행 속도, 떠났을 때 풀리는 속도, 증원 간격(초).
+export const RELAY = Object.freeze({ contested: .35, decay: .4, reinforce: 12 });
 import { enemyType } from '../data/enemies.js';
 
 export function createObjectives({ sessionState, view, progression, feedback, session, storage, enemyRuntime, difficulty, screen }) {
@@ -61,11 +64,12 @@ export function createObjectives({ sessionState, view, progression, feedback, se
     o.left = Math.max(0, o.left - dt);
     if (o.id === 'relay') {
       const p = sessionState.run.player, near = Math.hypot(p.x - o.x, p.y - o.y) < 115, contested = sessionState.run.enemies.some(e => e.hp > 0 && e.kind !== 3 && Math.hypot(e.x - o.x, e.y - o.y) < 78);
-      o.progress = Math.max(0, Math.min(16, o.progress + (near && !contested ? dt : -dt * .4)));
+      // v3.0: 적이 장치 곁에 있어도 동기화는 느리게(35%) 이어진다. 장치를 떠나면 천천히 풀린다.
+      o.progress = Math.max(0, Math.min(16, o.progress + (near ? (contested ? dt * RELAY.contested : dt) : -dt * RELAY.decay)));
       if (sessionState.run.time >= o.reinforceAt && sessionState.run.enemies.length < ENEMY_LIMIT - 2) {
         const angle = runRandom(sessionState.run) * Math.PI * 2;
         for (let i = 0; i < 2; i++) { const e = enemyRuntime.spawnEnemy(i ? 1 : sessionState.run.time >= 600 ? 7 : 0); e.x = o.x + Math.cos(angle + i * 1.5) * 190; e.y = o.y + Math.sin(angle + i * 1.5) * 190; }
-        o.reinforceAt = sessionState.run.time + 9;
+        o.reinforceAt = sessionState.run.time + RELAY.reinforce;
       }
       if (o.progress >= 16) { closeObjective(true); return; }
     }

@@ -37,7 +37,7 @@ export function restoreWorld(r,raw,_profile){
   r.legacyOrigin = finalEndings.some(e => e.id === raw.legacyOrigin) ? raw.legacyOrigin : null;
   r.legacyVariant = VARIANTS[raw.legacyVariant]?.ending === r.legacyOrigin ? raw.legacyVariant : '';
   r.objectiveOutcomes = {}; for (const task of objectives) if (['complete','failed','ignored'].includes(raw.objectiveOutcomes?.[task.id])) r.objectiveOutcomes[task.id] = raw.objectiveOutcomes[task.id];
-  r.guardianFate = { spare: integer(raw.guardianFate?.spare,0,0,1000), end: integer(raw.guardianFate?.end,0,0,1000) }; r.guardianOrder = ['spare','end'].includes(raw.guardianOrder) ? raw.guardianOrder : ''; r.guardianMeet = integer(raw.guardianMeet, 0, 0, 3);
+  r.guardianFate = { spare: integer(raw.guardianFate?.spare,0,0,1000), end: integer(raw.guardianFate?.end,0,0,1000) }; r.guardianOrder = ['spare','end'].includes(raw.guardianOrder) ? raw.guardianOrder : ''; r.guardianMeet = integer(raw.guardianMeet, 0, 0, 3); if (Number.isFinite(raw.guardianMeetAt)) r.guardianMeetAt = n(raw.guardianMeetAt, 0, 0, 1e7);
   r.objectiveStep = integer(raw.objectiveStep, 0, 0, objectives.length);
   const savedObjective = raw.objective, task = objectives[r.objectiveStep];
   if (task && savedObjective?.id === task.id && Number.isFinite(savedObjective.x) && Number.isFinite(savedObjective.y)) r.objective = {
