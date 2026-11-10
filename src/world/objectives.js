@@ -11,7 +11,12 @@ export function createObjectives({ sessionState, view, progression, feedback, se
     const o = sessionState.run?.objective, task = o && objectives[sessionState.run.objectiveStep]; if (!task || o.id !== task.id) return false;
     sessionState.run.objective = null; sessionState.run.objectiveStep++; sessionState.profile.memory.objectives[task.id][success ? 'complete' : 'failed']++; sessionState.run.objectiveOutcomes[task.id] = success ? 'complete' : 'failed';
     if (success) { sessionState.run.gold += task.gold; progression.collect(task.xp); feedback.popup(sessionState.run.player.x, sessionState.run.player.y - 48, 'OBJECTIVE CLEAR', '#a3e5d3'); }
-    else feedback.popup(sessionState.run.player.x, sessionState.run.player.y - 48, 'SIGNAL LOST', '#e8b7a0');
+    else {
+      feedback.popup(sessionState.run.player.x, sessionState.run.player.y - 48, 'SIGNAL LOST', '#e8b7a0');
+      // 놓친 표적은 신호와 함께 물러난다. 강화된 정예가 판 끝까지 남아 압박하지 않게 한다(보상도 없다).
+      const target = o.targetId && sessionState.run.enemies.find(e => e.id === o.targetId && e.hp > 0);
+      if (target) { feedback.burst(target.x, target.y, '#e8b7a0', 10); target.hp = 0; sessionState.run.enemies = sessionState.run.enemies.filter(e => e !== target); }
+    }
     session.record(`작전 · ${task.name} · ${success ? `완수 +${task.gold}G / EXP ${task.xp}` : '신호 소실'}`); storage.save(); return true;
   }
 

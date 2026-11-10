@@ -54,6 +54,7 @@ export function autoplay({
   limit = LIMIT,
   timeScale = 4,
   immortal = true,
+  objectives = true,
 } = {}) {
   const env = createMockBrowser({ observers: true }),
     descriptors = new Map();
@@ -111,12 +112,12 @@ export function autoplay({
       if (report.hp < lastHp) damage += lastHp - report.hp;
       if (immortal && report.hp > 0 && report.hp < report.maxHp && report.mode === "playing") t.setHp(report.maxHp);
       lastHp = immortal && report.mode === "playing" ? report.maxHp : report.hp;
-      if (mode === "gameover" || (report.time === 0 && frame > 60 && !report.hp)) {
-        death = { time: +run.time.toFixed(1), level: run.level };
+      if (finale && (mode === "ending" || (finale.thresholdAt && report.time === 0))) {
+        finale.endedAt = finale.thresholdAt;
         break;
       }
-      if (mode === "ending") {
-        finale.endedAt = +(report.time || run.time).toFixed(1);
+      if (mode === "gameover" || (report.time === 0 && frame > 60 && !report.hp)) {
+        death = { time: +run.time.toFixed(1), level: run.level };
         break;
       }
       if (mode !== "playing") {
@@ -230,7 +231,12 @@ export function autoplay({
         }
         const goal = core
           ? null
-          : run.site || run.objective || (run.npc?.spawned && run.npc.state === "waiting" ? run.npc : null);
+          : run.site ||
+            (objectives && run.objective?.phase && run.objective.targetId
+              ? run.enemies.find(e => e.id === run.objective.targetId && e.hp > 0)
+              : null) ||
+            (objectives ? run.objective : null) ||
+            (run.npc?.spawned && run.npc.state === "waiting" ? run.npc : null);
         if (goal && near < 6 && Math.hypot(goal.x - p.x, goal.y - p.y) > 40) {
           const gx = goal.x - p.x,
             gy = goal.y - p.y,
@@ -276,6 +282,13 @@ export function autoplay({
             weapons: Object.fromEntries(WEAPONS.filter(w => run.up[w]).map(w => [w, run.up[w]])),
             branches: { ...run.branches },
             fusions: Object.keys(run.fusionStates || {}),
+            kinds: run.enemies.reduce(
+              (m, e) => ((m[(e.elite ? "E" : "") + e.kind] = (m[(e.elite ? "E" : "") + e.kind] || 0) + 1), m),
+              {}
+            ),
+            bullets: (run.bullets || []).length,
+            objective: run.objective?.id || "",
+            episode: run.journey?.active?.kind || "",
           });
         }
         if (run.time > limit) break;
@@ -286,7 +299,16 @@ export function autoplay({
     } catch {
       /* 판이 끝나 실험 판이 비었다 */
     }
-    return { seed, policy, death, finale, timeline, decisions, trace, final: { level: run.level, kills: run.kills } };
+    return {
+      seed,
+      policy,
+      death,
+      finale,
+      timeline,
+      decisions,
+      trace,
+      final: { level: run.level, kills: run.kills, objectives: { ...(run.objectiveOutcomes || {}) } },
+    };
   } finally {
     app?.dispose();
     for (const [key, value] of descriptors)
