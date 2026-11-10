@@ -119,6 +119,7 @@ export function autoplay({
   timeScale = 4,
   immortal = true,
   dodge = true,
+  escape = false,
   objectives = true,
   planner = true,
   startWeapon = "pulse",
@@ -357,6 +358,29 @@ export function autoplay({
           ty = ax / len;
         let vx = ax / len + tx * 0.6,
           vy = ay / len + ty * 0.6;
+        // 무리 탈출(v2.9): 가까운 적이 많으면 16방향 중 앞쪽 220px 부채꼴에 적이 가장 적은 쪽으로 빠져나간다.
+        if (escape && near >= 3) {
+          let best = null;
+          for (let k = 0; k < 16; k++) {
+            const a = (k / 16) * Math.PI * 2,
+              ux = Math.cos(a),
+              uy = Math.sin(a);
+            let crowd = 0;
+            for (const e of run.enemies) {
+              if (e.hp <= 0) continue;
+              const dx = e.x - p.x,
+                dy = e.y - p.y,
+                d = Math.hypot(dx, dy);
+              if (d > 220 || d < 1) continue;
+              const along = (dx * ux + dy * uy) / d;
+              if (along > 0.35) crowd += (e.kind === 3 ? 4 : 1) * along * (1.4 - d / 220);
+            }
+            const score = crowd - (ux * vx + uy * vy) * 0.3;
+            if (!best || score < best.score) best = { ux, uy, score };
+          }
+          vx = best.ux;
+          vy = best.uy;
+        }
         // 근거리 시작 무기(노바 · 위성 · 지뢰 · 균열)로 펄스가 아직 휴면이면 사람처럼 적에게 다가가 무기 범위에 넣는다.
         const melee = CLOSE_RANGE.has(run.startWeapon) && !(run.up.pulse > 0);
         if (melee && closest && near < 4 && closestD2 > CLOSE_RANGE.get(run.startWeapon) ** 2) {
