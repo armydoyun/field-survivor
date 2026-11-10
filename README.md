@@ -1,8 +1,14 @@
-# FIELD SURVIVOR v2.8.0
+# FIELD SURVIVOR v2.9.0
 
 선택이 결말을 정하는 서바이버. ESM 소스이며 외부 런타임 라이브러리는 없다. 단일 파일 배포본은 `npm run build`로 만든다.
 
 변경 내역은 [CHANGELOG.md](CHANGELOG.md). v2.6.27까지의 융합 · 그래픽 설계는 아래 절과 [FUSION-REDESIGN.md](FUSION-REDESIGN.md) · [SKILL-VISUAL-DESIGN.md](SKILL-VISUAL-DESIGN.md)에 있다.
+
+## v2.9 두 목소리
+
+- **화부 만남**: 기록원을 들어 주지 않은 판에 13분쯤 나타난다. E로 함께 불을 지피거나, 곁에서 3초 멈춰 서서 불을 끈다. 새 진실 조각 '엔진의 기원'.
+- **표류 구역 종류**: 연소(피해) · 정체(발이 묶임) · 흡인(안쪽으로 당김).
+- **소리**: 음량 슬라이더와 무기 발사음.
 
 ## v2.8 손에 잡히는 전장
 
