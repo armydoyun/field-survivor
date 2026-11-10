@@ -10,6 +10,7 @@ import { branchReady } from '../growth/build.js';
 import { upgrades, upgradeFamilies } from '../data/upgrades.js';
 import { branches } from '../data/specializations.js';
 import { canReroll } from '../growth/cards.js';
+import { VARIANTS } from '../world/route.js';
 import { loadouts, unlockedLoadouts, startWeaponLevel } from '../data/loadouts.js';
 
 // 이번 판의 축 위치(NARRATIVE-REDESIGN.md 3.3절). 기억 축 −7(연소) ~ +7(보존)과 감시자 결정.
@@ -98,10 +99,10 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const witness=current.release?(seen>=2?' 기록원이 속삭인다. "누르지 마. 네가 서 있던 시간을 기억해."':' 기록원이 무언가를 기다리듯 너를 본다.'):'';
       return decisionHtml('THE LOOP · DECISION','반복의 중심',`중심핵의 빛이 멎는다. ${text.prompt}${witness}`,[{id:'final-'+current.ending,name:text.confirm,effect:`결말 보상 · ${endingReward}G`}]);
     } else if (view.mode === 'ending') {
-      const ending = finalEndings.find(x => x.id === view.lastResult?.endingId) || finalEndings[0], intro = (view.lastResult?.variant === 'hollow' ? endingTexts.hollow : endingTexts[ending.id]).intro;
+      const ending = finalEndings.find(x => x.id === view.lastResult?.endingId) || finalEndings[0], intro = (endingTexts[view.lastResult?.variant] || endingTexts[ending.id]).intro;
       const summary = `<div class="summary"><span>생존 <strong>${timeText(view.lastResult?.time || 0)}</strong></span><span>획득 <strong>${view.lastResult?.gold || 0} G</strong></span></div>`;
       const receipts=view.lastResult?.threads||[], epilogue=receipts.length?`<details class="ending-ledger"><summary>세부 기록 · ${receipts.length}건</summary><ul>${receipts.map(line=>`<li>${htmlEscape(line)}</li>`).join('')}</ul></details>`:'<p class="ending-ledger-empty">이번 도전에서 추가로 회수할 선택 기록은 없었습니다.</p>';
-      return  modalHtml('ENDING · THE LOOP', view.lastResult?.variant === 'hollow' ? `${ending.name} · 빈 껍질` : ending.name, intro, actionHtml('menu', '기록으로 돌아가기', true) + actionHtml('new', '새로운 도전') + actionHtml('ledger-open', '이 결말의 기록 열람'), summary+routeAxisHtml(view.lastResult?.axes)+sceneHtml(view.lastResult?.scenes)+epilogue, true);
+      return  modalHtml('ENDING · THE LOOP', VARIANTS[view.lastResult?.variant] ? `${ending.name} · ${VARIANTS[view.lastResult.variant].name}` : ending.name, intro, actionHtml('menu', '기록으로 돌아가기', true) + actionHtml('new', '새로운 도전') + actionHtml('ledger-open', '이 결말의 기록 열람'), summary+routeAxisHtml(view.lastResult?.axes)+sceneHtml(view.lastResult?.scenes)+epilogue, true);
     } else if (view.mode === 'gameover') {
       const r = view.lastResult || { time: 0, kills: 0, gold: 0, level: 1 }, summary = `<div class="summary"><span>생존 <strong>${timeText(r.time)}</strong></span><span>레벨 <strong>${r.level}</strong></span><span>처치 <strong>${r.kills}</strong></span><span>획득 <strong>${r.gold} G</strong></span></div>`;
       const deaths = sessionState.profile.memory.deaths, witnessLine = sessionState.profile.memory.witness.met ? deathLines.witness.filter(x => deaths >= x.from).at(-1)?.line.replace('{phase}', sessionState.profile.memory.lastDeathPhase || '이 벌판').replace('{count}', deaths) : '';

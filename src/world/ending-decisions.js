@@ -3,7 +3,7 @@ import { endingReward } from '../data/world-choices.js';
 import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes, truthFound, stokerLines } from '../data/world.js';
 import { episodeTitle } from './effects.js';
 import { appendRecord } from '../core/profile.js';
-import { routeAxes, routeEnding, releaseOpen, endingVariant } from './route.js';
+import { routeAxes, routeEnding, releaseOpen, endingVariant, VARIANTS } from './route.js';
 
 // 결말은 경로가 정한다(NARRATIVE-REDESIGN.md 4절). 마지막 화면은 경로의 결말을 확정하거나,
 // 해방 조건을 채운 판에서 멈춰 있어 열린 문으로 넘어가는 것만 허용한다.
@@ -18,6 +18,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
   function witnessScene(id,variant,r){
     const w=endingScenes.witness;
     if(variant==='hollow')return w.hollow;
+    if(variant==='chorus')return w.chorus[r.stoker.state];
     if(id==='release')return w.release;
     if(r.npc.state==='heard')return w.heard[id];
     if(id==='consume')return `${r.npc.state==='taken'?w.taken:w.none} ${r.stoker?.state==='stoked'?stokerLines.endingStoked:r.stoker?.state==='quenched'?stokerLines.endingQuenched:stokerLines.ending}`;
@@ -76,7 +77,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     const ending = finalEndings.find(x => x.id === id), variant = endingVariant(id, r);
     const result = { time: r.time, kills: r.kills, gold: r.gold + endingReward, level: r.level, ending: ending.name, endingId: id, variant, axes: routeAxes(r), threads: threadResolution(r), scenes: endingSceneList(id, r) };
     const memory = sessionState.profile.memory;
-    record(`최종 회수 · ${ending.name}${variant==='hollow'?' · 빈 껍질':''}`);
+    record(`최종 회수 · ${ending.name}${variant?` · ${VARIANTS[variant].name}`:''}`);
     if (!memory.endings[id]) record(truthFound);
     if (id === 'consume' && r.stoker?.state === 'stoked' && !memory.stoker.origin) { memory.stoker.origin = true; record(truthFound); } memory.endings[id]++; if (finalEndings.every(e=>memory.endings[e.id]>0)) record('모든 결말이 모였다. 기록 장치가 작동한 이유는 제목 화면의 결말 기록에서 확인할 수 있다.');
     memory.lastResolution = { ending: id, variant, axes: result.axes, threads: result.threads.slice(0, 40), scenes: result.scenes };

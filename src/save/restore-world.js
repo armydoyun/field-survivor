@@ -3,6 +3,7 @@ import { n, integer } from '../core/utils.js';
 import { episodeKinds, anomalies, sites, objectives, relics, signals, finalEndings } from '../data/world.js';
 import { keystones } from '../data/progression.js';
 import { HARVEST_CAP, RUN_END, W, H } from '../core/config.js';
+import { VARIANTS } from '../world/route.js';
 import { relicChoices } from '../world/effects.js';
 
 export function restoreJourney(raw,time) {
@@ -34,7 +35,7 @@ export function restoreWorld(r,raw,_profile){
   r.siteDecisions = {}; for (const site of sites) if (site.options.some(o => o.id === raw.siteDecisions?.[site.id])) r.siteDecisions[site.id] = raw.siteDecisions[site.id];
   // 직전 결말의 여파(시작 장면)만 남긴다. 잔향 · 전선 · 답장 필드는 서사 재설계 5단계에서 폐지했고 이전 저장값은 무시한다.
   r.legacyOrigin = finalEndings.some(e => e.id === raw.legacyOrigin) ? raw.legacyOrigin : null;
-  r.legacyVariant = r.legacyOrigin === 'consume' && raw.legacyVariant === 'hollow' ? 'hollow' : '';
+  r.legacyVariant = VARIANTS[raw.legacyVariant]?.ending === r.legacyOrigin ? raw.legacyVariant : '';
   r.objectiveOutcomes = {}; for (const task of objectives) if (['complete','failed','ignored'].includes(raw.objectiveOutcomes?.[task.id])) r.objectiveOutcomes[task.id] = raw.objectiveOutcomes[task.id];
   r.guardianFate = { spare: integer(raw.guardianFate?.spare,0,0,1000), end: integer(raw.guardianFate?.end,0,0,1000) }; r.guardianOrder = ['spare','end'].includes(raw.guardianOrder) ? raw.guardianOrder : ''; r.guardianMeet = integer(raw.guardianMeet, 0, 0, 3);
   r.objectiveStep = integer(raw.objectiveStep, 0, 0, objectives.length);

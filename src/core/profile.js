@@ -5,6 +5,7 @@ import { phases } from '../data/progression.js';
 import { hints } from '../data/hints.js';
 import { objectives, sites, anomalies, relics, finalEndings } from '../data/world.js';
 
+import { VARIANTS } from '../world/route.js';
 import { n, integer } from './utils.js';
 
 const objectiveDefault = () => Object.fromEntries(objectives.map(o => [o.id, { complete: 0, failed: 0, ignored: 0 }]));
@@ -41,7 +42,7 @@ function hydrateProfile(profile, p) {
   profile.memory.hints = Array.isArray(p.memory?.hints) ? hints.filter(h => p.memory.hints.includes(h.id)).map(h => h.id) : [];
   profile.memory.deaths = integer(p.memory?.deaths, 0, 0, 99999); profile.memory.lastDeathPhase = phases.some(x => x.name === p.memory?.lastDeathPhase) ? p.memory.lastDeathPhase : '';
   const savedEndings = p.memory?.endings; if (savedEndings && typeof savedEndings === 'object') for (const ending of finalEndings) profile.memory.endings[ending.id] = integer(savedEndings[ending.id], 0, 0, 99999);
-  const savedResolution = p.memory?.lastResolution; profile.memory.lastResolution = savedResolution && finalEndings.some(e => e.id === savedResolution.ending) && Array.isArray(savedResolution.threads) ? { ending: savedResolution.ending, variant: savedResolution.variant === 'hollow' && savedResolution.ending === 'consume' ? 'hollow' : '', axes: savedResolution.axes && typeof savedResolution.axes === 'object' ? { memory: n(savedResolution.axes.memory, 0, -7, 7), silence: integer(savedResolution.axes.silence, 0, 0, 3), spared: integer(savedResolution.axes.spared, 0, 0, 1000), ended: integer(savedResolution.axes.ended, 0, 0, 1000), stillness: savedResolution.axes.stillness === true } : null, scenes: Array.isArray(savedResolution.scenes) ? savedResolution.scenes.filter(t=>typeof t==='string').slice(0,3).map(t=>t.slice(0,300)) : [], threads: savedResolution.threads.filter(t => typeof t === 'string').slice(0, 40).map(t => t.slice(0, 180)) } : null;
+  const savedResolution = p.memory?.lastResolution; profile.memory.lastResolution = savedResolution && finalEndings.some(e => e.id === savedResolution.ending) && Array.isArray(savedResolution.threads) ? { ending: savedResolution.ending, variant: VARIANTS[savedResolution.variant]?.ending === savedResolution.ending ? savedResolution.variant : '', axes: savedResolution.axes && typeof savedResolution.axes === 'object' ? { memory: n(savedResolution.axes.memory, 0, -7, 7), silence: integer(savedResolution.axes.silence, 0, 0, 3), spared: integer(savedResolution.axes.spared, 0, 0, 1000), ended: integer(savedResolution.axes.ended, 0, 0, 1000), stillness: savedResolution.axes.stillness === true } : null, scenes: Array.isArray(savedResolution.scenes) ? savedResolution.scenes.filter(t=>typeof t==='string').slice(0,3).map(t=>t.slice(0,300)) : [], threads: savedResolution.threads.filter(t => typeof t === 'string').slice(0, 40).map(t => t.slice(0, 180)) } : null;
   const savedAnomalies = p.memory?.anomalies;
   if (savedAnomalies && typeof savedAnomalies === 'object') for (const event of anomalies) for (const choice of event.options) {
     profile.memory.anomalies[event.id][choice.id] = integer(savedAnomalies[event.id]?.[choice.id], 0, 0, 99999);

@@ -5,6 +5,9 @@ import { sites } from '../data/world.js';
 
 export const ROUTE = Object.freeze({ preserveAt: 3, consumeAt: -3, releaseSpared: 2, hollowEnded: 3 });
 
+// 결말 변주와 그 이름. 빈 껍질은 식지 않는 엔진, 합창은 두 개의 목소리에만 붙는다.
+export const VARIANTS = Object.freeze({ hollow: { ending: 'consume', name: '빈 껍질' }, chorus: { ending: 'divided', name: '합창' } });
+
 export function routeAxes(r) {
   let memory = 0;
   for (const choice of r?.signalChoices || []) memory += choice === 'hear' ? 1 : choice === 'burn' ? -1 : 0;
@@ -40,6 +43,8 @@ export function routeEnding(r) {
 }
 
 // 식지 않는 엔진의 극단: 감시자를 거듭 분해하고 기록원까지 추출한 판.
+// 두 개의 목소리의 합창: 기록원을 들어 주고 화부와도 무언가를 정한 판.
 export function endingVariant(id, r) {
+  if (id === 'divided' && r?.npc?.state === 'heard' && ['stoked', 'quenched'].includes(r?.stoker?.state)) return 'chorus';
   return id === 'consume' && routeAxes(r).ended >= ROUTE.hollowEnded && r?.npc?.state === 'taken' ? 'hollow' : '';
 }

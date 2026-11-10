@@ -1,13 +1,17 @@
-import { stokerLines } from '../data/world.js';
+import { stokerLines, startEffects } from '../data/world.js';
+import { routeAxes } from './route.js';
 import { stokerReward } from '../data/world-choices.js';
 import { appendRecord } from '../core/profile.js';
 
 // 화부 만남(NEXT-UPDATE-PLAN.md 8절 1순위). 감시자와 같은 문법: 곁에서 멈춰 서면 불을 끄고(보존), E로 불을 지핀다(연소).
 // 기록원을 들어 주지 않은 판에서만 13분에 나타난다. 판에는 나타날 때 run.stoker 필드가 생긴다.
-export const STOKER = Object.freeze({ at: 780, reach: 80, still: 3, stay: 40, offset: 150 });
+export const STOKER = Object.freeze({ at: 780, reach: 80, still: 3, stay: 40, offset: 150, heardMemory: 1 });
 
+// 기록원을 듣지 않은 판, 또는 들었지만 기억 축이 가운데(+1 이하)에 머문 판. 직전 결말이 합창이면 6:30에 온다.
 export function stokerEligible(r) {
-  return !!r && !r.stoker && r.time >= STOKER.at && r.finalStep < 1 && r.npc?.state !== 'heard';
+  if (!r || r.stoker || r.finalStep >= 1) return false;
+  const at = r.legacyVariant === 'chorus' ? startEffects.chorusStokerAt : STOKER.at;
+  return r.time >= at && (r.npc?.state !== 'heard' || routeAxes(r).memory <= STOKER.heardMemory || r.legacyVariant === 'chorus');
 }
 
 export function stokerWaiting(r) { return r?.stoker?.state === 'waiting'; }
