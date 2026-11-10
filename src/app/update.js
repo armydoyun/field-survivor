@@ -1,8 +1,10 @@
 import { movePlayer } from '../input/movement.js';
 import { branchReady } from '../growth/build.js';
+import { createDrift } from '../world/drift.js';
 
 export function createUpdate({ sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, inspector, hints }) {
   let lastShields=null;
+  const drift=createDrift({sessionState,combat});
   const { keys } = platform;
 
   function update(dt) {
@@ -27,7 +29,7 @@ export function createUpdate({ sessionState, view, platform, screen, feedback, s
     collisions.tickEnemies(dt,s);
     if (view.mode !== 'playing') return;
     if (!collisions.tickShots(dt,s)) return;
-    enemyRuntime.tickHazards();
+    enemyRuntime.tickHazards();drift.tickDrift(dt,s);
     collisions.tickBullets(dt,s);
     if (p.hp <= 0) { session.finish(); return; } // Collected EXP must not revive a lethal hit.
     // 무기를 내린 감시자(hp 0, bossChoiceId)는 결정이 날 때까지 남긴다.

@@ -2,6 +2,7 @@ import { W, H } from '../core/config.js';
 import { paceAt } from '../core/difficulty.js';
 import { phases } from '../data/progression.js';
 import { PILLAR, pillarsActive, pillarsNear } from '../world/pillars.js';
+import { DRIFT, driftActive, driftLive } from '../world/drift.js';
 
 // 단계별 바닥(NEXT-UPDATE-PLAN.md 3순위의 렌더 부분). 단계가 바뀌면 바닥 색과 격자가 6초에 걸쳐 바뀐다.
 // 그리기만 바꾸며 판 상태 · 난수는 건드리지 않는다.
@@ -42,6 +43,29 @@ export function drawPillars(ctx, r, cx, cy) {
     ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(p.x + 5, p.y + 7, p.r, p.r * .8, 0, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#3a4b56'; ctx.strokeStyle = '#8fa4b0'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * rise, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.strokeStyle = 'rgba(143,164,176,.45)'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * .55 * rise, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// 표류 구역: 예고 중에는 점선 원이 차오르고, 활성 중에는 호박색 빗금이 흐른다.
+export function drawDrift(ctx, r) {
+  const zones = r.drift?.zones;
+  if (!zones?.length || !driftActive(r)) return;
+  ctx.save();
+  for (const z of zones) {
+    const live = driftLive(z, r.time), fade = Math.min(1, (z.endAt - r.time) / 1.2);
+    ctx.globalAlpha = fade; ctx.lineWidth = 2;
+    if (!live) {
+      const f = 1 - (z.liveAt - r.time) / DRIFT.warn;
+      ctx.setLineDash([8, 7]); ctx.strokeStyle = '#f0b25a'; ctx.beginPath(); ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(240,178,90,.12)'; ctx.beginPath(); ctx.arc(z.x, z.y, z.radius * f, 0, Math.PI * 2); ctx.fill();
+      continue;
+    }
+    ctx.fillStyle = 'rgba(240,150,70,.16)'; ctx.strokeStyle = '#f0965a'; ctx.beginPath(); ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.save(); ctx.clip(); ctx.strokeStyle = 'rgba(240,150,70,.35)'; ctx.beginPath();
+    const shift = (r.time * 24) % 28;
+    for (let k = -z.radius * 2; k < z.radius * 2; k += 28) { ctx.moveTo(z.x + k + shift - z.radius, z.y - z.radius); ctx.lineTo(z.x + k + shift + z.radius, z.y + z.radius); }
+    ctx.stroke(); ctx.restore();
   }
   ctx.restore();
 }

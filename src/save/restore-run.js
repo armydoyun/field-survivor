@@ -24,6 +24,8 @@ export function restoreRun(raw,profile) {
   restoreLoadout(r,raw);
   restoreWorld(r,raw,profile);
   if (raw.startWeapon !== 'pulse' && loadouts.some(l => l.id === raw.startWeapon)) r.startWeapon = raw.startWeapon;
+  // 표류 구역은 순번과 다음 생성 시각만 이어 간다(떠 있던 구역은 불러올 때 사라진다).
+  if (raw.drift && typeof raw.drift === 'object') r.drift = { next: n(raw.drift.next, r.time, 0, 1e7), count: integer(raw.drift.count, 0, 0, 1e6), zones: [] };
   r.player = { x: n(p.x, W / 2, -1e7, 1e7), y: n(p.y, H / 2, -1e7, 1e7), hp: n(p.hp, 100, 0, 1e7), hurt: n(p.hurt, 0, 0, 2) };
   r.player.hp = Math.min(r.player.hp, statistics.stats(r).maxHp);
   if (r.player.hp <= 0) return null;

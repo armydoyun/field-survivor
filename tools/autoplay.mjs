@@ -292,6 +292,16 @@ export function autoplay({
             ay += dy * w;
           }
         }
+        // 표류 구역(예고 포함)은 사람처럼 크게 피한다.
+        for (const z of run.drift?.zones || []) {
+          const dx = p.x - z.x,
+            dy = p.y - z.y,
+            d = Math.hypot(dx, dy) || 1;
+          if (d < z.radius + 90) {
+            ax += (dx / d) * 0.02;
+            ay += (dy / d) * 0.02;
+          }
+        }
         const len = Math.hypot(ax, ay) || 1,
           tx = -ay / len,
           ty = ax / len;
