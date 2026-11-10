@@ -1,5 +1,5 @@
 import { W, H } from '../core/config.js';
-import { floorAt, drawFloorMarks } from './floor.js';
+import { floorAt, drawFloorMarks, drawPillars } from './floor.js';
 
 export function createScene({ sessionState, platform, cameraView, worldView, primitives, statistics, weaponView, fusionView, playerView, feedback, enemyView, navigation, hints }) {
   const { ctx } = platform;
@@ -19,7 +19,7 @@ export function createScene({ sessionState, platform, cameraView, worldView, pri
 
     worldView.drawJourney();
     const detail=primitives.visualDetail(),s=statistics.stats();
-    worldView.drawMarkers();
+    worldView.drawMarkers();drawPillars(ctx,sessionState.run,cx,cy);
     weaponView.drawAuxiliaryFields();weaponView.drawBaseDevices(s,cx,cy);
     worldView.drawCollectibles(s,detail,cx,cy);
     feedback.drawSkillEchoes();weaponView.drawPlayerShots(detail,cx,cy);weaponView.drawCombatWaves(detail,cx,cy);weaponView.drawCombatArcs(detail,cx,cy);

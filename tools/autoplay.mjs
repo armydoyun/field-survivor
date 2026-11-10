@@ -6,6 +6,15 @@ import { writeFileSync } from "node:fs";
 import { createMockBrowser } from "../tests/mock-browser.js";
 import { createDebugGame } from "../src/debug/create-debug-game.js";
 import { paceAt } from "../src/core/difficulty.js";
+import { START_WEAPON_LEVEL } from "../src/data/loadouts.js";
+
+// 근거리 시작 무기와 봇이 다가갈 거리(균열은 사거리 약 220 안).
+const CLOSE_RANGE = new Map([
+  ["nova", 85],
+  ["orbit", 85],
+  ["mine", 85],
+  ["rift", 170],
+]);
 import { fusionRecipes } from "../src/data/fusions.js";
 
 const FRAME_MS = 1000 / 60;
@@ -87,6 +96,7 @@ export function autoplay({
   objectives = true,
   planner = true,
   startWeapon = "pulse",
+  startLevel = START_WEAPON_LEVEL,
 } = {}) {
   const env = createMockBrowser({ observers: true }),
     descriptors = new Map();
@@ -123,11 +133,11 @@ export function autoplay({
       settings: { autoSpawn: true, worldEvents: true, choices: true, godMode: false, timeScale },
     });
     const t = app.tools;
-    // 시작 무기(새 게임의 시작 무기 선택과 같은 상태): 그 무기 Lv1 + 펄스 휴면.
+    // 시작 무기(새 게임의 시작 무기 선택과 같은 상태): 그 무기 START_WEAPON_LEVEL + 펄스 휴면.
     if (startWeapon !== "pulse") {
       const data = JSON.parse(t.snapshot());
       data.run.startWeapon = startWeapon;
-      data.run.up[startWeapon] = 1;
+      data.run.up[startWeapon] = startLevel;
       t.loadSnapshot(JSON.stringify(data));
     }
     t.hold(false);
@@ -252,13 +262,19 @@ export function autoplay({
         // 이동: 가까운 적의 반대 방향 + 접선(원 그리기). 표식(탐사 · 작전 · 기록원)이 있으면 그쪽을 섞는다.
         let ax = 0,
           ay = 0;
-        let near = 0;
+        let near = 0,
+          closest = null,
+          closestD2 = Infinity;
         // 적 몸체와 적 탄환(가중 2배)을 피한다. 가까울수록 강하게.
         for (const e of run.enemies) {
           if (e.hp <= 0) continue;
           const dx = p.x - e.x,
             dy = p.y - e.y,
             d2 = dx * dx + dy * dy;
+          if (e.kind !== 3 && d2 < closestD2) {
+            closest = e;
+            closestD2 = d2;
+          }
           if (d2 < 260 * 260) {
             const w = (e.kind === 3 ? 4 : 1) / Math.max(300, d2);
             ax += dx * w;
@@ -281,6 +297,13 @@ export function autoplay({
           ty = ax / len;
         let vx = ax / len + tx * 0.6,
           vy = ay / len + ty * 0.6;
+        // 근거리 시작 무기(노바 · 위성 · 지뢰 · 균열)로 펄스가 아직 휴면이면 사람처럼 적에게 다가가 무기 범위에 넣는다.
+        const melee = CLOSE_RANGE.has(run.startWeapon) && !(run.up.pulse > 0);
+        if (melee && closest && near < 4 && closestD2 > CLOSE_RANGE.get(run.startWeapon) ** 2) {
+          const d = Math.sqrt(closestD2);
+          vx = vx * 0.35 + (closest.x - p.x) / d;
+          vy = vy * 0.35 + (closest.y - p.y) / d;
+        }
         // 최종전: 중심핵(또는 남은 연결점)과 140 거리를 유지하며 돈다. 멀리 도망가면 사거리 밖이 된다.
         const core =
           run.finalStep === 2 && (run.enemies.find(e => e.coreNode && e.hp > 0) || run.enemies.find(e => e.final));

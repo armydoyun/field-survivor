@@ -1,6 +1,7 @@
 import { W, H } from '../core/config.js';
 import { paceAt } from '../core/difficulty.js';
 import { phases } from '../data/progression.js';
+import { PILLAR, pillarsActive, pillarsNear } from '../world/pillars.js';
 
 // 단계별 바닥(NEXT-UPDATE-PLAN.md 3순위의 렌더 부분). 단계가 바뀌면 바닥 색과 격자가 6초에 걸쳐 바뀐다.
 // 그리기만 바꾸며 판 상태 · 난수는 건드리지 않는다.
@@ -31,3 +32,16 @@ export function drawFloorMarks(ctx, floor, cx, cy) {
   ctx.stroke(); ctx.restore();
 }
 
+
+// 엄폐 기둥: 3단계 시작 후 2초 동안 솟아오른다. 화면 안 칸만 그린다.
+export function drawPillars(ctx, r, cx, cy) {
+  if (!pillarsActive(r)) return;
+  const rise = Math.min(1, (r.time - phases[PILLAR.fromPhase].at) / 2);
+  ctx.save(); ctx.globalAlpha = rise;
+  for (const p of pillarsNear(cx, cy, Math.max(W, H) / 2 + 40)) {
+    ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(p.x + 5, p.y + 7, p.r, p.r * .8, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#3a4b56'; ctx.strokeStyle = '#8fa4b0'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * rise, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = 'rgba(143,164,176,.45)'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * .55 * rise, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.restore();
+}

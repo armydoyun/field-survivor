@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { initialProfile } from '../src/core/profile.js';
 import { createStatistics } from '../src/core/statistics.js';
 import { createSession } from '../src/core/session.js';
-import { loadouts, unlockedLoadouts } from '../src/data/loadouts.js';
+import { loadouts, unlockedLoadouts, START_WEAPON_LEVEL } from '../src/data/loadouts.js';
 import { pulseDormant, pulseActive } from '../src/growth/build.js';
 import { restoreRun } from '../src/save/restore-run.js';
 import { encodeSave } from '../src/save/format.js';
@@ -29,7 +29,7 @@ test('with only pulse open a new game starts at once; otherwise the loadout scre
   const p = initialProfile(); p.memory.endings.preserve = 1; const h = harness(p);
   h.session.startFresh(); assert.equal(h.s.run, null); assert.equal(h.view.mode, 'loadout');
   h.session.startFresh(true, 'rift'); assert.equal(h.s.run, null, 'locked weapons are refused');
-  h.session.startFresh(true, 'nova'); assert.equal(h.s.run.startWeapon, 'nova'); assert.equal(h.s.run.up.nova, 1);
+  h.session.startFresh(true, 'nova'); assert.equal(h.s.run.startWeapon, 'nova'); assert.equal(h.s.run.up.nova, START_WEAPON_LEVEL);
   assert.equal(pulseDormant(h.s.run), true); assert.equal(pulseActive(h.s.run), false);
   h.s.run.up.pulse = 1; assert.equal(pulseActive(h.s.run), true);
 });
