@@ -2,6 +2,7 @@ import { movePlayer } from '../input/movement.js';
 import { branchReady } from '../growth/build.js';
 
 export function createUpdate({ sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, inspector, hints }) {
+  let lastShields=null;
   const { keys } = platform;
 
   function update(dt) {
@@ -15,6 +16,7 @@ export function createUpdate({ sessionState, view, platform, screen, feedback, s
     if (story.tickWitness(dt,moving)) return;
     story.tickGuardian(dt,moving);
     hints?.tickHints();
+    const shields=sessionState.run.journey.core?.shields;if(shields!=null&&lastShields!=null&&shields<lastShields)feedback.sound?.('shield');lastShields=shields??null;
     population.maintainEnemies();
     objectives.updateObjective(dt);
     population.spawnPopulation(dt);

@@ -5,8 +5,8 @@ import { hasBranch } from '../growth/build.js';
 import { clamp } from '../core/utils.js';
 import { enemyType } from '../data/enemies.js';
 
-export function createFeedback({ sessionState, platform, primitives, weaponView, cameraView }) {
-  const { ctx } = platform, random = createVisualRandom(sessionState);
+export function createFeedback({ sessionState, platform, primitives, weaponView, cameraView, sfx = null }) {
+  const { ctx } = platform, random = createVisualRandom(sessionState), sound = id => sfx?.play(id);
 
   function ring(x, y, radius, color, life = 0.3, kind = 'ring', r = sessionState.run) {
     if (r.waves.length < 90) r.waves.push({ x, y, radius, color, life, max: life, kind });
@@ -46,11 +46,11 @@ export function createFeedback({ sessionState, platform, primitives, weaponView,
     for (let i = r.popups.length - 1; i >= 0; i--) { const e = r.popups[i]; e.y -= 22 * dt; e.life -= dt; if (e.life <= 0) r.popups.splice(i, 1); }}
 
   function showPlayerHit(hit){
-    const p=sessionState.run.player;cameraView.cameraKick(.9);if(hit.stopped)popup(p.x,p.y-44,'TIME STOP','#c4c9f1');popup(p.x,p.y-22,`-${hit.dealt}`,'#ffaaa4');burst(p.x,p.y,'#ed938c',10);
+    const p=sessionState.run.player;cameraView.cameraKick(.9);sound('hurt');if(hit.stopped)popup(p.x,p.y-44,'TIME STOP','#c4c9f1');popup(p.x,p.y-22,`-${hit.dealt}`,'#ffaaa4');burst(p.x,p.y,'#ed938c',10);
   }
 
   function showEnemyHit(enemy,amount,crit){
-    const r=sessionState.run;if(hitOwner!==r){hitOwner=r;damageLabels=new WeakMap();}
+    const r=sessionState.run;if(hitOwner!==r){hitOwner=r;damageLabels=new WeakMap();}sound(crit?'crit':'hit');
     const old=damageLabels.get(enemy),color=crit?'#ffe1a0':'#dce7e8';
     if(old&&r.time-old.at<.09&&r.popups.includes(old.label)){old.amount+=amount;old.label.value=String(Math.round(old.amount));if(crit){old.label.color=color;old.label.crit=true;}}
     else if(r.popups.length<(primitives.visualDetail()?60:28)){const label={x:enemy.x,y:enemy.y-enemy.radius-8,value:String(Math.round(amount)),color,life:.55,crit,hit:true};r.popups.push(label);damageLabels.set(enemy,{at:r.time,amount,label});}
@@ -58,9 +58,9 @@ export function createFeedback({ sessionState, platform, primitives, weaponView,
     else if(primitives.visualDetail()&&r.waves.length<60)ring(enemy.x,enemy.y,enemy.radius+4,'#eef7f2',.1,'pop');if(r.fx.length<220&&primitives.visualDetail())impact(enemy.x,enemy.y,crit?'#ffe1a0':'#e5f0e7',crit);
   }
 
-  function showEnemyDeath(enemy){const color=enemyType[enemy.kind].color,boss=enemy.kind===3;burst(enemy.x,enemy.y,color,boss?36:14,'debris');burst(enemy.x,enemy.y,'#f4fbf6',boss?10:4);ring(enemy.x,enemy.y,enemy.radius+(boss?40:16),color,boss?.4:.24,'pop');}
+  function showEnemyDeath(enemy){sound('kill');const color=enemyType[enemy.kind].color,boss=enemy.kind===3;burst(enemy.x,enemy.y,color,boss?36:14,'debris');burst(enemy.x,enemy.y,'#f4fbf6',boss?10:4);ring(enemy.x,enemy.y,enemy.radius+(boss?40:16),color,boss?.4:.24,'pop');}
 
-  function showUpgrade(id){const family=upgradeFamilies[id],color=family==='생존'?'#a2e7bb':family==='제어'?'#a5d7f4':family==='탐사'?'#9fe6dd':family==='무기'?'#cdb6ec':'#f3d4a1';sessionState.run.waves=sessionState.run.waves.filter(w=>w.kind!=='upgrade');ring(sessionState.run.player.x,sessionState.run.player.y,36,color,.28,'upgrade');}
+  function showUpgrade(id){sound('level');const family=upgradeFamilies[id],color=family==='생존'?'#a2e7bb':family==='제어'?'#a5d7f4':family==='탐사'?'#9fe6dd':family==='무기'?'#cdb6ec':'#f3d4a1';sessionState.run.waves=sessionState.run.waves.filter(w=>w.kind!=='upgrade');ring(sessionState.run.player.x,sessionState.run.player.y,36,color,.28,'upgrade');}
 
   function drawFeedback(detail,cx,cy){
     for (const fx of sessionState.run.fx) {
@@ -75,5 +75,5 @@ export function createFeedback({ sessionState, platform, primitives, weaponView,
       ctx.font = `bold ${Math.round((text.crit ? 17 : text.hit ? 13 : 12) * (1 + pop * .25))}px system-ui`; ctx.globalAlpha = Math.min(1, text.life * 2.5); ctx.lineWidth = 3; ctx.strokeText(text.value, text.x, text.y); ctx.fillStyle = text.color; ctx.fillText(text.value, text.x, text.y); }
   }
 
-  return { markSkillAttack, skillAttackVisual, drawFeedback, showUpgrade, ring, impact, burst, popup, addSkillEcho, tickSkillEchoes, retireSkillField, drawSkillEchoes, tickWeaponEffects, tickCombatFeedback, showPlayerHit, showEnemyHit, showEnemyDeath };
+  return { sound, markSkillAttack, skillAttackVisual, drawFeedback, showUpgrade, ring, impact, burst, popup, addSkillEcho, tickSkillEchoes, retireSkillField, drawSkillEchoes, tickWeaponEffects, tickCombatFeedback, showPlayerHit, showEnemyHit, showEnemyDeath };
 }

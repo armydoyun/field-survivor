@@ -27,6 +27,8 @@ import { createSites } from '../world/sites.js';
 import { createPickups } from '../world/pickups.js';
 import { createFinale } from '../world/finale.js';
 import { createHints } from '../ui/hints.js';
+import { createSfx } from '../audio/sfx.js';
+import { createAudioControl } from './audio.js';
 import { createCameraView } from '../render/camera.js';
 import { createFeedback } from '../render/feedback.js';
 import { createPrimitives } from '../render/primitives.js';
@@ -64,9 +66,11 @@ export function createGame(sessionState = defaultSession, { createInspector, see
   const cameraView = createCameraView({ sessionState, view });
   const primitives = createPrimitives({ sessionState, renderState, platform, cameraView });
   const inspector=createInspector?.({sessionState,view,platform,cameraView});
-  const feedback = createFeedback({ sessionState, platform, primitives, weaponView:{drawRiftScar:(...args)=>weaponView.drawRiftScar(...args)}, cameraView });
+  const sfx = createSfx(); let audio = null;
+  const feedback = createFeedback({ sessionState, platform, primitives, weaponView:{drawRiftScar:(...args)=>weaponView.drawRiftScar(...args)}, cameraView, sfx:{ play:id=>audio?.play(id) } });
   const screen = createScreen({ view, platform, shop:{toggleShop:value=>shop.toggleShop(value),buildShop:()=>shop.buildShop()}, buildGuide:{closeUpgradeInfo:()=>buildGuide.closeUpgradeInfo(),toggleBuildGuide:value=>buildGuide.toggleBuildGuide(value)}, modals:{renderModal:()=>modals.renderModal()}, hud:{updateHud:()=>hud.updateHud()} });
   const storage = createStorage({ sessionState, view, screen, backend });
+  audio = createAudioControl({ sessionState, view, platform, storage, sfx });
   const enemyRuntime = createEnemyRuntime({ inspector, sessionState, platform, cameraView, difficulty, combat:{hurtPlayer:(...args)=>combat.hurtPlayer(...args)}, statistics, feedback });
   const combat = createCombat({ inspector, sessionState, statistics, enemyRuntime, feedback, difficulty, progression, onEnemyDying: enemy => journey.markJourneyKill(sessionState.run,enemy), onEnemyKilled: enemy => objectives.resolveKillObjective(enemy), onChoice: choice => { keys.clear(); screen.setMode(choice); storage.save(); } });
   const session = createSession({ seedSource, sessionState, view, platform, statistics, screen, storage, enemyRuntime, story:{openSignal:()=>story.openSignal(),openAnomaly:()=>story.openAnomaly()}, finale:{openFinale:()=>finale.openFinale()}, progression });
@@ -106,14 +110,14 @@ export function createGame(sessionState = defaultSession, { createInspector, see
   const population = createPopulation({ sessionState, difficulty, enemyRuntime, encounters, feedback, onGuardianSpawned: story.recordGuardianArrival });
   const update = createUpdate({ inspector, sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, hints });
   const loop = createLoop({ inspector, sessionState, view, update, cameraView, scene, hud, storage, finale });
-  const actions = createActions({ view, buildGuide, growthActions, session, screen, storage, story, sites, journey, finale, objectives });
-  const input = createKeyboardInput({ sessionState, view, platform, shop, buildGuide, menuInput, storage, growthActions, display, actions, session });
-  const events = createEvents({ inspector, view, platform, shop, buildGuide, menuInput, storage, display, session, input, actions });
+  const actions = createActions({ view, buildGuide, growthActions, session, screen, storage, story, sites, journey, finale, objectives, sfx:{ play:id=>audio.play(id) } });
+  const input = createKeyboardInput({ sessionState, view, platform, shop, buildGuide, menuInput, storage, growthActions, display, actions, session, audio });
+  const events = createEvents({ inspector, view, platform, shop, buildGuide, menuInput, storage, display, session, input, actions, audio });
 
   const cleanup=setup?.({sessionState,view,platform,statistics,storage,session,screen,enemyRuntime,combat,weapons,specializations,fusions,collisions,population,story,sites,objectives,encounters,journey,finale,growthActions,feedback,cameraView,primitives,hud,inspector});
   const unbind = events.bindEvents();
   enemyGuide.renderEnemyGuide();
-  storage.load(); screen.setMode('menu'); display.fitCanvas(); view.frameRequest = requestAnimationFrame(loop.frame);
+  storage.load(); audio.sync(); screen.setMode('menu'); display.fitCanvas(); view.frameRequest = requestAnimationFrame(loop.frame);
   // Runtime is ready.
   return { debug:inspector?.enabled ? {report:inspector.report,snapshot:inspector.snapshot} : undefined, dispose() { if (view.disposed) return; view.disposed = true; cleanup?.(); unbind(); keys.clear(); window.cancelAnimationFrame?.(view.frameRequest); } };
 }

@@ -13,7 +13,7 @@ const siteDefault = () => Object.fromEntries(sites.map(site => [site.id, { keep:
 
 const anomalyDefault = () => ({ clock: { hold: 0, rush: 0 }, border: { ward: 0, harvest: 0 }, echo: { keep: 0, erase: 0 } });
 
-const initialProfile = () => ({ gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), lastResolution: null, deaths: 0, lastDeathPhase: '', hints: [] } });
+const initialProfile = () => ({ audio: { muted: false, volume: .6 }, gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), lastResolution: null, deaths: 0, lastDeathPhase: '', hints: [] } });
 
 // v2.6.27의 잔향·전선·지난 결말 답장 기억(memory.echoes/fronts/legacies)은 서사 재설계로 폐지했다. 저장값은 읽지 않는다.
 const initialEndings = () => Object.fromEntries(finalEndings.map(e => [e.id, 0]));
@@ -21,6 +21,7 @@ const initialEndings = () => Object.fromEntries(finalEndings.map(e => [e.id, 0])
 const initialWitness = () => ({ met: 0, heard: 0, taken: 0, quiet: false });
 
 function hydrateProfile(profile, p) {
+  profile.audio = { muted: p.audio?.muted === true, volume: n(p.audio?.volume, .6, 0, 1) };
   profile.gold = integer(p.gold); profile.bestTime = n(p.bestTime, 0, 0, 1e7); profile.bestKills = integer(p.bestKills); profile.runs = integer(p.runs);
   for (const item of shopItems) profile.perks[item.id] = integer(p.perks?.[item.id], 0, 0, item.max);
   profile.memory.heard = integer(p.memory?.heard, 0, 0, 10000); profile.memory.burned = integer(p.memory?.burned, 0, 0, 10000);
