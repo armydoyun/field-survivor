@@ -6,6 +6,7 @@ import { writeFileSync } from "node:fs";
 import { createMockBrowser } from "../tests/mock-browser.js";
 import { createDebugGame } from "../src/debug/create-debug-game.js";
 import { paceAt } from "../src/core/difficulty.js";
+import { fusionRecipes } from "../src/data/fusions.js";
 
 const FRAME_MS = 1000 / 60;
 const LIMIT = 1800 + 300; // 30분 + 중심핵 전투 최대 5분
@@ -34,11 +35,40 @@ export const POLICIES = {
 
 const actionsIn = html => [...html.matchAll(/data-(action|choice)="([^"]+)"/g)].map(m => ({ kind: m[1], id: m[2] }));
 
-function chooseUpgrade(choices, up, maxWeapons) {
-  const owned = WEAPONS.filter(w => (up[w] || 0) > 0);
+// 융합 계획: 가진 무기 · 전문화와 가장 잘 맞는 기본 융합을 고르고, 만든 뒤에는 그 기반의 상위융합 재료를 고른다.
+// 재료 [무기, 전문화] 중 다른 전문화를 이미 골랐으면 불가능한 계획이다.
+const feasible = (run, [w, b]) => !run.branches[w] || run.branches[w] === b;
+export function fusionPlan(run) {
+  const made = fusionRecipes.filter(f => (run.up["fusion_" + f.id] || 0) > 0);
+  const base = made.find(f => !f.base);
+  if (base) {
+    const higher = fusionRecipes.filter(f => f.base === base.id && feasible(run, f.extra));
+    const pick = higher.sort((a, b) => (run.up[b.extra[0]] || 0) - (run.up[a.extra[0]] || 0))[0];
+    return { recipe: base, materials: pick ? [pick.extra] : [] };
+  }
+  let best = null,
+    bestScore = -Infinity;
+  for (const f of fusionRecipes.filter(f => !f.base)) {
+    if (!f.needs.every(m => feasible(run, m))) continue;
+    const score = f.needs.reduce(
+      (sum, [w, b]) => sum + (run.branches[w] === b ? 3 : 0) + Math.min(5, run.up[w] || 0) * 0.5,
+      0
+    );
+    if (score > bestScore) {
+      best = f;
+      bestScore = score;
+    }
+  }
+  return best ? { recipe: best, materials: best.needs } : { recipe: null, materials: [] };
+}
+
+function chooseUpgrade(choices, up, maxWeapons, plan = null) {
+  const owned = WEAPONS.filter(w => (up[w] || 0) > 0),
+    wanted = new Set((plan?.materials || []).map(([w]) => w));
   const score = id => {
     if (id.startsWith("fusion_")) return 100;
     const w = WEAPONS.indexOf(id);
+    if (w >= 0 && wanted.has(id) && (up[id] || 0) < 5) return 95 - (up[id] || 0);
     if (w >= 0) return (up[id] || 0) > 0 ? 80 - (up[id] || 0) : owned.length < maxWeapons ? 60 - w : 5;
     const p = PASSIVES.indexOf(id);
     return p >= 0 ? 40 - p : 10;
@@ -55,6 +85,7 @@ export function autoplay({
   timeScale = 4,
   immortal = true,
   objectives = true,
+  planner = true,
 } = {}) {
   const env = createMockBrowser({ observers: true }),
     descriptors = new Map();
@@ -143,9 +174,19 @@ export function autoplay({
         decisions[mode] = (decisions[mode] || 0) + 1;
         if (mode === "levelup") {
           run = JSON.parse(t.snapshot()).run;
-          const pick = chooseUpgrade(run.choices || [], run.up, maxWeapons);
+          const pick = chooseUpgrade(run.choices || [], run.up, maxWeapons, planner ? fusionPlan(run) : null);
           if (pick) click("choice", pick);
           continue;
+        }
+        if (mode === "branch" && planner) {
+          run = JSON.parse(t.snapshot()).run;
+          const weapon = WEAPONS.find(w => (run.up[w] || 0) >= 3 && !run.branches[w]),
+            want = fusionPlan(run).materials.find(([w]) => w === weapon);
+          const option = want && options.find(o => o.id === "branch-" + want[1]);
+          if (option) {
+            click("action", option.id);
+            continue;
+          }
         }
         if (mode === "fusion") {
           const next = options.find(
