@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DRIFT, driftActive, driftZone, driftLive, createDrift } from '../src/world/drift.js';
+import { DRIFT, DRIFT_KINDS, driftKind, driftActive, driftZone, driftLive, createDrift } from '../src/world/drift.js';
+import { initialProfile } from '../src/core/profile.js';
+import { createRun } from '../src/core/run.js';
+import { createStatistics } from '../src/core/statistics.js';
 import { phases } from '../src/data/progression.js';
 
 const at = phases[DRIFT.fromPhase].at;
@@ -30,4 +33,30 @@ test('no drift field before the phase; zones spawn on schedule, drift and hurt o
   for (let i = 0; i < 5; i++) { h.run.time += DRIFT.every; h.drift.tickDrift(1 / 60, { maxHp: 100 }); }
   assert.ok(h.run.drift.zones.length <= DRIFT.max);
   h.run.finalStep = 2; h.drift.tickDrift(1 / 60, { maxHp: 100 }); assert.equal(h.run.drift.zones.length, 0);
+});
+
+test('drift kinds: the fourth phase only burns; later phases mix stagnation and pull; consume-leaning runs burn more', () => {
+  for (let n = 0; n < 40; n++) assert.equal(driftKind(n, DRIFT.fromPhase, 0), 'burn');
+  const mixed = new Set(Array.from({ length: 60 }, (_, n) => driftKind(n, DRIFT.fromPhase + 1, 0)));
+  assert.deepEqual([...mixed].sort(), [...DRIFT_KINDS].sort());
+  const burns = memory => Array.from({ length: 200 }, (_, n) => driftKind(n, DRIFT.fromPhase + 1, memory)).filter(k => k === 'burn').length;
+  assert.ok(burns(-3) > burns(3) + 30);
+});
+
+test('stagnation slows movement through the stats; pull drags the player inward without damage', () => {
+  const zoneAt = kind => ({ kind, x: 0, y: 0, vx: 0, vy: 0, radius: DRIFT.radius, liveAt: 0, endAt: 1e6 });
+  const h = harness(at + 1); h.run.drift = { next: 1e9, count: 1, zones: [zoneAt('still')] }; h.run.player = { x: 10, y: 0 };
+  h.drift.tickDrift(1 / 60, { maxHp: 100 }); assert.ok(h.run.driftSlowUntil > h.run.time); assert.equal(h.hits.length, 0);
+  const profile = initialProfile(), run = createRun(profile, { maxHp: 100, xpNext: 24 }), st = createStatistics({ sessionState: { profile, run } });
+  const normal = st.stats(run).speed; run.time = 5; run.driftSlowUntil = 5.1; assert.ok(Math.abs(st.stats(run).speed - normal * DRIFT.slow) < 1e-9);
+  const g = harness(at + 1); g.run.drift = { next: 1e9, count: 1, zones: [zoneAt('pull')] }; g.run.player = { x: 50, y: 0 };
+  g.drift.tickDrift(.5, { maxHp: 100 }); assert.ok(Math.abs(g.run.player.x - (50 - DRIFT.pull * .5)) < 1e-9); assert.equal(g.hits.length, 0);
+});
+
+test('drift zones and their kinds survive a save restore; bogus kinds are dropped', async () => {
+  const { restoreRun } = await import('../src/save/restore-run.js');
+  const profile = initialProfile(), run = createRun(profile, { maxHp: 100, xpNext: 24 });
+  run.time = at + 30; run.drift = { next: at + 60, count: 2, zones: [driftZone(0, { x: 0, y: 0 }, at + 20, 'pull'), { ...driftZone(1, { x: 0, y: 0 }, at + 20), kind: 'lava' }] };
+  const back = restoreRun(JSON.parse(JSON.stringify(run)), profile);
+  assert.equal(back.drift.count, 2); assert.equal(back.drift.zones.length, 1); assert.deepEqual(back.drift.zones[0], run.drift.zones[0]);
 });

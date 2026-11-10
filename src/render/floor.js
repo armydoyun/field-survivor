@@ -48,24 +48,28 @@ export function drawPillars(ctx, r, cx, cy) {
   ctx.restore();
 }
 
-// 표류 구역: 예고 중에는 점선 원이 차오르고, 활성 중에는 호박색 빗금이 흐른다.
+// 표류 구역: 예고 중에는 점선 원이 차오르고, 활성 중에는 종류별 무늬가 흐른다.
+// 연소는 주황 빗금, 정체는 청회색 가로줄, 흡인은 보라 동심원이 안쪽으로 줄어든다.
+const DRIFT_COLORS = { burn: [240, 150, 70], still: [140, 170, 190], pull: [180, 140, 230] };
 export function drawDrift(ctx, r) {
   const zones = r.drift?.zones;
   if (!zones?.length || !driftActive(r)) return;
   ctx.save();
   for (const z of zones) {
-    const live = driftLive(z, r.time), fade = Math.min(1, (z.endAt - r.time) / 1.2);
+    const live = driftLive(z, r.time), fade = Math.min(1, (z.endAt - r.time) / 1.2), [cr, cg, cb] = DRIFT_COLORS[z.kind] || DRIFT_COLORS.burn, c = a => `rgba(${cr},${cg},${cb},${a})`;
     ctx.globalAlpha = fade; ctx.lineWidth = 2;
     if (!live) {
       const f = 1 - (z.liveAt - r.time) / DRIFT.warn;
-      ctx.setLineDash([8, 7]); ctx.strokeStyle = '#f0b25a'; ctx.beginPath(); ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
-      ctx.fillStyle = 'rgba(240,178,90,.12)'; ctx.beginPath(); ctx.arc(z.x, z.y, z.radius * f, 0, Math.PI * 2); ctx.fill();
+      ctx.setLineDash([8, 7]); ctx.strokeStyle = c(1); ctx.beginPath(); ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = c(.12); ctx.beginPath(); ctx.arc(z.x, z.y, z.radius * f, 0, Math.PI * 2); ctx.fill();
       continue;
     }
-    ctx.fillStyle = 'rgba(240,150,70,.16)'; ctx.strokeStyle = '#f0965a'; ctx.beginPath(); ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.save(); ctx.clip(); ctx.strokeStyle = 'rgba(240,150,70,.35)'; ctx.beginPath();
+    ctx.fillStyle = c(.16); ctx.strokeStyle = c(1); ctx.beginPath(); ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.save(); ctx.clip(); ctx.strokeStyle = c(.35); ctx.beginPath();
     const shift = (r.time * 24) % 28;
-    for (let k = -z.radius * 2; k < z.radius * 2; k += 28) { ctx.moveTo(z.x + k + shift - z.radius, z.y - z.radius); ctx.lineTo(z.x + k + shift + z.radius, z.y + z.radius); }
+    if (z.kind === 'pull') for (let k = 0; k < 4; k++) { const rr = z.radius * (1 - ((r.time * .6 + k / 4) % 1)); ctx.moveTo(z.x + rr, z.y); ctx.arc(z.x, z.y, rr, 0, Math.PI * 2); }
+    else if (z.kind === 'still') for (let k = -z.radius; k < z.radius; k += 18) { ctx.moveTo(z.x - z.radius, z.y + k + (shift % 18) / 3); ctx.lineTo(z.x + z.radius, z.y + k + (shift % 18) / 3); }
+    else for (let k = -z.radius * 2; k < z.radius * 2; k += 28) { ctx.moveTo(z.x + k + shift - z.radius, z.y - z.radius); ctx.lineTo(z.x + k + shift + z.radius, z.y + z.radius); }
     ctx.stroke(); ctx.restore();
   }
   ctx.restore();
