@@ -1,8 +1,15 @@
-# FIELD SURVIVOR v2.7.0
+# FIELD SURVIVOR v2.8.0
 
 선택이 결말을 정하는 서바이버. ESM 소스이며 외부 런타임 라이브러리는 없다. 단일 파일 배포본은 `npm run build`로 만든다.
 
 변경 내역은 [CHANGELOG.md](CHANGELOG.md). v2.6.27까지의 융합 · 그래픽 설계는 아래 절과 [FUSION-REDESIGN.md](FUSION-REDESIGN.md) · [SKILL-VISUAL-DESIGN.md](SKILL-VISUAL-DESIGN.md)에 있다.
+
+## v2.8 손에 잡히는 전장
+
+- **효과음**: 파일 없이 WebAudio로 합성한다. 상단 버튼이나 M 키로 끄고 켠다.
+- **시작 무기 선택**: 결말 · 진실 조각으로 펄스 외 무기 7종이 열린다. 무기별 시작 레벨은 자동 플레이 측정으로 정했다.
+- **단계별 전장**: 단계마다 바닥이 바뀌고, 10분부터 적 탄을 막는 엄폐 기둥, 16분부터 천천히 움직이는 표류 구역이 생긴다.
+- **화부**: 연소 경로의 목소리. 기획과 진행 상황은 [NEXT-UPDATE-PLAN.md](NEXT-UPDATE-PLAN.md).
 
 ## 스킬 밸런스 1차 조정
 
