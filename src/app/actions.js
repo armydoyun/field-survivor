@@ -1,6 +1,6 @@
 import { canInteractInWorld } from '../core/view-policy.js';
 // UI action IDs route to existing workflows; no gameplay formulas or dynamic registration.
-export function createActions({ view, buildGuide, growthActions, session, screen, storage, story, sites, journey, finale, objectives, sfx = null }) {
+export function createActions({ stoker, view, buildGuide, growthActions, session, screen, storage, story, sites, journey, finale, objectives, sfx = null }) {
   const exact={
     'fusion-close':growthActions.toggleFusion,'fusion-guide':()=>buildGuide.toggleBuildGuide(true),
     new:()=>session.startFresh(),'new-cancel':()=>{if(view.mode==='newconfirm')screen.setMode(view.newConfirmReturn);},'new-confirm':()=>{if(view.mode==='newconfirm')session.startFresh(true);},
@@ -24,6 +24,7 @@ export function createActions({ view, buildGuide, growthActions, session, screen
   function interact(){
     if(!canInteractInWorld(view))return;
     if(story.dismantleGuardian())return;
+    if(stoker?.stokeFire())return;
     if(!sites.meetSite()&&!objectives.meetObjective())story.meetWitness();
   }
   return { dispatch, overlayClick, interact, toggleFusion:growthActions.toggleFusion };

@@ -142,6 +142,7 @@ const truthPieces = [
   { id: 'preserve', unlock: '남겨진 목소리', text: '신호는 지워지기 직전의 목소리다. 보존된 문장은 다음 사람에게 읽힌다.' },
   { id: 'consume', unlock: '식지 않는 엔진', text: '엔진은 이름을 태워 시간을 되감는다. 태울수록 뜨거워지고, 그만큼 중심핵도 강해진다.' },
   { id: 'divided', unlock: '두 개의 목소리', text: '쓰러질 때마다 엔진에 기록 한 장이 더해진다. 너도 처음부터 그 기록 중 하나였다.' },
+  { id: 'origin', unlock: '화부와 불을 지피고 식지 않는 엔진에 닿기', text: '엔진의 첫 설계도에는 기록원의 이름과 화부의 이름이 나란히 적혀 있다. 둘은 같은 장치를 만들었고, 하나는 기억을 남기려 했고 하나는 꺼지지 않게 하려 했다.' },
   { id: 'release', unlock: '열린 문', text: '감시자는 먼저 들어온 도전자의 기록을 담은 껍질이다. 돌려보낼 때마다 이름을 되찾고, 분실된 좌표는 처음부터 문을 가리키고 있었다.' }
 ];
 const truthFound = '진실 조각을 하나 찾았다. 제목 화면의 결말 기록에서 읽을 수 있다.';
@@ -172,7 +173,14 @@ const stokerLines = {
     '화부 · "더 넣어. 문은 뜨거울 때만 움직여."',
     '화부 · "이제 너도 엔진 소리를 좋아하게 됐군."'
   ],
-  ending: '화부가 마지막 석탄을 밀어 넣었다. "이제 따뜻하지?"'
+  ending: '화부가 마지막 석탄을 밀어 넣었다. "이제 따뜻하지?"',
+  // v2.9 만남(NEXT-UPDATE-PLAN.md 8절): 기록원을 듣지 않은 판의 13분에 전장에 나타난다.
+  arrive: '화부 · 엔진 쪽에서 열기가 번져 왔다. 석탄 자루를 멘 사람이 불씨 옆에 서 있다.',
+  stoked: '화부 · "그래, 같이 지피자. 이 불이 꺼지면 우리도 끝이야." 불꽃이 무기에 옮겨붙었다.',
+  quenched: '화부 · 너는 아무 말 없이 불씨 옆에 서 있었다. 그는 한참 뒤에야 삽을 내려놓았다. "…오늘은 쉬어도 되겠군."',
+  left: '화부 · 대답을 기다리지 않고 엔진 쪽으로 돌아갔다.',
+  endingStoked: '화부가 네 옆에서 마지막 석탄을 밀어 넣었다. "봐, 우리가 지핀 불이야." 엔진 깊은 곳에 오래된 설계도 한 장이 타고 있었다.',
+  endingQuenched: '화부의 자리는 비어 있었다. 꺼진 불씨 옆에 삽 한 자루만 기대어 있다.'
 };
 
 export { stokerLines, witnessReactions, deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };

@@ -20,7 +20,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     if(variant==='hollow')return w.hollow;
     if(id==='release')return w.release;
     if(r.npc.state==='heard')return w.heard[id];
-    if(id==='consume')return `${r.npc.state==='taken'?w.taken:w.none} ${stokerLines.ending}`;
+    if(id==='consume')return `${r.npc.state==='taken'?w.taken:w.none} ${r.stoker?.state==='stoked'?stokerLines.endingStoked:r.stoker?.state==='quenched'?stokerLines.endingQuenched:stokerLines.ending}`;
     return r.npc.state==='taken'?w.taken:w.none;
   }
   function guardianScene(id,variant,a){
@@ -48,6 +48,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     for(let i=0;i<r.signalChoices.length;i++)lines.push(`${signals[i].title} · ${r.signalChoices[i]==='hear'?'끝까지 들었다':'연료로 바꿨다'}`);
     if(r.npc.state==='heard')lines.push(`기록원 · 이야기를 들었다${r.npc.silenced?' · 옆에서 4.5초 동안 멈춰 있었다':''}`);
     else if(r.npc.state==='taken')lines.push('기록원 · 기록을 추출했다');
+    if(r.stoker&&r.stoker.state!=='waiting')lines.push(`화부 · ${r.stoker.state==='stoked'?'함께 불을 지폈다':r.stoker.state==='quenched'?'곁에 서서 불을 껐다':'대답하지 않았다'}`);
     if(r.guardianFate.spare||r.guardianFate.end)lines.push(`감시자 · 돌려보냄 ${r.guardianFate.spare}회 / 분해 ${r.guardianFate.end}회`);
     for(const site of sites)if(r.siteDecisions[site.id])lines.push(`${site.title} · ${site.options.find(o=>o.id===r.siteDecisions[site.id]).name}`);
     else if(r.time>=site.at)lines.push(`${site.title} · 응답하지 않고 지나쳤다`);
@@ -76,7 +77,8 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     const result = { time: r.time, kills: r.kills, gold: r.gold + endingReward, level: r.level, ending: ending.name, endingId: id, variant, axes: routeAxes(r), threads: threadResolution(r), scenes: endingSceneList(id, r) };
     const memory = sessionState.profile.memory;
     record(`최종 회수 · ${ending.name}${variant==='hollow'?' · 빈 껍질':''}`);
-    if (!memory.endings[id]) record(truthFound); memory.endings[id]++; if (finalEndings.every(e=>memory.endings[e.id]>0)) record('모든 결말이 모였다. 기록 장치가 작동한 이유는 제목 화면의 결말 기록에서 확인할 수 있다.');
+    if (!memory.endings[id]) record(truthFound);
+    if (id === 'consume' && r.stoker?.state === 'stoked' && !memory.stoker.origin) { memory.stoker.origin = true; record(truthFound); } memory.endings[id]++; if (finalEndings.every(e=>memory.endings[e.id]>0)) record('모든 결말이 모였다. 기록 장치가 작동한 이유는 제목 화면의 결말 기록에서 확인할 수 있다.');
     memory.lastResolution = { ending: id, variant, axes: result.axes, threads: result.threads.slice(0, 40), scenes: result.scenes };
     return commitRunResult(sessionState,result);
   }

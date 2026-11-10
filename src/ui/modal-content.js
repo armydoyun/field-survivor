@@ -46,7 +46,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
     } else if (view.mode === 'ledger') {
       const m=sessionState.profile.memory, last=m.lastResolution;
       // 진실 조각: 결말 4개와 정지 비밀이 하나씩 연다. 모두 모이면 전체 진실이 열린다.
-      const found=truthPieces.filter(x=>x.id==='stillness'?m.witness.quiet:m.endings[x.id]>0), allFound=found.length===truthPieces.length;
+      const found=truthPieces.filter(x=>x.id==='stillness'?m.witness.quiet:x.id==='origin'?m.stoker?.origin===true:m.endings[x.id]>0), allFound=found.length===truthPieces.length;
       const pieces=truthPieces.map(x=>found.includes(x)?`<li>${htmlEscape(x.text)}</li>`:`<li class="muted">잠김 · ${htmlEscape(x.unlock)}</li>`).join('');
       const epilogue = `<div class="closure-reveal"><strong>진실 조각 ${found.length}/${truthPieces.length}</strong><ul>${pieces}</ul>${allFound?`<p>${htmlEscape(truthReveal)}</p>`:''}</div>`;
       const summary=`<div class="summary">${finalEndings.map(x=>`<span>${x.name} <strong>${m.endings[x.id]}회</strong></span>`).join('')}</div>`;

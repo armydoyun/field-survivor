@@ -58,6 +58,8 @@ export function restoreWorld(r,raw,_profile){
   r.finalStep = r.time >= RUN_END ? integer(raw.finalStep, 0, 0, 3) : 0;
   r.signalStep = integer(raw.signalStep, 0, 0, signals.length); r.signalHp = integer(raw.signalHp, 0, 0, 60); r.signalPower = integer(raw.signalPower, 0, 0, 3); r.signalChoices = Array.isArray(raw.signalChoices) ? raw.signalChoices.slice(0,r.signalStep).filter(x=>x==='hear'||x==='burn') : [];
   r.logs = Array.isArray(raw.logs) ? raw.logs.filter(x => typeof x === 'string').slice(-6).map(x => x.slice(0, 110)) : [];
+  const stoker = raw.stoker;
+  if (stoker && typeof stoker === 'object' && ['waiting', 'stoked', 'quenched', 'left'].includes(stoker.state)) r.stoker = { state: stoker.state, x: n(stoker.x, W / 2, -1e7, 1e7), y: n(stoker.y, H / 2, -1e7, 1e7), still: n(stoker.still, 0, 0, 3), until: n(stoker.until, 0, 0, 1e7) };
   const npc = raw.npc;
   if (npc && typeof npc === 'object' && ['none', 'waiting', 'heard', 'taken'].includes(npc.state)) {
     r.npc = { spawned: !!npc.spawned, state: npc.state, x: n(npc.x, W / 2, -1e7, 1e7), y: n(npc.y, H / 2, -1e7, 1e7), still: n(npc.still, 0, 0, 4.5), encounterPending: !!npc.encounterPending && npc.state === 'waiting', secretPending: !!npc.secretPending && npc.state === 'heard' && !npc.silenced, silenced: !!npc.silenced && npc.state === 'heard' };

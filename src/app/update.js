@@ -2,7 +2,7 @@ import { movePlayer } from '../input/movement.js';
 import { branchReady } from '../growth/build.js';
 import { createDrift } from '../world/drift.js';
 
-export function createUpdate({ sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, inspector, hints }) {
+export function createUpdate({ stoker, sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, inspector, hints }) {
   let lastShields=null,lastDrift=0,driftOwner=null;
   const drift=createDrift({sessionState,combat});
   const { keys } = platform;
@@ -16,7 +16,7 @@ export function createUpdate({ sessionState, view, platform, screen, feedback, s
     story.spawnWitness(); sites.spawnSite(); objectives.spawnObjective();
     if (journey.journeyTick(dt)) return;
     if (story.tickWitness(dt,moving)) return;
-    story.tickGuardian(dt,moving);
+    story.tickGuardian(dt,moving);stoker?.spawnStoker();stoker?.tickStoker(dt,moving);
     hints?.tickHints();
     const shields=sessionState.run.journey.core?.shields;if(shields!=null&&lastShields!=null&&shields<lastShields)feedback.sound?.('shield');lastShields=shields??null;
     population.maintainEnemies();

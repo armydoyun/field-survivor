@@ -294,6 +294,16 @@ export function autoplay({
           env.dispatch("keydown", { code: "KeyE" });
           env.dispatch("keyup", { code: "KeyE" });
         }
+        // 화부: 보존 정책은 곁에서 멈춰 불을 끄고, 연소 정책은 E로 불을 지핀다.
+        const stoker = run.stoker?.state === "waiting" ? run.stoker : null;
+        if (stoker && Math.hypot(stoker.x - p.x, stoker.y - p.y) < 70) {
+          if (rules.guardian === "spare") {
+            hold([]);
+            continue;
+          }
+          env.dispatch("keydown", { code: "KeyE" });
+          env.dispatch("keyup", { code: "KeyE" });
+        }
         // 융합 가능하면 G
         if (frame % 240 === 0) {
           env.dispatch("keydown", { code: "KeyG" });
@@ -372,7 +382,8 @@ export function autoplay({
               ? run.enemies.find(e => e.id === run.objective.targetId && e.hp > 0)
               : null) ||
             (objectives ? run.objective : null) ||
-            (run.npc?.spawned && run.npc.state === "waiting" ? run.npc : null);
+            (run.npc?.spawned && run.npc.state === "waiting" ? run.npc : null) ||
+            (run.stoker?.state === "waiting" ? run.stoker : null);
         if (goal && near < 6 && Math.hypot(goal.x - p.x, goal.y - p.y) > 40) {
           const gx = goal.x - p.x,
             gy = goal.y - p.y,
@@ -501,7 +512,13 @@ export function autoplay({
       decisions,
       trace,
       sources,
-      final: { level: run.level, kills: run.kills, virtualDeaths, objectives: { ...(run.objectiveOutcomes || {}) } },
+      final: {
+        stoker: run.stoker?.state ?? null,
+        level: run.level,
+        kills: run.kills,
+        virtualDeaths,
+        objectives: { ...(run.objectiveOutcomes || {}) },
+      },
     };
   } finally {
     app?.dispose();

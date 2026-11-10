@@ -3,6 +3,7 @@ import { paceAt } from '../core/difficulty.js';
 import { phases } from '../data/progression.js';
 import { PILLAR, pillarsActive, pillarsNear } from '../world/pillars.js';
 import { DRIFT, driftActive, driftLive } from '../world/drift.js';
+import { STOKER } from '../world/stoker.js';
 
 // 단계별 바닥(NEXT-UPDATE-PLAN.md 3순위의 렌더 부분). 단계가 바뀌면 바닥 색과 격자가 6초에 걸쳐 바뀐다.
 // 그리기만 바꾸며 판 상태 · 난수는 건드리지 않는다.
@@ -67,5 +68,19 @@ export function drawDrift(ctx, r) {
     for (let k = -z.radius * 2; k < z.radius * 2; k += 28) { ctx.moveTo(z.x + k + shift - z.radius, z.y - z.radius); ctx.lineTo(z.x + k + shift + z.radius, z.y + z.radius); }
     ctx.stroke(); ctx.restore();
   }
+  ctx.restore();
+}
+
+// 화부: 불씨 옆의 인물. 기다리는 동안 불꽃이 흔들리고, 곁에 멈춰 있으면 꺼져 가는 고리가 찬다.
+export function drawStoker(ctx, r) {
+  const k = r.stoker;
+  if (!k || k.state !== 'waiting') return;
+  const near = Math.hypot(r.player.x - k.x, r.player.y - k.y) <= STOKER.reach, flick = Math.sin(r.time * 9) * 2;
+  ctx.save();
+  ctx.fillStyle = 'rgba(240,150,70,.18)'; ctx.beginPath(); ctx.arc(k.x, k.y, 30 + flick, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#f0965a'; ctx.beginPath(); ctx.moveTo(k.x - 7, k.y + 6); ctx.quadraticCurveTo(k.x - 8, k.y - 8, k.x, k.y - 17 - flick); ctx.quadraticCurveTo(k.x + 8, k.y - 8, k.x + 7, k.y + 6); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#2b2321'; ctx.fillRect(k.x - 9, k.y + 6, 18, 6);
+  if (k.still > 0) { ctx.strokeStyle = '#9fc7d6'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(k.x, k.y, 24, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, k.still / STOKER.still)); ctx.stroke(); }
+  if (near) { ctx.textAlign = 'center'; ctx.font = 'bold 12px system-ui'; ctx.fillStyle = '#f7d2b4'; ctx.fillText('E · 불을 지핀다 / 멈춰 서면 불을 끈다', k.x, k.y - 34); }
   ctx.restore();
 }

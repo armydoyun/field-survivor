@@ -13,11 +13,12 @@ const siteDefault = () => Object.fromEntries(sites.map(site => [site.id, { keep:
 
 const anomalyDefault = () => ({ clock: { hold: 0, rush: 0 }, border: { ward: 0, harvest: 0 }, echo: { keep: 0, erase: 0 } });
 
-const initialProfile = () => ({ audio: { muted: false, volume: .6 }, gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), lastResolution: null, deaths: 0, lastDeathPhase: '', hints: [] } });
+const initialProfile = () => ({ audio: { muted: false, volume: .6 }, gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), lastResolution: null, deaths: 0, lastDeathPhase: '', hints: [], stoker: initialStoker() } });
 
 // v2.6.27의 잔향·전선·지난 결말 답장 기억(memory.echoes/fronts/legacies)은 서사 재설계로 폐지했다. 저장값은 읽지 않는다.
 const initialEndings = () => Object.fromEntries(finalEndings.map(e => [e.id, 0]));
 
+const initialStoker = () => ({ met: 0, stoked: 0, quenched: 0, origin: false });
 const initialWitness = () => ({ met: 0, heard: 0, taken: 0, quiet: false });
 
 function hydrateProfile(profile, p) {
@@ -28,6 +29,7 @@ function hydrateProfile(profile, p) {
   profile.memory.archive = Array.isArray(p.memory?.archive) ? p.memory.archive.filter(x => typeof x === 'string').slice(-8).map(x => x.slice(0, 110)) : [];
   // v2.6.27 이전의 신호 챕터(memory.chapters)는 최종 결말과 이름이 겹쳐 폐지했다. 저장값은 읽지 않는다.
   const witness = p.memory?.witness; if (witness && typeof witness === 'object') profile.memory.witness = { met: integer(witness.met, 0, 0, 99999), heard: integer(witness.heard, 0, 0, 99999), taken: integer(witness.taken, 0, 0, 99999), quiet: witness.quiet === true };
+  const stoker = p.memory?.stoker; if (stoker && typeof stoker === 'object') profile.memory.stoker = { met: integer(stoker.met, 0, 0, 99999), stoked: integer(stoker.stoked, 0, 0, 99999), quenched: integer(stoker.quenched, 0, 0, 99999), origin: stoker.origin === true };
   const guardian = p.memory?.guardian; if (guardian && typeof guardian === 'object') profile.memory.guardian = { spared: integer(guardian.spared, 0, 0, 99999), ended: integer(guardian.ended, 0, 0, 99999) };
   const savedSites = p.memory?.sites;
   if (savedSites && typeof savedSites === 'object') for (const site of sites) for (const option of site.options) {

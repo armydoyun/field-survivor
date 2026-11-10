@@ -176,7 +176,8 @@ test('truth pieces open one by one from endings and the stillness secret, and th
   assert.equal(count(),0);assert.ok(!content.buildModal().includes(truthReveal));
   s.profile.memory.witness.quiet=true;assert.equal(count(),1);
   for(const [i,id]of ['preserve','consume','divided'].entries()){s.profile.memory.endings[id]=1;assert.equal(count(),i+2);assert.ok(!content.buildModal().includes(truthReveal));}
-  s.profile.memory.endings.release=2;assert.equal(count(),truthPieces.length);assert.ok(content.buildModal().includes(truthReveal));
+  s.profile.memory.endings.release=2;assert.equal(count(),truthPieces.length-1);assert.ok(!content.buildModal().includes(truthReveal));
+  s.profile.memory.stoker.origin=true;assert.equal(count(),truthPieces.length);assert.ok(content.buildModal().includes(truthReveal));
   const fresh=state();prepareRoute(fresh.run,4);createEndingDecisions({sessionState:fresh}).chooseFinale('preserve');assert.ok(fresh.profile.memory.archive.includes(truthFound));
   const again=state();again.profile.memory.endings.preserve=1;prepareRoute(again.run,4);createEndingDecisions({sessionState:again}).chooseFinale('preserve');assert.ok(!again.profile.memory.archive.includes(truthFound));
 });

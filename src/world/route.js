@@ -10,6 +10,8 @@ export function routeAxes(r) {
   for (const choice of r?.signalChoices || []) memory += choice === 'hear' ? 1 : choice === 'burn' ? -1 : 0;
   if (r?.npc?.state === 'heard') memory++;
   else if (r?.npc?.state === 'taken') memory--;
+  if (r?.stoker?.state === 'stoked') memory--;
+  else if (r?.stoker?.state === 'quenched') memory++;
   for (const site of sites) {
     const decision = r?.siteDecisions?.[site.id];
     memory += decision === 'keep' ? 1 : decision === 'take' ? -1 : 0;

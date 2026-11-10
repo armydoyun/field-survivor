@@ -14,6 +14,8 @@ export const SOUNDS = Object.freeze({
   guardianSpare: { kind: "arp", wave: "sine", notes: [392, 494, 587, 784], step: 0.09, dur: 0.35, gain: 0.08, gap: 1, cap: 1 },
   guardianEnd: { kind: "noise", dur: 0.45, gain: 0.12, filter: 600, gap: 1, cap: 1 },
   shield: { kind: "arp", wave: "sine", notes: [1047, 1568], step: 0.04, dur: 0.4, gain: 0.08, gap: 0.3, cap: 3 },
+  stoke: { kind: "noise", dur: 0.5, gain: 0.1, filter: 900, gap: 1, cap: 1 },
+  quench: { kind: "tone", wave: "sine", freq: 520, to: 260, dur: 0.7, gain: 0.08, gap: 1, cap: 1 },
   drift: { kind: "tone", wave: "sine", freq: 110, to: 82, dur: 0.6, gain: 0.09, gap: 2, cap: 1 },
 });
 

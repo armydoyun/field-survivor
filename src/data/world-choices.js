@@ -7,5 +7,7 @@ export const siteRewards = {
 // 경로 간 격차 조정(SKILL-BALANCE.md): 연소(태우기 · 추출)는 즉시 화력, 보존(기억 · 듣기)은 버팀 + 성장(경험치).
 export const signalReward = { hp:20, goldBase:70, goldStep:30, burnPower:.08, xp:.06 };
 export const witnessReward = { heal:15, gold:150, silenceHeal:40, takeDamage:.05, xp:.06 };
+// 화부: 불을 지피면 연소 화력(signalPower) +2, 불을 끄면 회복. 기억 축은 지피면 −1, 끄면 +1.
+export const stokerReward = { power:2, heal:20 };
 export const anomalyDuration = { clock:90, border:120 };
 export const endingReward = 400;
