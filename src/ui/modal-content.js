@@ -49,7 +49,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const deaths = sessionState.profile.memory.deaths, deathLine = deathLines.witness.filter(x => deaths >= x.from).at(-1)?.line.replace('{phase}', sessionState.profile.memory.lastDeathPhase || '이 벌판').replace('{count}', deaths);
       const intro = sessionState.run.legacyOrigin === 'release' ? witnessAfterRelease : deathLine && deaths >= 3 ? deathLine : witness.quiet ? '네가 말없이 서 있던 시간은 아직 남아 있어. 다른 시간은 전부 사라졌는데.' : wasTaken ? '전에는 내 말을 전부 연료로 바꿨지. 그래도 돌아왔네.' : wasHeard ? '너는 나를 기억하지 못해도, 나는 네가 멈췄던 순간을 기억해.' : '처음 보는 얼굴이네. 아니, 그저 처음이라고 믿는 얼굴인가.';
       const guardian = sessionState.profile.memory.guardian, trace = guardian.spared ? '감시자를 돌려보낸 선택도 여기 남아 있어.' : guardian.ended ? '감시자를 끝까지 분해한 명령도 여기 남아 있어.' : '';
-      return decisionHtml('UNKNOWN CONTACT · 001','기록원',`${intro} ${trace} 나는 네가 지나가는 소리를 들었어. 한 번은 아주 가까웠고, 한 번은 여기까지 오지 않았지.`,[{id:'witness-hear',name:'이야기를 들어준다',effect:`즉시 HP 최대 ${witnessReward.heal} 회복 · 재생 +0.25/s (피격 후 3초간 +0.0625/s)`},{id:'witness-take',name:'기록을 추출한다',effect:`${witnessReward.gold}G · 이번 도전의 모든 무기 피해 +10%`}]);
+      return decisionHtml('UNKNOWN CONTACT · 001','기록원',`${intro} ${trace} 나는 네가 지나가는 소리를 들었어. 한 번은 아주 가까웠고, 한 번은 여기까지 오지 않았지.`,[{id:'witness-hear',name:'이야기를 들어준다',effect:`즉시 HP 최대 ${witnessReward.heal} 회복 · 재생 +0.25/s (피격 후 3초간 +0.0625/s) · 획득 EXP +${Math.round(witnessReward.xp*100)}%`},{id:'witness-take',name:'기록을 추출한다',effect:`${witnessReward.gold}G · 이번 도전의 모든 무기 피해 +${Math.round(witnessReward.takeDamage*100)}%`}]);
     } else if (view.mode === 'secret') {
       const line = sessionState.profile.memory.witness.taken ? '한 번은 나를 부품으로 만들었지. 그런데도 이번에는 기다려 주었어.' : '이 세상은 네가 쓰러진 시간만 세고 있었어. 네가 가만히 있었던 순간은 한 번도 세지 않았지.';
       return  modalHtml('HIDDEN RECORD · 000', '아무것도 하지 않은 시간', `${line} 지금은 달라. 네가 서 있던 4.5초가 여기에 남았어. 이번 도전에도 남고, 다음에도 사라지지 않을 거야.`, actionHtml('silence', sessionState.profile.memory.witness.quiet ? '기억으로 남긴다' : `기억으로 남긴다 · HP 최대 ${witnessReward.silenceHeal} 회복 / 영구 최대 HP +10(즉시 적용)`, true));
@@ -57,7 +57,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const ev=signals[sessionState.run.signalStep], heard=sessionState.profile.memory.heard, burned=sessionState.profile.memory.burned;
       const trace=sessionState.run.signalStep===2 && heard+burned?`잡음 사이에 ${heard}개의 응답과 ${burned}개의 빈 주파수가 겹친다.`:'';
       const line=sessionState.run.signalStep===0&&sessionState.run.legacyOrigin==='preserve'?firstSignalAfterPreserve:ev.line;
-      return decisionHtml('INCOMING SIGNAL',ev.title,`${line} ${trace}`,[{id:'hear',name:'기억한다',effect:`최대 HP 기초값 +${signalReward.hp} · 즉시 HP 최대 ${signalReward.hp} 회복`},{id:'burn',name:'연료로 변환한다',effect:`신호 공격력 배율 +15%p · ${signalReward.goldBase+signalReward.goldStep*(sessionState.run.signalStep+1)}G`}]);
+      return decisionHtml('INCOMING SIGNAL',ev.title,`${line} ${trace}`,[{id:'hear',name:'기억한다',effect:`최대 HP 기초값 +${signalReward.hp} · 즉시 HP 최대 ${signalReward.hp} 회복 · 획득 EXP +${Math.round(signalReward.xp*100)}%`},{id:'burn',name:'연료로 변환한다',effect:`신호 공격력 배율 +${Math.round(signalReward.burnPower*100)}%p · ${signalReward.goldBase+signalReward.goldStep*(sessionState.run.signalStep+1)}G`}]);
     } else if (view.mode === 'anomaly') {
       const e=anomalies[sessionState.run.anomalyStep];
       return decisionHtml(`FIELD SHIFT · 전장 변화 ${String(sessionState.run.anomalyStep+1).padStart(2,'0')} / 03`,e.title,e.line,e.options.map(o=>({id:'anomaly-'+o.id,name:o.name,effect:o.effect})));

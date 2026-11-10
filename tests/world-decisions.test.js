@@ -5,7 +5,7 @@ import { initialProfile, hydrateProfile } from '../src/core/profile.js';
 import { createRun } from '../src/core/run.js';
 import { createStatistics } from '../src/core/statistics.js';
 import { createProgression } from '../src/growth/progression.js';
-import { xpNeed } from '../src/growth/experience.js';
+import { xpNeed, xpBonus } from '../src/growth/experience.js';
 import { createSiteDecisions } from '../src/world/site-decisions.js';
 import { createStoryDecisions } from '../src/world/story-decisions.js';
 import { createEndingDecisions } from '../src/world/ending-decisions.js';
@@ -37,7 +37,7 @@ test('all six site choices retain exact rewards, HP order, enemy patterns and si
   for(let i=0;i<sites.length;i++)for(const choice of ['keep','take']){
     const h=harness(),{s}=h;prepareSite(s,i);s.run.player.hp=50;
     assert.equal(h.site.chooseSite(choice).id,sites[i].id);assert.equal(s.run.siteStep,i+1);assert.equal(s.run.sitePending,false);assert.equal(s.run.site,null);assert.equal(s.run.relicPending,sites[i].id);assert.equal(s.profile.memory.sites[sites[i].id][choice],1);
-    const expected={coordinate:{keep:[100,50,0,0,0,100,[]],take:[220,50,0,0,0,240,[1,1,1,1,1,1]]},reservoir:{keep:[0,90,0,0,0,240,[]],take:[0,25,2,0,0,0,[4,4,4,4,4]]},archive:{keep:[350,75,0,1,0,0,[]],take:[0,50,0,0,2,350,[2,5,2,5,2,5]]}}[sites[i].id][choice];
+    const expected={coordinate:{keep:[100,50,0,0,0,100,[]],take:[220,50,0,0,0,240,[1,1,1,1,1,1]]},reservoir:{keep:[0,90,0,0,0,240,[]],take:[0,25,siteRewards.reservoir.take.power,0,0,0,[4,4,4,4,4]]},archive:{keep:[350,75,0,1,0,0,[]],take:[0,50,0,0,siteRewards.archive.take.haste,350,[2,5,2,5,2,5]]}}[sites[i].id][choice];
     const [gold,hp,power,vitality,haste,xp,kinds]=expected;assert.equal(s.run.gold,gold);assert.equal(s.run.player.hp,hp);assert.equal(s.run.up.power||0,power);assert.equal(s.run.up.vitality||0,vitality);assert.equal(s.run.up.haste||0,haste);
     assert.equal(s.run.xp+[...Array(s.run.level-1)].reduce((sum,_,j)=>sum+xpNeed(j+1),0),xp);
     assert.deepEqual(h.spawned.map(e=>e.kind),kinds);if(i===2&&choice==='take')assert.ok(h.spawned.every(e=>e.elite));noChange(s,()=>h.site.chooseSite(choice));
@@ -179,4 +179,13 @@ test('truth pieces open one by one from endings and the stillness secret, and th
   s.profile.memory.endings.release=2;assert.equal(count(),truthPieces.length);assert.ok(content.buildModal().includes(truthReveal));
   const fresh=state();prepareRoute(fresh.run,4);createEndingDecisions({sessionState:fresh}).chooseFinale('preserve');assert.ok(fresh.profile.memory.archive.includes(truthFound));
   const again=state();again.profile.memory.endings.preserve=1;prepareRoute(again.run,4);createEndingDecisions({sessionState:again}).chooseFinale('preserve');assert.ok(!again.profile.memory.archive.includes(truthFound));
+});
+test('route rewards: remembering and listening add experience, burning and extraction add the tuned damage',()=>{
+  const profile=initialProfile(),base=createRun(profile,{maxHp:100,xpNext:xpNeed(1)});
+  assert.equal(xpBonus(profile,base),1);
+  const kept={...base,signalChoices:['hear','hear','burn'],npc:{...base.npc,state:'heard'}};
+  assert.ok(Math.abs(xpBonus(profile,kept)-(1+2*signalReward.xp+witnessReward.xp))<1e-12);
+  const s={profile,run:createRun(profile,{maxHp:100,xpNext:xpNeed(1)}),replaceRun(){}},statistics=createStatistics({sessionState:s}),plain=statistics.stats().damage;
+  s.run.signalPower=3;s.run.npc.state='taken';
+  assert.ok(Math.abs(statistics.stats().damage/plain-(1+3*signalReward.burnPower)*(1+witnessReward.takeDamage))<1e-9);
 });
