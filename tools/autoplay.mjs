@@ -7,6 +7,8 @@ import { createMockBrowser } from "../tests/mock-browser.js";
 import { createDebugGame } from "../src/debug/create-debug-game.js";
 import { paceAt } from "../src/core/difficulty.js";
 import { startWeaponLevel } from "../src/data/loadouts.js";
+import { hazardHit } from "../src/math/geometry.js";
+import { fusionRecipes } from "../src/data/fusions.js";
 
 // 근거리 시작 무기와 봇이 다가갈 거리(균열은 사거리 약 220 안).
 const CLOSE_RANGE = new Map([
@@ -15,7 +17,6 @@ const CLOSE_RANGE = new Map([
   ["mine", 85],
   ["rift", 170],
 ]);
-import { fusionRecipes } from "../src/data/fusions.js";
 
 const FRAME_MS = 1000 / 60;
 const LIMIT = 1800 + 300; // 30분 + 중심핵 전투 최대 5분
@@ -93,6 +94,7 @@ export function autoplay({
   limit = LIMIT,
   timeScale = 4,
   immortal = true,
+  dodge = true,
   objectives = true,
   planner = true,
   startWeapon = "pulse",
@@ -343,6 +345,26 @@ export function autoplay({
         if (goal && Math.hypot(goal.x - p.x, goal.y - p.y) < 70) {
           env.dispatch("keydown", { code: "KeyE" });
           env.dispatch("keyup", { code: "KeyE" });
+        }
+        // 회피(NEXT-UPDATE-PLAN.md 5순위): 예고 범위(곧 발동 · 발동 중) 안이면 8방향 중 안전하고 원래 방향에 가까운 쪽으로 빠진다.
+        if (dodge && run.hazards?.length) {
+          const soon = run.hazards.filter(h => h.fireAt - run.time < 1.2 && h.endAt > run.time),
+            danger = pt => soon.some(h => hazardHit(h, pt, Math.max(run.time, h.fireAt)));
+          if (soon.length && danger(p)) {
+            let best = null;
+            for (let k = 0; k < 8; k++) {
+              const a = (k / 8) * Math.PI * 2,
+                ux = Math.cos(a),
+                uy = Math.sin(a);
+              if (danger({ x: p.x + ux * 70, y: p.y + uy * 70 })) continue;
+              const score = ux * vx + uy * vy;
+              if (!best || score > best.score) best = { ux, uy, score };
+            }
+            if (best) {
+              vx = best.ux;
+              vy = best.uy;
+            }
+          }
         }
         const keys = [];
         if (vx > 0.3) keys.push("KeyD");
