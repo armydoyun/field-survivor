@@ -164,4 +164,15 @@ const witnessReactions = {
   relic: '기록원 · "{relic}… 그건 내가 두고 간 거야. 잘 써 줘."'
 };
 
-export { witnessReactions, deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };
+// 화부: 엔진을 지키는 인물(NEXT-UPDATE-PLAN.md 4순위). 기록원을 듣지 않은 판에서 태우는 선택에 반응하고,
+// 식지 않는 엔진 결말 장면에 한 줄 남는다. 기록원과 대칭되는 연소 경로의 목소리.
+const stokerLines = {
+  burn: [
+    '화부 · "좋아. 그 정도면 한동안 꺼지지 않아."',
+    '화부 · "더 넣어. 문은 뜨거울 때만 움직여."',
+    '화부 · "이제 너도 엔진 소리를 좋아하게 됐군."'
+  ],
+  ending: '화부가 마지막 석탄을 밀어 넣었다. "이제 따뜻하지?"'
+};
+
+export { stokerLines, witnessReactions, deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };

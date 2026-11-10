@@ -1,6 +1,6 @@
 import { commitRunResult } from '../core/run-lifecycle.js';
 import { endingReward } from '../data/world-choices.js';
-import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes, truthFound } from '../data/world.js';
+import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes, truthFound, stokerLines } from '../data/world.js';
 import { episodeTitle } from './effects.js';
 import { appendRecord } from '../core/profile.js';
 import { routeAxes, routeEnding, releaseOpen, endingVariant } from './route.js';
@@ -20,6 +20,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     if(variant==='hollow')return w.hollow;
     if(id==='release')return w.release;
     if(r.npc.state==='heard')return w.heard[id];
+    if(id==='consume')return `${r.npc.state==='taken'?w.taken:w.none} ${stokerLines.ending}`;
     return r.npc.state==='taken'?w.taken:w.none;
   }
   function guardianScene(id,variant,a){

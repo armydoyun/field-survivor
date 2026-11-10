@@ -16,7 +16,7 @@ import { createModalContent } from '../src/ui/modal-content.js';
 import { sites, relics, anomalies, startEffects, startScenes, firstSignalAfterPreserve, witnessAfterRelease, deathLines, truthPieces, truthFound, truthReveal, witnessReactions } from '../src/data/world.js';
 import { createSession } from '../src/core/session.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../src/data/world-choices.js';
-import { endingTexts, endingScenes } from '../src/data/world.js';
+import { endingTexts, endingScenes, stokerLines } from '../src/data/world.js';
 import { GUARDIAN_SALVAGE, ENEMY_LIMIT, GUARDIAN_REACH, GUARDIAN_YIELD } from '../src/core/config.js';
 
 function state(){const s={profile:initialProfile(),run:null,replaceRun:r=>{s.run=r;}};s.run=createRun(s.profile,{maxHp:100,xpNext:xpNeed(1)});return s;}
@@ -123,7 +123,7 @@ test('ending scenes follow the witness, guardians and the lost coordinate; the h
   let result=scenes(r=>{prepareRoute(r,4);r.npc.state='heard';r.guardianFate={spare:1,end:0};r.siteDecisions.coordinate='keep';},'preserve');
   assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.heard.preserve,endingScenes.guardian.spared]);assert.ok(result.scenes[2].startsWith(endingScenes.exit.keep));assert.equal(result.variant,'');
   result=scenes(r=>{prepareRoute(r,-6);r.guardianFate={spare:0,end:3};},'consume');assert.equal(result.variant,'hollow');assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.hollow,endingScenes.guardian.hollow]);
-  result=scenes(r=>{prepareRoute(r,-6);r.guardianFate={spare:0,end:2};},'consume');assert.equal(result.variant,'');assert.equal(result.scenes[0],endingScenes.witness.taken);
+  result=scenes(r=>{prepareRoute(r,-6);r.guardianFate={spare:0,end:2};},'consume');assert.equal(result.variant,'');assert.equal(result.scenes[0],`${endingScenes.witness.taken} ${stokerLines.ending}`);
   result=scenes(r=>{prepareRelease(r);r.siteDecisions.coordinate='keep';},'release');assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.release,endingScenes.guardian.release]);assert.ok(result.scenes[2].startsWith(endingScenes.exit.release));
   result=scenes(r=>{prepareRoute(r,0);r.time=1800;},'divided');assert.ok(result.scenes[2].includes('지나친 표식 3개'));
 });
@@ -199,6 +199,10 @@ test('the witness reacts to memory-axis choices: a voice if heard, static if ext
   }
   const h=harness(),{s}=h;s.run.npc.state='heard';prepareSite(h.s,0);h.site.chooseSite('take');assert.ok(s.run.logs.includes(witnessReactions.burn[0]));
   const relic=relics.find(r=>r.site===sites[0].id);h.site.chooseRelic(relic.id);assert.ok(s.run.logs.includes(witnessReactions.relic.replace('{relic}',relic.name)));
+});
+test('the stoker answers burning when the witness was not heard; the archivist keeps the voice when heard',()=>{
+  for(const state of ['none','taken']){const h=harness(),{s}=h;s.run.npc.state=state;h.story.chooseSignal('burn');h.story.chooseSignal('burn');const logs=s.run.logs.join('\n');assert.ok(logs.includes(stokerLines.burn[0]),state);assert.ok(logs.includes(stokerLines.burn[1]),state);}
+  const h=harness(),{s}=h;s.run.npc.state='heard';h.story.chooseSignal('burn');assert.ok(!s.run.logs.join('\n').includes('화부 ·'));
 });
 test('ending and ledger screens draw the run\'s axis position; the result keeps the axes for the ledger',()=>{
   const s=state();prepareRoute(s.run,4);s.run.guardianFate={spare:2,end:1};const result=createEndingDecisions({sessionState:s}).chooseFinale('preserve');
