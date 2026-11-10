@@ -16,6 +16,12 @@ export const SOUNDS = Object.freeze({
   shield: { kind: "arp", wave: "sine", notes: [1047, 1568], step: 0.04, dur: 0.4, gain: 0.08, gap: 0.3, cap: 3 },
   stoke: { kind: "noise", dur: 0.5, gain: 0.1, filter: 900, gap: 1, cap: 1 },
   quench: { kind: "tone", wave: "sine", freq: 520, to: 260, dur: 0.7, gain: 0.08, gap: 1, cap: 1 },
+  // 무기 발사음(v2.9): 아주 작게, 무기마다 간격을 둔다. 타격음보다 작아야 한다.
+  firePulse: { kind: "tone", wave: "triangle", freq: 1250, to: 940, dur: 0.025, gain: 0.014, gap: 0.09, cap: 8 },
+  fireNova: { kind: "tone", wave: "sine", freq: 300, to: 170, dur: 0.18, gain: 0.03, gap: 0.3, cap: 3 },
+  fireRift: { kind: "noise", dur: 0.08, gain: 0.025, filter: 3200, gap: 0.3, cap: 3 },
+  fireBeacon: { kind: "tone", wave: "sine", freq: 1560, to: 1400, dur: 0.05, gain: 0.018, gap: 0.2, cap: 4 },
+  fireMine: { kind: "tone", wave: "square", freq: 220, to: 200, dur: 0.04, gain: 0.015, gap: 0.3, cap: 3 },
   drift: { kind: "tone", wave: "sine", freq: 110, to: 82, dur: 0.6, gain: 0.09, gap: 2, cap: 1 },
 });
 

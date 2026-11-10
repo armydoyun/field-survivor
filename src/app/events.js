@@ -26,6 +26,7 @@ export function createEvents({ view, platform, shop, buildGuide, menuInput, stor
     listen($('pauseButton'), 'click', session.pause);
 
     if (audio && $('soundButton')) listen($('soundButton'), 'click', audio.toggle);
+    if (audio && $('volumeSlider')) { listen($('volumeSlider'), 'input', event => { audio.setVolume(event.target.value); audio.play('select'); }); listen($('volumeSlider'), 'change', event => event.target.blur?.()); }
 
     listen($('hideButton'), 'click', menuInput.hideGame);
 

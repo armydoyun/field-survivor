@@ -42,3 +42,14 @@ test('the audio control toggles and saves the setting, labels the button, and st
   const restored = initialProfile(); hydrateProfile(restored, { audio: { muted: true, volume: 7 } }); assert.deepEqual(restored.audio, { muted: true, volume: 1 });
   const fresh = initialProfile(); hydrateProfile(fresh, {}); assert.deepEqual(fresh.audio, { muted: false, volume: .6 });
 });
+
+test('the volume slider stores 0 to 100 in steps of 5, follows mute and the fire sounds stay quieter than hits', () => {
+  const profile = initialProfile(), saves = [], slider = { value: '0', disabled: false }, button = { innerHTML: '' };
+  const sfx = createSfx({ audioContext: () => null });
+  const audio = createAudioControl({ sessionState: { profile }, view: {}, platform: { $: id => id === 'volumeSlider' ? slider : id === 'soundButton' ? button : null }, storage: { save: () => saves.push(1) }, sfx });
+  audio.sync(); assert.equal(slider.value, '60');
+  assert.equal(audio.setVolume('42'), .4); assert.equal(slider.value, '40'); assert.equal(sfx.state().volume, .4); assert.equal(saves.length, 1);
+  assert.equal(audio.setVolume(250), 1); assert.equal(audio.setVolume('x'), 0);
+  audio.toggle(); assert.equal(slider.disabled, true);
+  for (const id of Object.keys(SOUNDS).filter(id => id.startsWith('fire'))) assert.ok(SOUNDS[id].gain < SOUNDS.hit.gain, id);
+});

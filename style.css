@@ -356,3 +356,7 @@ background:#3a5a66}
 @media(max-width:430px){.guide-card-head{flex-wrap:wrap;gap:6px}.guide-badge{max-width:100%;overflow-wrap:anywhere}.guide-summary{gap:7px 13px}}
 
 @media(max-width:430px){.build-toolbar{flex-wrap:wrap;gap:8px}.build-count{white-space:normal}}
+
+/* 효과음 음량(v2.9) */
+.volume-slider { width: 84px; accent-color: #8fcfc0; vertical-align: middle; cursor: pointer; }
+.volume-slider:disabled { opacity: .4; cursor: default; }

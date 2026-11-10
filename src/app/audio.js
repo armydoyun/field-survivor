@@ -3,9 +3,11 @@ export function createAudioControl({ sessionState, view, platform, storage, sfx 
   const { $ } = platform;
   const settings = () => sessionState.profile.audio || (sessionState.profile.audio = { muted: false, volume: .6 });
   function label() { const button = $('soundButton'); if (button) button.innerHTML = `${settings().muted ? '소리 꺼짐' : '소리 켜짐'} <kbd>M</kbd>`; }
-  function sync() { sfx.setMuted(settings().muted); sfx.setVolume(settings().volume); label(); }
+  function sync() { sfx.setMuted(settings().muted); sfx.setVolume(settings().volume); label(); const slider = $('volumeSlider'); if (slider) { slider.value = String(Math.round(settings().volume * 100)); slider.disabled = settings().muted; } }
+  // 음량 0 ~ 100(5 단위). 0으로 내려도 끄기 설정과는 따로 둔다.
+  function setVolume(percent) { settings().volume = Math.max(0, Math.min(1, Math.round(Number(percent) / 5) * 5 / 100 || 0)); sync(); storage.save(); return settings().volume; }
   function toggle() { settings().muted = !settings().muted; sync(); storage.save(); return settings().muted; }
   function unlock() { const opened = sfx.unlock(); if (opened) sync(); return opened; }
   function play(id) { sfx.setSuspended(view.panic); return sfx.play(id); }
-  return { unlock, toggle, sync, play };
+  return { unlock, toggle, sync, play, setVolume };
 }

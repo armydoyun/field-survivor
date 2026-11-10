@@ -26,13 +26,13 @@ export function createWeapons({ sessionState, view, statistics, feedback, camera
           inspector?.segment(p.x,p.y,x,y,10,'rift');
           for (const e of sessionState.run.enemies) if (targetable(e,sessionState.run) && segmentHit(p.x,p.y,x,y,e.x,e.y,e.radius+10)) { combat.damage(e,dmg * (offset ? .68 : 1)); }
         }
-        feedback.ring(p.x,p.y,32,'#e7b7fa',.26); sessionState.run.riftClock = statistics.riftInterval(s);
+        feedback.sound?.('fireRift'); feedback.ring(p.x,p.y,32,'#e7b7fa',.26); sessionState.run.riftClock = statistics.riftInterval(s);
       }
       else sessionState.run.riftClock = .15;
     }
     if (s.beacon && (sessionState.run.beaconClock -= dt) <= 0) {
       if (sessionState.run.beacons.length >= 2) {const old=sessionState.run.beacons.shift();feedback.addSkillEcho('circle',{x:old.x,y:old.y,radius:9,color:'#a3dbf6'});}
-      sessionState.run.beacons.push({x:p.x,y:p.y,life:11,clock:.2}); feedback.ring(p.x,p.y,24,'#a2e4ff',.25); sessionState.run.beaconClock = beaconInterval(s);
+      sessionState.run.beacons.push({x:p.x,y:p.y,life:11,clock:.2}); feedback.sound?.('fireBeacon'); feedback.ring(p.x,p.y,24,'#a2e4ff',.25); sessionState.run.beaconClock = beaconInterval(s);
     }
     for (let i=sessionState.run.beacons.length-1;i>=0;i--) {
       const b=sessionState.run.beacons[i]; b.life-=dt;
@@ -59,7 +59,7 @@ export function createWeapons({ sessionState, view, statistics, feedback, camera
       const target = s.placement ? nearestEnemyIn(sessionState.run,300) : null, d = target ? Math.hypot(target.x-p.x,target.y-p.y) || 1 : 1, offset = Math.min(d*.7, 50+s.placement*20);
       const x = target ? p.x+(target.x-p.x)/d*offset : p.x, y = target ? p.y+(target.y-p.y)/d*offset : p.y;
       if (sessionState.run.mines.length >= 8) sessionState.run.mines.shift();
-      sessionState.run.mines.push({ x, y, life: 12 }); feedback.ring(x, y, 16, '#dba88b', .22, 'ring'); sessionState.run.mineClock = statistics.mineInterval(s);
+      sessionState.run.mines.push({ x, y, life: 12 }); feedback.sound?.('fireMine'); feedback.ring(x, y, 16, '#dba88b', .22, 'ring'); sessionState.run.mineClock = statistics.mineInterval(s);
     }
     for (const m of [...sessionState.run.mines].reverse()) {
       const i = sessionState.run.mines.indexOf(m);
@@ -74,7 +74,7 @@ export function createWeapons({ sessionState, view, statistics, feedback, camera
   function tickBaseWeapons(dt, s) {
     const p = sessionState.run.player;
     if (s.nova && (sessionState.run.novaClock -= dt) <= 0) {
-      const radius = statistics.novaRadius(s), color = '#8ee1d7'; inspector?.circle(p.x,p.y,radius,'nova'); feedback.ring(p.x, p.y, radius, color, .36, 'nova');
+      const radius = statistics.novaRadius(s), color = '#8ee1d7'; feedback.sound?.('fireNova'); inspector?.circle(p.x,p.y,radius,'nova'); feedback.ring(p.x, p.y, radius, color, .36, 'nova');
       cameraView.cameraKick(.3);
       for (const e of sessionState.run.enemies) if (targetable(e,sessionState.run) && Math.hypot(e.x - p.x, e.y - p.y) <= radius + e.radius) {
         applySlow(e, .20, .8,sessionState.run.time); combat.damage(e, statistics.weaponDamage('nova', s)); pushEnemy(e, p.x, p.y, statistics.novaPush(s));
@@ -135,7 +135,7 @@ export function createWeapons({ sessionState, view, statistics, feedback, camera
       const crit = runRandom(sessionState.run) < statistics.pulseCritChance(s), damage = statistics.weaponDamage('pulse', s) * (i ? 0.38 : 1) * (crit ? s.critMult : 1);
       sessionState.run.shots.push({ kind: 'pulse', x: sessionState.run.player.x, y: sessionState.run.player.y, vx: Math.cos(a) * 530, vy: Math.sin(a) * 530, damage, crit, aux: i > 0, radius: s.radius, cold: s.frost > 0, life: 1.35, pierce: s.pierce, hit: [] });
     }
-    if (sessionState.run.waves.length < 28) feedback.ring(sessionState.run.player.x, sessionState.run.player.y, 18, '#f0dfad', .12, 'muzzle');
+    feedback.sound?.('firePulse'); if (sessionState.run.waves.length < 28) feedback.ring(sessionState.run.player.x, sessionState.run.player.y, 18, '#f0dfad', .12, 'muzzle');
     return true;
   }
   function weaponTick(dt,s){tickBaseWeapons(dt,s);feedback.tickWeaponEffects(sessionState.run,dt);}
