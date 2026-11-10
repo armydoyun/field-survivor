@@ -1,6 +1,6 @@
 import { W, H } from '../core/config.js';
 
-export function createScene({ sessionState, platform, cameraView, worldView, primitives, statistics, weaponView, fusionView, playerView, feedback, enemyView, navigation }) {
+export function createScene({ sessionState, platform, cameraView, worldView, primitives, statistics, weaponView, fusionView, playerView, feedback, enemyView, navigation, hints }) {
   const { ctx } = platform;
 
   function draw() {
@@ -28,6 +28,7 @@ export function createScene({ sessionState, platform, cameraView, worldView, pri
     playerView.drawStatus(s);
     feedback.drawFeedback(detail,cx,cy);
     ctx.globalAlpha = 1;navigation.drawNavigation(cx,cy);ctx.restore();
+    hints?.drawHint();
   }
 
   return { draw };

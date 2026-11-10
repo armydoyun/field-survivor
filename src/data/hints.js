@@ -1,0 +1,10 @@
+// 첫 플레이 안내: 새 시스템을 처음 만나는 순간에 한 번만 띄운다(profile.memory.hints에 본 ID를 남긴다).
+// 문구는 조작과 의미만 짧게. 숨은 조건(열린 문의 멈춤 등)은 안내하지 않는다.
+export const hints = Object.freeze([
+  { id: 'witness', text: '낯선 신호가 나타났습니다 · 다가가 E로 대화할 수 있습니다.' },
+  { id: 'guardian', text: '감시자가 무기를 내렸습니다 · 곁에서 3초 멈춰 서면 돌려보내고, E로 분해합니다.' },
+  { id: 'route', text: '아레나 테두리 색이 변했습니다 · 지금까지의 선택이 보존(청록) · 연소(주황) 쪽으로 기울었다는 뜻입니다.' },
+  { id: 'fusion', text: '융합 준비 완료 · G로 융합 창을 열 수 있습니다.' },
+  { id: 'shield', text: '돌려보낸 감시자가 방패가 되어 중심핵의 공격을 막아 줍니다.' },
+]);
+export const HINT_SECONDS = 6;

@@ -1,7 +1,7 @@
 import { movePlayer } from '../input/movement.js';
 import { branchReady } from '../growth/build.js';
 
-export function createUpdate({ sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, inspector }) {
+export function createUpdate({ sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, inspector, hints }) {
   const { keys } = platform;
 
   function update(dt) {
@@ -14,6 +14,7 @@ export function createUpdate({ sessionState, view, platform, screen, feedback, s
     if (journey.journeyTick(dt)) return;
     if (story.tickWitness(dt,moving)) return;
     story.tickGuardian(dt,moving);
+    hints?.tickHints();
     population.maintainEnemies();
     objectives.updateObjective(dt);
     population.spawnPopulation(dt);
