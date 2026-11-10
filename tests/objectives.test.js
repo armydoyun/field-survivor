@@ -43,3 +43,13 @@ test('the relay keeps syncing slowly while contested, unwinds when left, and rei
   r.player = { x: 500, y: 0, hp: 100 }; h.o.updateObjective(1); assert.ok(Math.abs(r.objective.progress - (RELAY.contested + 1 - RELAY.decay)) < 1e-9);
   assert.equal(RELAY.reinforce, 12);
 });
+
+test('a syncing relay pushes nearby enemies away every two seconds, never the guardian', async () => {
+  const { RELAY } = await import('../src/world/objectives.js');
+  const h = harness(), r = h.run; r.objectiveStep = objectives.findIndex(x => x.id === 'relay'); r.time = 300;
+  r.objective = { id: 'relay', phase: 1, x: 0, y: 0, left: 52, progress: 0, reinforceAt: 1e9 }; r.player = { x: 0, y: 0, hp: 100 };
+  const grunt = { id: 1, kind: 0, hp: 10, x: 40, y: 0 }, guardian = { id: 2, kind: 3, hp: 10, x: -40, y: 0 }; r.enemies = [grunt, guardian];
+  h.o.updateObjective(.1); assert.equal(grunt.pushX, RELAY.push); assert.equal(guardian.pushX, undefined);
+  grunt.pushX = 0; h.o.updateObjective(.1); assert.equal(grunt.pushX, 0, 'waits for the next pulse');
+  r.time += RELAY.pulse; h.o.updateObjective(.1); assert.equal(grunt.pushX, RELAY.push);
+});

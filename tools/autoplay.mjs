@@ -532,6 +532,9 @@ export function autoplay({
             .map(e => `${e.named ? "N" : "H"}${e.phase}:${Math.round(Math.hypot(e.x - p.x, e.y - p.y))}`)
             .join(","),
           keys: [...held].join(""),
+          obj: run.objective
+            ? `${run.objective.id}:${run.objective.phase || 0}:${(run.objective.progress || 0).toFixed(1)}:${Math.round(Math.hypot(run.objective.x - p.x, run.objective.y - p.y))}`
+            : "",
         });
         if (trace.length > 80) trace.shift();
         if (run.time >= (minute + 1) * 60) {

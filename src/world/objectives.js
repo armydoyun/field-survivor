@@ -4,7 +4,8 @@ import { objectives } from '../data/world.js';
 import { ENEMY_LIMIT } from '../core/config.js';
 
 // 붕괴된 중계기 동기화(v3.0 완화): 경합 중 진행 속도, 떠났을 때 풀리는 속도, 증원 간격(초).
-export const RELAY = Object.freeze({ contested: .35, decay: .4, reinforce: 12 });
+export const RELAY = Object.freeze({ contested: .35, decay: .4, reinforce: 12, pulse: 2, pulseRadius: 150, push: 70 });
+import { pushEnemy } from '../combat/control.js';
 import { enemyType } from '../data/enemies.js';
 
 export function createObjectives({ sessionState, view, progression, feedback, session, storage, enemyRuntime, difficulty, screen }) {
@@ -70,6 +71,12 @@ export function createObjectives({ sessionState, view, progression, feedback, se
         const angle = runRandom(sessionState.run) * Math.PI * 2;
         for (let i = 0; i < 2; i++) { const e = enemyRuntime.spawnEnemy(i ? 1 : sessionState.run.time >= 600 ? 7 : 0); e.x = o.x + Math.cos(angle + i * 1.5) * 190; e.y = o.y + Math.sin(angle + i * 1.5) * 190; }
         o.reinforceAt = sessionState.run.time + RELAY.reinforce;
+      }
+      // 동기화 중인 장치는 2초마다 주변 적을 밀어낸다(감시자 · 중심핵 제외). 곁에 서 있는 플레이어의 숨 돌릴 틈.
+      if (near && sessionState.run.time >= (o.pulseAt || 0)) {
+        o.pulseAt = sessionState.run.time + RELAY.pulse;
+        for (const e of sessionState.run.enemies) if (Math.hypot(e.x - o.x, e.y - o.y) < RELAY.pulseRadius) pushEnemy(e, o.x, o.y, RELAY.push);
+        feedback.ring?.(o.x, o.y, RELAY.pulseRadius, '#a3e5d3', .3, 'ring');
       }
       if (o.progress >= 16) { closeObjective(true); return; }
     }

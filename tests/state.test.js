@@ -75,5 +75,5 @@ test('live state bindings follow replacement and reset without modifying former 
 });
 test('version metadata is consistent and the persistent save key is unchanged', () => {
   const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-  assert.equal(VERSION, '2.9.0'); assert.equal(pkg.version, VERSION); assert.equal(SAVE_KEY, 'field-survivor.v1');
+  assert.equal(VERSION, '3.0.0'); assert.equal(pkg.version, VERSION); assert.equal(SAVE_KEY, 'field-survivor.v1');
 });

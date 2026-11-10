@@ -1,8 +1,14 @@
-# FIELD SURVIVOR v2.9.0
+# FIELD SURVIVOR v3.0.0
 
 선택이 결말을 정하는 서바이버. ESM 소스이며 외부 런타임 라이브러리는 없다. 단일 파일 배포본은 `npm run build`로 만든다.
 
 변경 내역은 [CHANGELOG.md](CHANGELOG.md). v2.6.27까지의 융합 · 그래픽 설계는 아래 절과 [FUSION-REDESIGN.md](FUSION-REDESIGN.md) · [SKILL-VISUAL-DESIGN.md](SKILL-VISUAL-DESIGN.md)에 있다.
+
+## v3.0 시험과 합창
+
+- **합창**: 기록원을 들어 주고 화부와도 정한 판이 두 개의 목소리로 끝나면 두 사람이 함께 나오는 결말 변주가 열린다.
+- **감시자의 시험**: 쓰러뜨리지 못해도 75초(두 번째 90초, 세 번째 100초)를 버티면 감시자가 먼저 무기를 내린다.
+- **붕괴된 중계기 완화**: 경합 중에도 느리게 동기화되고, 장치가 주변 적을 밀어낸다.
 
 ## v2.9 두 목소리
 
