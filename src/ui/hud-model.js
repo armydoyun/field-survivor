@@ -10,7 +10,7 @@ import { routeAxes } from '../world/route.js';
 import { anomalyActive, hasRelic } from '../world/effects.js';
 import { relics, anomalies, objectives, sites, finalEndings, startScenes } from '../data/world.js';
 import { xpNeed, xpCollectionScale } from '../growth/experience.js';
-import { fusionReady, weaponConsumed, fusionConsumed, activeFusions, specialized } from '../growth/build.js';
+import { fusionReady, weaponConsumed, fusionConsumed, activeFusions, specialized, pulseDormant } from '../growth/build.js';
 import { recoveryScale } from '../combat/recovery.js';
 import { armorScale, incomingScale } from '../combat/rules.js';
 import { upgrades } from '../data/upgrades.js';
@@ -47,7 +47,7 @@ export function createHudModel({ sessionState, view, statistics, growthMetrics }
     text['upgradeCount'] = `${owned.length} · 전문화 ${Object.keys(sessionState.run?.branches || {}).length}/${branches.length}`; html['activeUpgrades'] =  owned.length ? owned.map(item => `<span class="upgrade-chip">${item.name} ${sessionState.run.up[item.id]}${growthMetrics.branchLabel(item.id)?`<em class="upgrade-branch">◆ ${growthMetrics.branchLabel(item.id)}</em>`:''}</span>`).join('') : '<p class="muted">레벨업하면 효과를 선택할 수 있습니다.</p>';
     const value = amount => amount.toFixed(1);
     const weapons = [
-      ['PULSE', `코어 Lv ${s.pulse}/5 · ${s.shots}발 / ${s.interval.toFixed(2)}초`, `중앙탄 ${value(statistics.weaponDamage('pulse', s))} · 보조탄 각 ${value(statistics.weaponDamage('extra', s))} (38%) · 탐지 490 · 관통 후속 피해 ×0.87 · 치명타 ×${s.critMult.toFixed(2)} · 최대 ${s.pierce}명 명중`],
+      ['PULSE', pulseDormant(sessionState.run) ? '휴면 · 레벨업에서 펄스를 고르면 깨어남' : `코어 Lv ${s.pulse}/5 · ${s.shots}발 / ${s.interval.toFixed(2)}초`, `중앙탄 ${value(statistics.weaponDamage('pulse', s))} · 보조탄 각 ${value(statistics.weaponDamage('extra', s))} (38%) · 탐지 490 · 관통 후속 피해 ×0.87 · 치명타 ×${s.critMult.toFixed(2)} · 최대 ${s.pierce}명 명중`],
       ['ORBIT', s.orbit ? `Lv ${s.orbit} · ${s.orbit}개 · 회전 반경 ${s.orbitRadius}` : '미해금', s.orbit ? `위성당 명중 ${value(statistics.weaponDamage('orbit', s))} · 적 탄환 접촉 시 요격 · 위성별 ${statistics.orbitReload()}초 재충전 · 명중한 일반 적 넉백 ${orbitPush(s)} · 몸통·돌진·지면 공격 차단 불가` : '위성 업그레이드로 해금'],
       ['NOVA', s.nova ? `Lv ${s.nova} · 반경 ${Math.round(statistics.novaRadius(s))} · ${statistics.novaInterval(s.nova).toFixed(2)}초 주기` : '미해금', s.nova ? `범위 피해 ${value(statistics.weaponDamage('nova', s))} · 일반 적 넉백 ${statistics.novaPush(s)} · 둔화 ${20}%` : '노바 충격파 업그레이드로 해금'],
       ['CHAIN', s.chain ? `Lv ${s.chain} · 최대 ${statistics.chainTargets(s)}명 · 재발동 ${statistics.chainReload(s).toFixed(2)}초` : '미해금', s.chain ? `자동 적 탐지 (460) · 첫 피해 ${value(statistics.weaponDamage('chain', s))} · 도약마다 ×${0.88} · 연쇄 거리 ${chainReach(s)} · 치명타 없음 · PULSE와 독립 발동` : '연쇄 번개 업그레이드로 해금']

@@ -15,4 +15,8 @@ function refreshBuild(r){
 const hasBranch=(weapon,id,r)=>!weaponConsumed(weapon,r)&&r?.branches?.[weapon]===id;
 const branchReady=r=>branches.find(b=>(r?.up?.[b.id]||0)>=3&&!weaponConsumed(b.id,r)&&!r?.branches?.[b.id]);
 const specialized=(id,r)=>!weaponConsumed(id,r)&&!!r?.branches?.[id];
-export { fusionConsumed, activeFusions, weaponConsumed, fusionReady, refreshBuild, hasBranch, branchReady, specialized };
+// 다른 무기로 시작한 판에서 펄스를 아직 고르지 않았으면 기본 사격이 쉰다(시작 무기 선택).
+const pulseDormant=r=>!!r?.startWeapon&&r.startWeapon!=='pulse'&&!(r.up?.pulse>0);
+const pulseActive=r=>!weaponConsumed('pulse',r)&&!pulseDormant(r);
+
+export { pulseDormant, pulseActive, fusionConsumed, activeFusions, weaponConsumed, fusionReady, refreshBuild, hasBranch, branchReady, specialized };

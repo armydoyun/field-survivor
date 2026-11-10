@@ -4,7 +4,7 @@ import { phases } from '../data/progression.js';
 import { RUN_END } from './config.js';
 import { rewardXp as enemyRewardXp } from '../growth/rewards.js';
 import { anomalyActive } from '../world/effects.js';
-import { weaponConsumed, hasBranch, specialized, activeFusions } from '../growth/build.js';
+import { hasBranch, specialized, activeFusions, pulseActive } from '../growth/build.js';
 import { clamp } from './utils.js';
 import { tacticalKind } from '../combat/rules.js';
 
@@ -24,7 +24,7 @@ export function createDifficulty({ sessionState, statistics }) {
 
   function combatPower(r=sessionState.run){
     const s=statistics.stats(r),crit=1+statistics.pulseCritChance(s)*(s.critMult-1),auxCrit=1+statistics.pulseCritChance(s)*(s.critMult-1),damage=type=>statistics.weaponDamage(type,s,0,r);
-    let total=(weaponConsumed('pulse',r)?0:damage('pulse')*(crit+Math.max(0,s.shots-1)*.38*.55*auxCrit)/s.interval);
+    let total=(!pulseActive(r)?0:damage('pulse')*(crit+Math.max(0,s.shots-1)*.38*.55*auxCrit)/s.interval);
     if(s.orbit)total+=damage('orbit')/.38*.65;
     if(s.nova)total+=damage('nova')/statistics.novaInterval(s.nova)*(hasBranch('nova','boundary',r)?1.2:hasBranch('nova','reflux',r)?1.3:1);
     if(s.chain)total+=damage('chain')/statistics.chainReload(s);

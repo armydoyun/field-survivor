@@ -7,7 +7,7 @@ import { createKeyboardInput } from '../src/input/keyboard.js';
 import { createActions } from '../src/app/actions.js';
 import { createGrowthActions } from '../src/ui/growth-actions.js';
 
-const modes=['playing','menu','paused','levelup','branch','fusion','signal','bosschoice','encounter','secret','site','relic','echo','legacy','anomaly','keystone','finalintro','finalchoice','ending','gameover','ledger','newconfirm','resetconfirm','unknown'];
+const modes=['playing','menu','paused','levelup','branch','fusion','signal','bosschoice','encounter','secret','site','relic','echo','legacy','anomaly','keystone','finalintro','finalchoice','ending','gameover','ledger','newconfirm','resetconfirm','loadout','unknown'];
 const runs=[null,Object.freeze({pending:0}),Object.freeze({pending:2})];
 function flags(mode,bits){return {mode,panic:!!(bits&1),buildOpen:!!(bits&2),shopOpen:!!(bits&4),skillInfoOpen:!!(bits&8)};}
 // Independent copies of the v2.6.23 call-site conditions. Do not derive expected values from policy helpers.

@@ -4,7 +4,7 @@ import { targetable } from './rules.js';
 import { nearestEnemyIn, nearestEnemy } from './targeting.js';
 import { segmentHit } from '../math/geometry.js';
 import { applySlow, pushEnemy } from './control.js';
-import { specialized, weaponConsumed } from '../growth/build.js';
+import { specialized, weaponConsumed, pulseActive } from '../growth/build.js';
 import { hasRelic } from '../world/effects.js';
 
 export function createWeapons({ sessionState, view, statistics, feedback, cameraView, combat, inspector }) {
@@ -126,7 +126,7 @@ export function createWeapons({ sessionState, view, statistics, feedback, camera
     return false;
   }
   function fire() {
-    if(specialized('pulse',sessionState.run)||weaponConsumed('pulse',sessionState.run))return false;
+    if(specialized('pulse',sessionState.run)||!pulseActive(sessionState.run))return false;
     const target = nearestEnemy(sessionState.run);
     if (!target) return false;
     const s = statistics.stats(), angle = Math.atan2(target.y - sessionState.run.player.y, target.x - sessionState.run.player.x);

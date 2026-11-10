@@ -7,9 +7,9 @@ export function createActions({ view, buildGuide, growthActions, session, screen
     resume:session.resume,reroll:growthActions.rerollUpgrade,hear:()=>story.chooseSignal('hear'),burn:()=>story.chooseSignal('burn'),
     'witness-hear':()=>story.chooseWitness('hear'),'witness-take':()=>story.chooseWitness('take'),silence:story.acknowledgeSilence,
     'final-enter':finale.beginFinale,'reset-open':()=>{if(view.mode==='menu')screen.setMode('resetconfirm');},'reset-cancel':()=>{if(view.mode==='resetconfirm')screen.setMode('menu');},'reset-confirm':session.resetAllRecords,
-    'ledger-open':()=>{if(['menu','ending'].includes(view.mode))screen.setMode('ledger');},'ledger-back':()=>{if(view.mode==='ledger')screen.setMode('menu');},menu:()=>{screen.setMode('menu');storage.save();}
+    'loadout-back':()=>{if(view.mode==='loadout')screen.setMode('menu');},'ledger-open':()=>{if(['menu','ending'].includes(view.mode))screen.setMode('ledger');},'ledger-back':()=>{if(view.mode==='ledger')screen.setMode('menu');},menu:()=>{screen.setMode('menu');storage.save();}
   };
-  const prefixes=[['fusion-',growthActions.chooseFusion],['anomaly-',story.chooseAnomaly],['site-',sites.chooseSite],['relic-',sites.chooseRelic],['branch-',growthActions.chooseBranch],['keystone-',journey.chooseKeystone],['final-',finale.chooseFinale]];
+  const prefixes=[['start-',weapon=>{if(view.mode==='loadout')session.startFresh(true,weapon);}],['fusion-',growthActions.chooseFusion],['anomaly-',story.chooseAnomaly],['site-',sites.chooseSite],['relic-',sites.chooseRelic],['branch-',growthActions.chooseBranch],['keystone-',journey.chooseKeystone],['final-',finale.chooseFinale]];
   function dispatch(id){
     if(typeof id!=='string')return false;
     if(Object.hasOwn(exact,id)){sfx?.play('select');exact[id]();return true;}
