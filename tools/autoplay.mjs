@@ -10,6 +10,30 @@ import { startWeaponLevel } from "../src/data/loadouts.js";
 import { hazardHit } from "../src/math/geometry.js";
 import { fusionRecipes } from "../src/data/fusions.js";
 
+// 받은 피해의 출처를 피격 직후 판 상태로 어림한다: 예고 범위 · 표류 구역 · 탄 · 감시자 · 정예 · 일반 적 몸체.
+function damageSource(r) {
+  const p = r?.player;
+  if (!p) return "unknown";
+  if ((r.hazards || []).some(h => r.time >= h.fireAt && hazardHit(h, p, r.time))) return "hazard";
+  if ((r.drift?.zones || []).some(z => r.time >= z.liveAt && Math.hypot(p.x - z.x, p.y - z.y) < z.radius + 12))
+    return "drift";
+  if ((r.bullets || []).some(b => Math.hypot(b.x - p.x, b.y - p.y) < 40 + (b.radius || 0))) return "bullet";
+  let best = null,
+    bestD = Infinity;
+  for (const e of r.enemies || []) {
+    const d = Math.hypot(e.x - p.x, e.y - p.y) - (e.radius || 12);
+    if (e.hp > 0 && d < bestD) {
+      best = e;
+      bestD = d;
+    }
+  }
+  if (!best || bestD > 60) return "unknown";
+  return best.kind === 3 ? "guardian" : best.elite ? "elite" : `body${best.kind}`;
+}
+
+// 봇이 회피 계산에 쓰는 플레이어 이동 속도(px/초, 기본 이동 속도 어림).
+const BOT_SPEED = 190;
+
 // 근거리 시작 무기와 봇이 다가갈 거리(균열은 사거리 약 220 안).
 const CLOSE_RANGE = new Map([
   ["nova", 85],
@@ -149,6 +173,7 @@ export function autoplay({
       minute = 0,
       damage = 0,
       virtualDeaths = 0,
+      sources = {},
       pool = Infinity,
       lastTime = 0,
       lastHp = t.report().hp,
@@ -165,6 +190,19 @@ export function autoplay({
         mode = report.mode;
       const lost = report.hp < lastHp ? lastHp - report.hp : 0;
       damage += lost;
+      if (lost > 0) {
+        const hitRun = JSON.parse(t.snapshot()).run,
+          source = damageSource(hitRun);
+        sources[source] = (sources[source] || 0) + lost;
+        if (process.env.FS_HIT_TRACE) {
+          const p = hitRun.player,
+            near = (hitRun.enemies || [])
+              .map(e => ({ k: e.kind, el: !!e.elite, d: Math.round(Math.hypot(e.x - p.x, e.y - p.y)), ai: e.ai }))
+              .sort((a, b) => a.d - b.d)
+              .slice(0, 3);
+          console.log(JSON.stringify({ t: +hitRun.time.toFixed(2), lost, source, hz: hitRun.hazards?.length, near }));
+        }
+      }
       // 가상 HP 통: 실제 최대 HP · 재생으로 버틴다고 보고 0이 될 때마다 가상 사망 1회(생존 보상의 가치를 잰다).
       if (report.mode === "playing") {
         const dt = Math.max(0, report.time - lastTime);
@@ -366,6 +404,42 @@ export function autoplay({
             }
           }
         }
+        // 탄 회피: 0.6초 안에 스칠 탄이 있으면 8방향(+제자리) 중 가장 여유가 큰 쪽으로 움직인다(탄은 직선으로 본다).
+        if (dodge) {
+          const threats = (run.bullets || []).filter(b => {
+            const rx = p.x - b.x,
+              ry = p.y - b.y,
+              v2 = b.vx * b.vx + b.vy * b.vy;
+            if (rx * rx + ry * ry > 320 * 320 || !v2) return false;
+            const tc = Math.max(0, Math.min(0.6, (rx * b.vx + ry * b.vy) / v2));
+            return Math.hypot(rx - b.vx * tc, ry - b.vy * tc) < 22 + (b.radius || 0);
+          });
+          if (threats.length) {
+            const margin = (ux, uy) => {
+              let worst = Infinity;
+              for (let s = 0.05; s <= 0.6; s += 0.05)
+                for (const b of threats) {
+                  const d =
+                    Math.hypot(
+                      p.x + ux * BOT_SPEED * s - (b.x + b.vx * s),
+                      p.y + uy * BOT_SPEED * s - (b.y + b.vy * s)
+                    ) - (b.radius || 0);
+                  if (d < worst) worst = d;
+                }
+              return worst;
+            };
+            let best = { ux: 0, uy: 0, score: Math.min(margin(0, 0), 40) };
+            for (let k = 0; k < 8; k++) {
+              const a = (k / 8) * Math.PI * 2,
+                ux = Math.cos(a),
+                uy = Math.sin(a),
+                score = Math.min(margin(ux, uy), 40) + (ux * vx + uy * vy) * 2;
+              if (score > best.score) best = { ux, uy, score };
+            }
+            vx = best.ux;
+            vy = best.uy;
+          }
+        }
         const keys = [];
         if (vx > 0.3) keys.push("KeyD");
         else if (vx < -0.3) keys.push("KeyA");
@@ -426,6 +500,7 @@ export function autoplay({
       timeline,
       decisions,
       trace,
+      sources,
       final: { level: run.level, kills: run.kills, virtualDeaths, objectives: { ...(run.objectiveOutcomes || {}) } },
     };
   } finally {
