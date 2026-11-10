@@ -80,3 +80,11 @@ test('frozen architecture separates helpers, view models, adapters, attack state
   assert.ok(source('render/scene.js').length<3500);assert.ok(source('ui/hud.js').length<2000);assert.ok(source('ui/modals.js').length<1500);assert.doesNotMatch(source('render/scene.js'),/for \(const e of|for \(const fx of|function drawGem/);
   assert.match(source('growth/commands.js'),/makeFusionRuntime\(id\)/);assert.match(source('combat/specializations.js'),/recordAttackHit/);
 });
+test('HUD route tint follows the memory axis without showing numbers',()=>{
+  for(const [choices,route]of [[[],'neutral'],[['hear','hear'],'preserve'],[['hear','hear','hear'],'preserve'],[['burn','burn'],'consume']]){
+    const h=fixture();h.sessionState.run.signalChoices=choices;const out=createHudModel(h).readHud({});assert.equal(out.dataset.gameColumn.route,route,choices.join());
+  }
+  const h=fixture();Object.assign(h.sessionState.run,{signalChoices:['burn','burn','burn'],siteDecisions:{coordinate:'take'}});assert.equal(createHudModel(h).readHud({}).dataset.gameColumn.route,'consume-strong');
+  const nodes=new Map(),$=id=>{if(!nodes.has(id))nodes.set(id,{style:{},dataset:{},setAttribute(){}});return nodes.get(id);};
+  createHud({platform:{$},model:{readHud:()=>({text:{},html:{},width:{},hidden:{},keys:{},dataset:{gameColumn:{route:'preserve'}},fusionDisabled:true,fusionExpanded:'false'})}}).updateHud();assert.equal($('gameColumn').dataset.route,'preserve');
+});

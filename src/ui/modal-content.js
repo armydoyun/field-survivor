@@ -11,6 +11,13 @@ import { upgrades, upgradeFamilies } from '../data/upgrades.js';
 import { branches } from '../data/specializations.js';
 import { canReroll } from '../growth/cards.js';
 
+// 이번 판의 축 위치(NARRATIVE-REDESIGN.md 3.3절). 기억 축 −7(연소) ~ +7(보존)과 감시자 결정.
+function routeAxisHtml(axes){
+  if(!axes)return '';
+  const position=Math.round((Math.max(-7,Math.min(7,axes.memory))+7)/14*100);
+  return `<div class="route-axis" aria-label="이번 판의 경로"><div class="route-axis-ends"><span>연소</span><span>보존</span></div><div class="route-axis-track"><span class="route-axis-mark" style="left:${position}%"></span></div><div class="route-axis-notes">감시자 · 돌려보냄 ${axes.spared} / 분해 ${axes.ended}${axes.stillness?' · 기록원 곁에서 멈춰 있었다':''}${axes.silence?` · 지나친 표식 ${axes.silence}`:''}</div></div>`;
+}
+
 export function createModalContent({ sessionState, view, keystoneOptions, fusionHtml, growthMetrics, route }) {
 
   function siteEffect(site,id){
@@ -37,7 +44,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const epilogue = `<div class="closure-reveal"><strong>진실 조각 ${found.length}/${truthPieces.length}</strong><ul>${pieces}</ul>${allFound?`<p>${htmlEscape(truthReveal)}</p>`:''}</div>`;
       const summary=`<div class="summary">${finalEndings.map(x=>`<span>${x.name} <strong>${m.endings[x.id]}회</strong></span>`).join('')}</div>`;
       const recordLines=(last?.threads||[]).map(line=>`<li>${htmlEscape(line)}</li>`).join('');
-      return modalHtml('ECHO ARCHIVE · CONCLUSION','결말과 남겨진 사람들','전투에서 내린 선택과 지나친 선택은 사라지지 않습니다. 마지막 도전의 기록과 발견한 결말을 다시 읽을 수 있습니다.',actionHtml('ledger-back','제목 화면으로',true),summary+epilogue+sceneHtml(last?.scenes)+(last?`<details class="ending-ledger" open><summary>마지막 결말 · ${finalEndings.find(x=>x.id===last.ending)?.name} · ${last.threads.length}건</summary><ul>${recordLines}</ul></details>`:''),true);
+      return modalHtml('ECHO ARCHIVE · CONCLUSION','결말과 남겨진 사람들','전투에서 내린 선택과 지나친 선택은 사라지지 않습니다. 마지막 도전의 기록과 발견한 결말을 다시 읽을 수 있습니다.',actionHtml('ledger-back','제목 화면으로',true),summary+epilogue+routeAxisHtml(last?.axes)+sceneHtml(last?.scenes)+(last?`<details class="ending-ledger" open><summary>마지막 결말 · ${finalEndings.find(x=>x.id===last.ending)?.name} · ${last.threads.length}건</summary><ul>${recordLines}</ul></details>`:''),true);
     } else if (view.mode === 'newconfirm') {
       return  modalHtml('NEW RUN · CONFIRM', '진행 중인 도전을 포기할까요?', `현재 ${timeText(sessionState.run?.time || 0)}까지 플레이한 도전과 획득한 전투 골드 ${sessionState.run?.gold || 0}G가 사라집니다. 영구 강화와 과거 기록은 유지됩니다.`, actionHtml('new-cancel', '계속 이어서 하기', true) + actionHtml('new-confirm', '현재 도전 포기하고 새로 시작'));
     } else if (view.mode === 'resetconfirm') {
@@ -87,7 +94,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const ending = finalEndings.find(x => x.id === view.lastResult?.endingId) || finalEndings[0], intro = (view.lastResult?.variant === 'hollow' ? endingTexts.hollow : endingTexts[ending.id]).intro;
       const summary = `<div class="summary"><span>생존 <strong>${timeText(view.lastResult?.time || 0)}</strong></span><span>획득 <strong>${view.lastResult?.gold || 0} G</strong></span></div>`;
       const receipts=view.lastResult?.threads||[], epilogue=receipts.length?`<details class="ending-ledger"><summary>세부 기록 · ${receipts.length}건</summary><ul>${receipts.map(line=>`<li>${htmlEscape(line)}</li>`).join('')}</ul></details>`:'<p class="ending-ledger-empty">이번 도전에서 추가로 회수할 선택 기록은 없었습니다.</p>';
-      return  modalHtml('ENDING · THE LOOP', view.lastResult?.variant === 'hollow' ? `${ending.name} · 빈 껍질` : ending.name, intro, actionHtml('menu', '기록으로 돌아가기', true) + actionHtml('new', '새로운 도전') + actionHtml('ledger-open', '이 결말의 기록 열람'), summary+sceneHtml(view.lastResult?.scenes)+epilogue, true);
+      return  modalHtml('ENDING · THE LOOP', view.lastResult?.variant === 'hollow' ? `${ending.name} · 빈 껍질` : ending.name, intro, actionHtml('menu', '기록으로 돌아가기', true) + actionHtml('new', '새로운 도전') + actionHtml('ledger-open', '이 결말의 기록 열람'), summary+routeAxisHtml(view.lastResult?.axes)+sceneHtml(view.lastResult?.scenes)+epilogue, true);
     } else if (view.mode === 'gameover') {
       const r = view.lastResult || { time: 0, kills: 0, gold: 0, level: 1 }, summary = `<div class="summary"><span>생존 <strong>${timeText(r.time)}</strong></span><span>레벨 <strong>${r.level}</strong></span><span>처치 <strong>${r.kills}</strong></span><span>획득 <strong>${r.gold} G</strong></span></div>`;
       const deaths = sessionState.profile.memory.deaths, witnessLine = sessionState.profile.memory.witness.met ? deathLines.witness.filter(x => deaths >= x.from).at(-1)?.line.replace('{phase}', sessionState.profile.memory.lastDeathPhase || '이 벌판').replace('{count}', deaths) : '';

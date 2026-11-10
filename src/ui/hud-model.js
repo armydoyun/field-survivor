@@ -6,6 +6,7 @@ import { episodeTitle } from '../world/effects.js';
 import { number as uiNumber, escapeHtml as htmlEscape } from './html.js';
 import { timeText } from '../core/utils.js';
 import { GUARDIAN_MEETINGS } from '../core/config.js';
+import { routeAxes } from '../world/route.js';
 import { anomalyActive, hasRelic } from '../world/effects.js';
 import { relics, anomalies, objectives, sites, finalEndings, startScenes } from '../data/world.js';
 import { xpNeed, xpCollectionScale } from '../growth/experience.js';
@@ -91,7 +92,10 @@ export function createHudModel({ sessionState, view, statistics, growthMetrics }
     text['frontStatus'] = aftermath ? `지난 결말의 여파 · ${aftermath.line}\n${aftermath.change}` : '지난 결말의 여파 · 없음';
     text['chapterStatus'] = `최종 엔딩 ${Object.values(sessionState.profile.memory.endings).filter(x => x > 0).length}/${finalEndings.length}: ${finalEndings.map(e => `${e.name} ${sessionState.profile.memory.endings[e.id]}회`).join(' / ')}`;
     text['walletGold'] = `${sessionState.profile.gold.toLocaleString('ko-KR')} G`; text['bestTime'] = timeText(sessionState.profile.bestTime); text['bestKills'] = sessionState.profile.bestKills.toLocaleString('ko-KR'); text['runCount'] = sessionState.profile.runs.toLocaleString('ko-KR');
-    return {text,html,width,hidden,keys,fusionDisabled,fusionExpanded:String(view.mode==='fusion')};
+    // 경로 색(NARRATIVE-REDESIGN.md 3.3절): 숫자 없이 아레나 테두리로 기억 축을 느끼게 한다.
+    const memory=sessionState.run?routeAxes(sessionState.run).memory:0,route=memory>=4?'preserve-strong':memory>=2?'preserve':memory<=-4?'consume-strong':memory<=-2?'consume':'neutral';
+    const dataset={gameColumn:{route}};
+    return {text,html,width,hidden,keys,dataset,fusionDisabled,fusionExpanded:String(view.mode==='fusion')};
   }
 
   return { readHud };

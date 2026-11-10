@@ -2,6 +2,7 @@ import { signalReward, witnessReward, anomalyDuration } from '../data/world-choi
 import { signals, anomalies, guardianLines, truthFound } from '../data/world.js';
 import { GUARDIAN_SALVAGE } from '../core/config.js';
 import { appendRecord } from '../core/profile.js';
+import { witnessReaction } from './reactions.js';
 
 export function createStoryDecisions({ sessionState, statistics, combat }) {
   const record = line => appendRecord(sessionState.profile,sessionState.run,line);
@@ -53,6 +54,7 @@ export function createStoryDecisions({ sessionState, statistics, combat }) {
     const event = signals[sessionState.run.signalStep]; sessionState.run.signalChoices.push(choice); sessionState.run.signalStep++;
     if (choice === 'hear') { sessionState.run.signalHp += signalReward.hp; sessionState.run.player.hp = Math.min(statistics.stats().maxHp, sessionState.run.player.hp + signalReward.hp); sessionState.profile.memory.heard++; record(`${event.title} · 목소리를 기억했다.`); }
     else { sessionState.run.signalPower++; sessionState.run.gold += signalReward.goldBase + signalReward.goldStep * sessionState.run.signalStep; sessionState.profile.memory.burned++; record(`${event.title} · 신호를 연료로 바꿨다.`); }
+    const reaction = witnessReaction(sessionState.run, choice === 'hear' ? 'keep' : 'burn'); if (reaction) record(reaction);
     return true;
   }
 

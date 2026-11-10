@@ -72,11 +72,11 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     const r=sessionState.run, current=route(r);
     if (!r || r.finalStep !== 3 || !(id === current.ending || (id === 'release' && current.release))) return null;
     const ending = finalEndings.find(x => x.id === id), variant = endingVariant(id, r);
-    const result = { time: r.time, kills: r.kills, gold: r.gold + endingReward, level: r.level, ending: ending.name, endingId: id, variant, threads: threadResolution(r), scenes: endingSceneList(id, r) };
+    const result = { time: r.time, kills: r.kills, gold: r.gold + endingReward, level: r.level, ending: ending.name, endingId: id, variant, axes: routeAxes(r), threads: threadResolution(r), scenes: endingSceneList(id, r) };
     const memory = sessionState.profile.memory;
     record(`최종 회수 · ${ending.name}${variant==='hollow'?' · 빈 껍질':''}`);
     if (!memory.endings[id]) record(truthFound); memory.endings[id]++; if (finalEndings.every(e=>memory.endings[e.id]>0)) record('모든 결말이 모였다. 기록 장치가 작동한 이유는 제목 화면의 결말 기록에서 확인할 수 있다.');
-    memory.lastResolution = { ending: id, variant, threads: result.threads.slice(0, 40), scenes: result.scenes };
+    memory.lastResolution = { ending: id, variant, axes: result.axes, threads: result.threads.slice(0, 40), scenes: result.scenes };
     return commitRunResult(sessionState,result);
   }
 

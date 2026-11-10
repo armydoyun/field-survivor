@@ -147,4 +147,21 @@ const truthPieces = [
 const truthFound = '진실 조각을 하나 찾았다. 제목 화면의 결말 기록에서 읽을 수 있다.';
 const truthReveal = '이 전장은 실패를 재생하는 감옥이자, 결정을 태워 시간을 되감는 기록 장치였다. 보존은 증언을 다음 사람에게 남기고, 연소는 지금의 생존을 위해 이름을 희생하며, 고르지 않은 사람은 다음 반복으로 넘어간다. 열린 문은 누구도 다음 사람의 운명을 독점하지 못하게 만든다. 어느 길도 지난 선택을 없애지는 않는다.';
 
-export { deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };
+// 판 중 진행(NARRATIVE-REDESIGN.md 3.3 · 5.1절): 기억 축이 움직일 때 기록원이 짧게 반응한다.
+// 들어 준 기록원은 목소리로, 추출한 기록원은 잡음으로. 아직 만나지 않았으면 반응하지 않는다.
+const witnessReactions = {
+  keep: [
+    '기록원 · "방금 그 문장, 나도 들었어."',
+    '기록원 · "또 하나 남겼네. 수신기가 조금 따뜻해졌어."',
+    '기록원 · "이제 네 발소리보다 네가 남긴 문장이 더 많아."'
+  ],
+  burn: [
+    '기록원 · "…태웠구나. 이해는 해."',
+    '기록원 · "엔진 소리가 커졌어. 너도 들리지?"',
+    '기록원 · "이 속도면 남는 이름이 없겠어."'
+  ],
+  taken: '수신기 · 잡음 사이로 추출한 파형이 짧게 떨린다.',
+  relic: '기록원 · "{relic}… 그건 내가 두고 간 거야. 잘 써 줘."'
+};
+
+export { witnessReactions, deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };

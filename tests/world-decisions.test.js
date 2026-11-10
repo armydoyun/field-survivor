@@ -13,7 +13,7 @@ import { createSites } from '../src/world/sites.js';
 import { createStory } from '../src/world/story.js';
 import { createFinale } from '../src/world/finale.js';
 import { createModalContent } from '../src/ui/modal-content.js';
-import { sites, relics, anomalies, startEffects, startScenes, firstSignalAfterPreserve, witnessAfterRelease, deathLines, truthPieces, truthFound, truthReveal } from '../src/data/world.js';
+import { sites, relics, anomalies, startEffects, startScenes, firstSignalAfterPreserve, witnessAfterRelease, deathLines, truthPieces, truthFound, truthReveal, witnessReactions } from '../src/data/world.js';
 import { createSession } from '../src/core/session.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../src/data/world-choices.js';
 import { endingTexts, endingScenes } from '../src/data/world.js';
@@ -188,4 +188,25 @@ test('route rewards: remembering and listening add experience, burning and extra
   const s={profile,run:createRun(profile,{maxHp:100,xpNext:xpNeed(1)}),replaceRun(){}},statistics=createStatistics({sessionState:s}),plain=statistics.stats().damage;
   s.run.signalPower=3;s.run.npc.state='taken';
   assert.ok(Math.abs(statistics.stats().damage/plain-(1+3*signalReward.burnPower)*(1+witnessReward.takeDamage))<1e-9);
+});
+test('the witness reacts to memory-axis choices: a voice if heard, static if extracted, silence before meeting',()=>{
+  for(const [state,expect]of [['none',null],['waiting',null],['taken','taken'],['heard','voice']]){
+    const h=harness(),{s}=h;s.run.npc.state=state;h.story.chooseSignal('hear');h.story.chooseSignal('hear');h.story.chooseSignal('burn');
+    const logs=s.run.logs.join('\n');
+    if(expect===null)assert.ok(!logs.includes('기록원 · "')&&!logs.includes(witnessReactions.taken),state);
+    if(expect==='taken')assert.ok(logs.includes(witnessReactions.taken));
+    if(expect==='voice'){assert.ok(logs.includes(witnessReactions.keep[0]));assert.ok(logs.includes(witnessReactions.keep[1]));assert.ok(logs.includes(witnessReactions.burn[0]));}
+  }
+  const h=harness(),{s}=h;s.run.npc.state='heard';prepareSite(h.s,0);h.site.chooseSite('take');assert.ok(s.run.logs.includes(witnessReactions.burn[0]));
+  const relic=relics.find(r=>r.site===sites[0].id);h.site.chooseRelic(relic.id);assert.ok(s.run.logs.includes(witnessReactions.relic.replace('{relic}',relic.name)));
+});
+test('ending and ledger screens draw the run\'s axis position; the result keeps the axes for the ledger',()=>{
+  const s=state();prepareRoute(s.run,4);s.run.guardianFate={spare:2,end:1};const result=createEndingDecisions({sessionState:s}).chooseFinale('preserve');
+  assert.deepEqual({memory:result.axes.memory,spared:result.axes.spared,ended:result.axes.ended},{memory:4,spared:2,ended:1});
+  assert.deepEqual(s.profile.memory.lastResolution.axes,result.axes);
+  const ending=createModalContent({sessionState:s,view:{mode:'ending',lastResult:result},route:()=>null}).buildModal();
+  assert.ok(ending.includes('route-axis'));assert.ok(ending.includes(`left:${Math.round((4+7)/14*100)}%`));assert.ok(ending.includes('돌려보냄 2 / 분해 1'));
+  const ledger=createModalContent({sessionState:s,view:{mode:'ledger'},route:()=>null}).buildModal();assert.ok(ledger.includes('route-axis'));
+  const restored=initialProfile();hydrateProfile(restored,{memory:{lastResolution:{ending:'preserve',threads:[],scenes:[],axes:{memory:99,spared:-3,ended:2,stillness:'yes'}}}});
+  assert.deepEqual({memory:restored.memory.lastResolution.axes.memory,spared:restored.memory.lastResolution.axes.spared,stillness:restored.memory.lastResolution.axes.stillness},{memory:7,spared:0,stillness:false});
 });
