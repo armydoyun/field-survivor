@@ -7,7 +7,7 @@ import { HURT_TIME, RECOVERY_DELAY, ENEMY_LIMIT } from '../src/core/config.js';
 import { armorScale, incomingScale, wardRadius, targetable } from '../src/combat/rules.js';
 import { commitPlayerHit, commitEnemyHit } from '../src/combat/health.js';
 import { commitEnemyDeath, spawnDeathChildren, spawnDeathBurst, burstChance } from '../src/combat/death.js';
-import { hasRelic, legacyEffect, frontEffect, anomalyActive, clockFrozen } from '../src/world/effects.js';
+import { hasRelic, anomalyActive, clockFrozen } from '../src/world/effects.js';
 const fresh = () => createRun(initialProfile(), { maxHp: 100, xpNext: 18 });
 const enemy = (extra={}) => ({ id:1, kind:0, hp:100, maxHp:100, x:0, y:0, phase:0, ...extra });
 
@@ -20,10 +20,9 @@ test('player hit guards preserve all state during hurt, invulnerability and leth
   assert.equal(commitPlayerHit(r,0,initialProfile()).dealt,1); assert.equal(r.player.hp,99);
   assert.equal(r.player.hurt,HURT_TIME); assert.equal(r.recoveryUntil,1+RECOVERY_DELAY); assert.equal(r.director.hits,1);
 });
-test('player damage combines account armor, upgrades, world choices and cooldown boundaries', () => {
-  for (const [choice,expected] of [['hold',67],['break',80]]) {
-    const p=initialProfile(), r=fresh(); p.perks.armor=2; r.up.armor=5; r.frontChoices.breach=choice;
-    r.echoOutcomes.guardian='keep'; r.legacyOrigin='release'; r.legacyChoice='open'; r.relics=['clockwork']; r.time=14; r.relicCooldown=14;
+test('player damage combines account armor, upgrades and cooldown boundaries; removed world choices no longer scale it', () => {
+  for (const legacyOrigin of [null,'release','consume']) {
+    const expected=78, p=initialProfile(), r=fresh(); p.perks.armor=2; r.up.armor=5; r.legacyOrigin=legacyOrigin; r.relics=['clockwork']; r.time=14; r.relicCooldown=14;
     const hit=commitPlayerHit(r,100,p); assert.equal(hit.dealt,expected); assert.equal(hit.stopped,true);
     assert.equal(r.relicFreezeUntil,15.5); assert.equal(r.relicCooldown,28); assert.equal(r.player.hp,100-expected);
     r.player.hurt=0; r.finalStep=2; const d=r.director.hits;
@@ -43,17 +42,18 @@ test('support protection is bounded, nonstacking and excludes bosses and other s
   assert.equal(wardRadius({}),105); assert.equal(wardRadius({elite:true}),135);
 });
 test('boss phases and exposure preserve damage scales and director exclusion', () => {
-  for (const [phase,final,exposed,expected] of [[0,false,false,100],[1,false,false,82],[2,false,false,82],[4,false,false,130],[4,true,true,150]]) {
-    const r=fresh(), e=enemy({kind:3,hp:1000,maxHp:1000,phase,final}); if(exposed)r.frontChoices.threshold='expose';
+  for (const [phase,final,expected] of [[0,false,100],[1,false,82],[2,false,82],[4,false,130],[4,true,130]]) {
+    const r=fresh(), e=enemy({kind:3,hp:1000,maxHp:1000,phase,final});
     assert.equal(commitEnemyHit(r,e,100,1).amount,expected); assert.equal(r.director.damage,0);
   }
   const r=fresh(), e=enemy({hp:10}); commitEnemyHit(r,e,100,null);
   assert.equal(r.director.damage,10); assert.equal(e.combatAt,r.time); assert.equal(e.hp,-90);
 });
-test('guardian choice opens at zero HP, while final choice retains its independent threshold', () => {
-  const r=fresh(), boss=enemy({id:42,kind:3,hp:10});
+test('named guardian yields at zero HP, hollow shells die normally, and the final choice keeps its own threshold', () => {
+  const r=fresh(), boss=enemy({id:42,kind:3,named:true,hp:10});
   assert.equal(commitEnemyHit(r,boss,9,null).choice,null); assert.equal(boss.hp,1);
-  assert.equal(commitEnemyHit(r,boss,1,null).choice,'bosschoice'); assert.equal(boss.hp,0); assert.equal(r.bossChoiceId,42);
+  assert.equal(commitEnemyHit(r,boss,1,null).choice,null); assert.equal(boss.hp,0); assert.equal(boss.phase,3); assert.equal(r.bossChoiceId,42);
+  const shellRun=fresh(), shell=enemy({id:7,kind:3,hollow:true,hp:5}); assert.equal(commitEnemyHit(shellRun,shell,9,null).choice,null); assert.ok(shell.hp<=0); assert.notEqual(shell.phase,3); assert.equal(shellRun.bossChoiceId,0);
   const before=structuredClone(boss); assert.equal(commitEnemyHit(r,boss,100,null),null); assert.deepEqual(boss,before);
   const finalRun=fresh(), final=enemy({kind:3,final:true,hp:11});
   assert.equal(commitEnemyHit(finalRun,final,1,1).choice,'finalchoice'); assert.equal(finalRun.finalStep,3); assert.equal(final.hp,10);
@@ -97,9 +97,9 @@ test('burst preserves chance, recursion limit, RNG use and fragment cap', () => 
   for(const shot of r.shots.slice(-2)){assert.equal(shot.damage,40);assert.equal(shot.burstDepth,2);assert.deepEqual(shot.hit,[7]);assert.equal(shot.kind,'burst');}
   let rolls=0;spawnDeathBurst(r,enemy(),0,5,()=>{throw Error('cap');},()=>{rolls++;return 0;});assert.equal(rolls,1);
 });
-test('world predicates inspect supplied runs, including permanent echoes and timed clock phases', () => {
-  const a=fresh(), b=fresh(); a.relics=['clockwork']; a.legacyOrigin='release';a.legacyChoice='open';a.frontChoices.breach='hold';
-  assert.equal(hasRelic('clockwork',a),true);assert.equal(hasRelic('clockwork',b),false);assert.equal(legacyEffect('release','open',a),true);assert.equal(frontEffect('breach','hold',b),false);
+test('world predicates inspect supplied runs, including permanent field shifts and timed clock phases', () => {
+  const a=fresh(), b=fresh(); a.relics=['clockwork'];
+  assert.equal(hasRelic('clockwork',a),true);assert.equal(hasRelic('clockwork',b),false);
   a.anomalyChoices={clock:'hold',echo:'keep'};a.anomalyUntil.clock=20;
   for(const [time,expected]of [[11.99,false],[12,true],[13.99,true],[14,false],[24,false]]){a.time=time;assert.equal(clockFrozen(a),expected);}
   assert.equal(anomalyActive('echo','keep',a),true); assert.equal(clockFrozen(null),false);

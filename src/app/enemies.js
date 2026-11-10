@@ -33,7 +33,7 @@ export function createEnemyRuntime({ sessionState, platform, cameraView, difficu
 
   const guardians=createGuardians({random:()=>runRandom(sessionState.run),attacks:hostileAttacks,movementVector:movement,hurtPlayer:(...args) => combat.hurtPlayer(...args)});
 
-  const coreBoss=createCoreBoss({spawnEnemy:spawnForRun,finalRating:(...args) => difficulty.finalRating(...args),hurtPlayer:(...args) => combat.hurtPlayer(...args)});
+  const coreBoss=createCoreBoss({spawnEnemy:spawnForRun,finalRating:(...args) => difficulty.finalRating(...args),hurtPlayer:(...args) => combat.hurtPlayer(...args),healPlayer:(amount,r) => { r.player.hp = Math.min(statistics.stats(r).maxHp, r.player.hp + amount); }});
 
   const enemyBehavior=createEnemyBehavior({random:()=>runRandom(sessionState.run),stats:(...args) => statistics.stats(...args),paceAt:(...args) => difficulty.paceAt(...args),movementVector:movement,spawnEnemy:spawnForRun,moveGuardian:guardians.moveGuardian,moveCore:coreBoss.moveCore,attacks:hostileAttacks,ring:(...args) => feedback.ring(...args),hurtPlayer:(...args) => combat.hurtPlayer(...args)});
 

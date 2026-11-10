@@ -96,7 +96,7 @@ export function createWeapons({ sessionState, view, statistics, feedback, camera
     }
     for (let i = 0; i < count && target && view.mode === 'playing'; i++) {
       seen.add(target.id);
-      if (sessionState.run.arcs.length < 90) sessionState.run.arcs.push({ x1: x, y1: y, x2: target.x, y2: target.y, kind:'chain',life:0.18,max:0.18,cold:false,seed: target.id * 1.37 + sessionState.run.time });
+      if (sessionState.run.arcs.length < 90) sessionState.run.arcs.push({ x1: x, y1: y, x2: target.x, y2: target.y, kind:'chain',life:0.26,max:0.26,cold:false,seed: target.id * 1.37 + sessionState.run.time });
       feedback.impact(target.x,target.y,'#f5d69c'); inspector?.circle(target.x,target.y,target.radius,'chain target'); x = target.x; y = target.y;
       combat.damage(target, statistics.weaponDamage('chain', s, i)); target = null; let best = reach ** 2;
       for (const e of sessionState.run.enemies) { const d = (e.x - x) ** 2 + (e.y - y) ** 2; if (targetable(e,sessionState.run) && !seen.has(e.id) && d < best) { target = e; best = d; } }

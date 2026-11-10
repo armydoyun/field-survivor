@@ -1,6 +1,6 @@
 import { STEP } from './context.js';
 export function tickMobile(c,code,interval){
-  const {p,q,player,every,aim,group,circle,add,line,unit,lightning,targets,allow}=c;
+  const {p,q,player,every,aim,group,add,unit,lightning,targets,allow}=c;
   if(code==='F05'||code==='F14')every('main',interval,()=>{
     const list=aim(code==='F05'?600:560);if(!list.length)return false;const g=group();
     for(let i=0;i<(code==='F05'?4:3);i++){

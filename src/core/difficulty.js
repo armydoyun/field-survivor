@@ -3,7 +3,7 @@ import { fusionById } from '../data/fusions.js';
 import { phases } from '../data/progression.js';
 import { RUN_END } from './config.js';
 import { rewardXp as enemyRewardXp } from '../growth/rewards.js';
-import { anomalyActive, frontEffect } from '../world/effects.js';
+import { anomalyActive } from '../world/effects.js';
 import { weaponConsumed, hasBranch, specialized, activeFusions } from '../growth/build.js';
 import { clamp } from './utils.js';
 import { tacticalKind } from '../combat/rules.js';
@@ -18,7 +18,7 @@ export function paceAt(time) {
 
 export function createDifficulty({ sessionState, statistics }) {
 
-  const rewardXp = enemy => enemyRewardXp(enemy, { time: sessionState.run.time, paceXp: paceAt(sessionState.run.time).xp, harvest: anomalyActive('border','harvest',sessionState.run), legacy: frontEffect('legacy','save',sessionState.run) ? 'save' : frontEffect('legacy','strip',sessionState.run) ? 'strip' : '' });
+  const rewardXp = enemy => enemyRewardXp(enemy, { time: sessionState.run.time, paceXp: paceAt(sessionState.run.time).xp, harvest: anomalyActive('border','harvest',sessionState.run) });
 
   function combatPower(r=sessionState.run){
     const s=statistics.stats(r),crit=1+statistics.pulseCritChance(s)*(s.critMult-1),auxCrit=1+statistics.pulseCritChance(s)*(s.critMult-1),damage=type=>statistics.weaponDamage(type,s,0,r);

@@ -13,7 +13,7 @@ export function tickGuns(c,code,interval){
   }
   if(code==='F09'){
     every('main',interval,()=>{const t=aim(600)[0];if(!t)return false;const a=c.angleTo(t),g=group();q.angle=a;q.baseTargets=[t.id];
-      for(let i=0;i<4;i++){const side=(i-1.5)*100,x=player.x+Math.cos(a)*120-Math.sin(a)*side,y=player.y+Math.sin(a)*120+Math.cos(a)*side;unit(i,x,y);bolt(x,y,a,.22,{speed:800,distance:640,pierce:4,group:g,limit:2,cap:64});}});
-    every('wall',.6,()=>{const t=aim(600)[0];if(!t)return false;const a=c.angleTo(t);rect(player.x+Math.cos(a)*120,player.y+Math.sin(a)*120,a,320*p.size,80*p.size,.45,group());});
+      for(let i=0;i<4;i++){const side=(i-1.5)*100,x=player.x+Math.cos(a)*45-Math.sin(a)*side,y=player.y+Math.sin(a)*45+Math.cos(a)*side;unit(i,x,y);bolt(x,y,Math.atan2(t.y-y,t.x-x),.22,{speed:800,distance:640,pierce:4,group:g,limit:2,cap:64});}});
+    every('wall',.6,()=>{const t=aim(600)[0];if(!t)return false;const a=c.angleTo(t);rect(player.x+Math.cos(a)*45,player.y+Math.sin(a)*45,a,320*p.size,80*p.size,.45,group());});
   }
 }

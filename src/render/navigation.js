@@ -1,4 +1,4 @@
-import { sites, objectives, fronts } from '../data/world.js';
+import { sites, objectives } from '../data/world.js';
 import { W, H } from '../core/config.js';
 import { clamp } from '../core/utils.js';
 
@@ -9,7 +9,6 @@ export function createNavigation({ sessionState, platform, journey, cameraView, 
     const result=[],p=sessionState.run.player,add=(id,point,name,color,reach=80,priority=1)=>{if(point&&Number.isFinite(point.x)&&Number.isFinite(point.y)){const distance=Math.hypot(point.x-p.x,point.y-p.y);result.push({id,x:point.x,y:point.y,name:name||'목표',color,reach,priority,distance});}};
     add('site',sessionState.run.site,sites[sessionState.run.siteStep]?.title||'탐사','#efd2a0',74);
     const o=sessionState.run.objective;if(o){const target=o.id==='hunter'&&o.phase?sessionState.run.enemies.find(e=>e.id===o.targetId&&e.hp>0):o;add('objective',target,objectives[sessionState.run.objectiveStep]?.name||'임무','#a5e0cf',o.phase?95:75,o.phase?0:1);}
-    add('echo',sessionState.run.echoSite,'기억 조사','#c8b8ef',72);add('legacy',sessionState.run.legacySite,'지난 기록','#e8c99b',72);add('front',sessionState.run.front,fronts[sessionState.run.frontStep]?.title||'전선','#a5cfe0',110);
     if(sessionState.run.npc.spawned&&sessionState.run.npc.state==='waiting')add('witness',sessionState.run.npc,'낯선 신호','#b6d6b9',75);
     const a=sessionState.run.journey.active;if(a){const target=a.kind==='hunt'?sessionState.run.enemies.find(e=>e.id===a.targetId&&e.hp>0):a;add('journey',target,journey.episodeTitle(a.kind),'#8ed9cc',a.kind==='relay'?88:60,0);}
     if(sessionState.run.finalStep===2)for(const e of sessionState.run.enemies)if(e.hp>0){if(e.coreNode)add('node-'+e.id,e,'연결점','#dfbd8b',90,0);else if(e.final&&sessionState.run.journey.core?.phase===1)add('core',e,'중심핵','#edc69b',250,0);}

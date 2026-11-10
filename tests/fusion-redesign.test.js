@@ -1,5 +1,6 @@
 import { createBuildModel } from '../src/ui/build-model.js';
 import test from 'node:test';
+import { fusionBalance } from '../src/data/balance.js';
 import assert from 'node:assert/strict';
 import { fusionRecipes, fusionById } from '../src/data/fusions.js';
 import { branches } from '../src/data/specializations.js';
@@ -43,8 +44,8 @@ for(const f of fusionRecipes)test('refresh rates and saved attack continuation: 
  const baseline=simulate(60);assert.ok(baseline.hits.length>0,f.id+' must damage enemies');assert.deepEqual(simulate(30).hits,baseline.hits);assert.deepEqual(simulate(144).hits,baseline.hits);assert.deepEqual(simulate(60,true).hits,baseline.hits);
 });
 test('upper damage retains completed foundation and applies additional growth once',()=>{
- const f=higher.find(f=>f.base==='fs_instant_slash'),h=harness(f),s={...h.statistics.stats(),damage:100},p=fusionParameters(f,h.r,s);assert.ok(Math.abs(p.damage-184.8)<1e-9);
- h.r.up['fusion_'+f.id]=4;assert.ok(Math.abs(fusionParameters(f,h.r,s).damage-284.592)<1e-9);
+ const f=higher.find(f=>f.base==='fs_instant_slash'),h=harness(f),s={...h.statistics.stats(),damage:100},p=fusionParameters(f,h.r,s),balance=fusionBalance(f.id);assert.ok(Math.abs(p.damage-184.8*balance)<1e-9);
+ h.r.up['fusion_'+f.id]=4;assert.ok(Math.abs(fusionParameters(f,h.r,s).damage-284.592*balance)<1e-9);
  const b=fusionById[f.base];assert.equal(fusionInterval(b,p),.16);assert.equal(p.size,1.15);
 });
 test('slash hits current enemy coordinate immediately, never travels, and harmless echoes add no damage',()=>{

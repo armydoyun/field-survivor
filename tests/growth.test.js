@@ -4,20 +4,13 @@ import { readFileSync } from 'node:fs';
 import { initialProfile } from '../src/core/profile.js';
 import { createRun } from '../src/core/run.js';
 import { branches } from '../src/data/specializations.js';
-import { fusionRecipes } from '../src/data/fusions.js';
 import { upgrades } from '../src/data/upgrades.js';
-import { branchReady, fusionReady, activeFusions, weaponConsumed, fusionConsumed, hasBranch, refreshBuild } from '../src/growth/build.js';
-import { availableUpgrades, growthCandidates, makeChoices, canReroll, upgradeUseful } from '../src/growth/cards.js';
+import { branchReady, hasBranch } from '../src/growth/build.js';
+import { availableUpgrades, makeChoices, canReroll } from '../src/growth/cards.js';
 import { commitSpecialization, commitFusion, commitUpgrade } from '../src/growth/commands.js';
 import { retireWeaponAttacks } from '../src/combat/loadout.js';
 
 const fresh = () => createRun(initialProfile(), { maxHp: 100, xpNext: 24 });
-function ready(f) {
-  const r = fresh();
-  for (const [w, branch] of f.needs) { r.up[w] = 4; r.branches[w] = branch; }
-  if (f.base) { assert.ok(commitFusion(r, f.base)); r.up['fusion_' + f.base] = 3; }
-  return r;
-}
 test('all 16 specializations require level 3 and retire only the changed weapon attacks', () => {
   let count = 0;
   for (const b of branches) for (const option of b.options) {

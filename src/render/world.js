@@ -1,4 +1,3 @@
-import { fronts, legacies } from '../data/world.js';
 import { episodeTitle } from '../world/effects.js';
 import { W, H } from '../core/config.js';
 import { clamp } from '../core/utils.js';
@@ -39,7 +38,7 @@ export function createWorldView({ sessionState, platform, cameraView, primitives
       primitives.drawShape(npc.x, npc.y, 9, '#22323b', 4); primitives.drawShape(npc.x, npc.y, 4.5, npc.state === 'heard' ? '#8dd6b8' : '#ffe1a8', 4);
       ctx.textAlign = 'center'; ctx.font = 'bold 12px system-ui'; ctx.fillStyle = '#f7e5c4';
       if (near && npc.state === 'waiting') ctx.fillText('E · 대화', npc.x, npc.y - 29);
-      if (near && npc.state === 'heard' && !sessionState.profile.memory.witness.quiet && npc.still > 1) {
+      if (near && npc.state === 'heard' && !npc.silenced && npc.still > 1) {
         ctx.fillStyle = '#c7eadc'; ctx.fillText('···', npc.x, npc.y - 29);
       }
     }
@@ -49,28 +48,6 @@ export function createWorldView({ sessionState, platform, cameraView, primitives
       primitives.drawShape(site.x, site.y, 12, '#f0d3a1', 4); primitives.drawShape(site.x, site.y, 5, '#433c39', 4);
       ctx.font = 'bold 13px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = '#f6ddb4';
       ctx.fillText(near ? 'E · 조사' : '◇ FIELD SITE', site.x, site.y - 34);
-    }
-    if (sessionState.run.front) {
-      const f = sessionState.run.front, def = fronts[sessionState.run.frontStep];
-      if (def) for (let i=0;i<2;i++) { const target = def.paths[i], x=f.x+(i?150:-150), y=f.y, near=(p.x-x)**2+(p.y-y)**2<64**2;
-        ctx.strokeStyle=i?'#e9b994':'#9edacf';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,21+Math.sin(sessionState.run.time*3+i)*3,0,Math.PI*2);ctx.stroke();
-        primitives.drawShape(x,y,11,i?'#c99883':'#8dc3bb',4);primitives.drawShape(x,y,5,'#273640',4);
-        ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillStyle=i?'#f4cdb8':'#b8ece2';ctx.fillText(near?'E · '+target.name:target.name,x,y-34);
-        ctx.font='10px system-ui';ctx.fillText(target.desc,x,y+42,236);
-      }
-      ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillStyle='#e8d9b5';ctx.fillText(def.title+` · 남은 ${Math.max(0,Math.ceil(def.at+180-sessionState.run.time))}초`,f.x,f.y+78);
-    }
-    if (sessionState.run.echoSite) {
-      const e = sessionState.run.echoSite, near = Math.hypot(p.x - e.x, p.y - e.y) <= 72;
-      ctx.strokeStyle = '#b8b5e7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(e.x, e.y, 20 + 3 * Math.sin(sessionState.run.time * 3), 0, Math.PI * 2); ctx.stroke();
-      primitives.drawShape(e.x, e.y, 11, '#b8b5e7', 4); primitives.drawShape(e.x, e.y, 5, '#2c3247', 4);
-      ctx.textAlign = 'center'; ctx.font = 'bold 12px system-ui'; ctx.fillStyle = '#d9d9fc'; ctx.fillText(near ? 'E · 기억 조사' : '✧ MEMORY ECHO', e.x, e.y - 32);
-    }
-    if (sessionState.run.legacySite) {
-      const e = sessionState.run.legacySite, near = (p.x-e.x)**2+(p.y-e.y)**2 < 72**2, name = legacies[sessionState.run.legacyOrigin]?.name || '';
-      ctx.strokeStyle = '#eed8b5'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(e.x,e.y,23+3*Math.sin(sessionState.run.time*3),0,Math.PI*2); ctx.stroke();
-      primitives.drawShape(e.x,e.y,12,'#deb788',6); primitives.drawShape(e.x,e.y,5,'#35404d',4);
-      ctx.font = 'bold 12px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = '#f8e2c3'; ctx.fillText(near ? 'E · 지난 결말의 답장' : name,e.x,e.y-36);
     }
     if (sessionState.run.objective) {
       const o = sessionState.run.objective, near = Math.hypot(p.x - o.x, p.y - o.y) <= 75, phase = o.phase, relay = o.id === 'relay', radius = relay && phase ? 115 : 26;

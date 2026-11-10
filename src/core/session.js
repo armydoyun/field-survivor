@@ -2,6 +2,8 @@ import { canPauseGame, canResetRecords } from './view-policy.js';
 import { commitRunStart, commitRunResult } from './run-lifecycle.js';
 import { makeRandomState, nextRandom, newSeed } from './random.js';
 import { appendRecord } from './profile.js';
+import { startScenes, deathLines } from '../data/world.js';
+import { phases } from '../data/progression.js';
 import { makeJourney, createRun } from './run.js';
 import { xpNeed } from '../growth/experience.js';
 import { branchReady } from '../growth/build.js';
@@ -12,12 +14,9 @@ export function resumeMode(r){
   if (r.finalStep === 3) return 'finalchoice';
   if (r.finalStep === 1) return 'finalintro';
   if (r.journey.keystonePending) return 'keystone';
-  if (r.bossChoiceId && r.enemies.some(e => e.id === r.bossChoiceId && e.kind === 3 && e.phase === 3)) return 'bosschoice';
   if (r.npc.secretPending) return 'secret';
   if (r.npc.encounterPending) return 'encounter';
   if (r.sitePending && r.site) return 'site';
-  if (r.echoPending && r.echoSite) return 'echo';
-  if (r.legacyPending && r.legacySite) return 'legacy';
   if (r.relicPending) return 'relic';
   if (r.anomalyPending) return 'anomaly';
   if (branchReady(r)) return 'branch';
@@ -44,12 +43,13 @@ export function createSession({ sessionState, view, platform, statistics, screen
   }
 
   function finish() {
+    const r=sessionState.run;if(r){const memory=sessionState.profile.memory;memory.deaths++;memory.lastDeathPhase=phases.filter(x=>r.time>=x.at).at(-1).name;record(deathLines.gameover);}
     const result=commitRunResult(sessionState);if(!result)return;view.lastResult=result; keys.clear(); screen.setMode('gameover'); storage.save();
   }
 
   function startFresh(confirmed = false) {
     if (sessionState.run && !confirmed) { view.newConfirmReturn = view.mode; screen.setMode('newconfirm'); return; }
-    view.resetIdle = false; commitRunStart(sessionState,newRun()); record(sessionState.profile.runs === 1 ? '이곳에 처음 도착했다. 누군가 작은 기록을 남겨 두었다.' : sessionState.profile.memory.witness.quiet ? '다시 돌아왔다. 이번에도 누군가는 아무것도 하지 않은 시간을 기억한다.' : sessionState.profile.memory.chapters.length ? `다시 돌아왔다. 발견한 결말 ${sessionState.profile.memory.chapters.length}개는 아직 기록되어 있다.` : '다시 돌아왔다. 이 구역은 이전의 선택을 기억하고 있다.'); keys.clear(); screen.setMode('playing'); storage.save();
+    view.resetIdle = false; commitRunStart(sessionState,newRun()); const aftermath=sessionState.run.legacyOrigin?startScenes[sessionState.run.legacyVariant||sessionState.run.legacyOrigin]:null; if(aftermath)record(`지난 결말의 여파 · ${aftermath.line}`); record(sessionState.profile.runs === 1 ? '이곳에 처음 도착했다. 누군가 작은 기록을 남겨 두었다.' : sessionState.profile.memory.witness.quiet ? '다시 돌아왔다. 이번에도 누군가는 아무것도 하지 않은 시간을 기억한다.' : Object.values(sessionState.profile.memory.endings).some(Boolean) ? `다시 돌아왔다. 발견한 결말 ${Object.values(sessionState.profile.memory.endings).filter(Boolean).length}개는 아직 기록되어 있다.` : '다시 돌아왔다. 이 구역은 이전의 선택을 기억하고 있다.'); keys.clear(); screen.setMode('playing'); storage.save();
   }
 
   function resume() {

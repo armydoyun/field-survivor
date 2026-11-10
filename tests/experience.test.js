@@ -52,11 +52,11 @@ test('recovery has a strict timer boundary, clamps healing and cannot resurrect'
   r.player.hp=0; assert.equal(commitRepeatedHealing(r,100,100),0); assert.equal(r.player.hp,0); assert.equal(recoveryScale(null),1);
 });
 test('kill rewards preserve elite, timing, encounter factors and explicit zero XP scales', () => {
-  const context={time:0,paceXp:1,harvest:false,legacy:''}, e={kind:0};
+  const context={time:0,paceXp:1,harvest:false}, e={kind:0};
   assert.equal(rewardGold(e),1); assert.equal(rewardXp(e,context),5);
   e.elite=true; assert.equal(rewardGold(e),3); assert.equal(rewardXp(e,context),15);
-  e.xpScale=2; Object.assign(context,{time:780,paceXp:2,harvest:true,legacy:'save'}); assert.equal(rewardXp(e,context),111);
-  context.legacy='strip'; assert.equal(rewardXp(e,context),88); e.xpScale=0; assert.equal(rewardXp(e,context),0);
+  e.xpScale=2; Object.assign(context,{time:780,paceXp:2,harvest:true}); assert.equal(rewardXp(e,context),98);
+  assert.equal(rewardXp(e,{...context,legacy:'save'}),98); e.xpScale=0; assert.equal(rewardXp(e,context),0);
 });
 test('loot releases at most 5000 reserve only after a successful gem deposit', () => {
   const r=fresh(), enemy={x:10,y:20}; r.xpReserve=20000;

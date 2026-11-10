@@ -1,11 +1,12 @@
 import { keystoneScale } from '../world/effects.js';
+import { fusionBalance } from '../data/balance.js';
 // Evaluate investment once per attack. Emitted attacks keep this snapshot until expiration.
 export function fusionParameters(f,r,s){
   const has=id=>f.needs.some(([w])=>w===id),u=r.up,lv=id=>u[id]||0;
   let rate=1;if(has('pulse'))rate*=.91**lv('haste')*(1-(r.momentumTime>0?.04*lv('momentum'):0));
   if(has('chain'))rate*=1-.05*lv('conduction');if(has('mine')||has('beacon'))rate*=1-.08*lv('machinery');
   const k=f.needs.reduce((sum,[id])=>sum+keystoneScale(id,r),0)/f.needs.length;
-  return {damage:s.damage*k*(has('orbit')||has('rift')?1+.05*lv('edgecraft'):1)*(1+.18*(lv('fusion_'+f.id)-1))*(f.base?1.54*1.20:1),rate,
+  return {damage:s.damage*k*fusionBalance(f.id)*(has('orbit')||has('rift')?1+.05*lv('edgecraft'):1)*(1+.18*(lv('fusion_'+f.id)-1))*(f.base?1.54*1.20:1),rate,
     size:(1+.08*lv('area'))*(has('nova')||has('lance')||has('rift')?1+.05*lv('wavecraft'):1)*(f.base?1.15:1),
     reach:f.base?1.10:1,length:(has('rift')?1+.05*lv('edgecraft'):1)*(f.base?1.10:1),aim:20*lv('placement'),hop:has('chain')?15*lv('conduction'):0,
     multishot:has('pulse')?lv('multishot'):0,pierce:has('pulse')?lv('pierce'):0,crit:s.crit,critMult:s.critMult,frost:lv('frost'),repulsion:lv('repulsion')};

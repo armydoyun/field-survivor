@@ -4,7 +4,7 @@ import { targetable, incomingScale } from './rules.js';
 import { pushEnemy, applySlow } from './control.js';
 import { segmentEntry, segmentHit } from '../math/geometry.js';
 import { advanceEnemyBullet } from './hostile-attacks.js';
-import { anomalyActive, frontEffect } from '../world/effects.js';
+import { anomalyActive } from '../world/effects.js';
 
 // Own contact and projectile resolution; app/update.js keeps only execution order.
 export function createCollisions({ sessionState, view, statistics, enemyRuntime, weapons, combat, feedback, inspector }) {
@@ -52,7 +52,7 @@ export function createCollisions({ sessionState, view, statistics, enemyRuntime,
         sessionState.run.anomalyWardAt = sessionState.run.time + 16; feedback.burst(b.x, b.y, '#a7e1e8', 9); feedback.popup(b.x, b.y, 'WARD', '#a7e1e8'); sessionState.run.bullets.splice(i, 1); continue;
       }
       inspector?.segment(x,y,b.x,b.y,b.radius,'bullet','hostile');const hit = segmentHit(x, y, b.x, b.y, p.x, p.y, 12 + b.radius);
-      if (hit) combat.hurtPlayer(Math.round(b.damage * incomingScale(sessionState.run.time) * (b.boss && frontEffect('threshold','expose',sessionState.run) ? 1.12 : 1)));
+      if (hit) combat.hurtPlayer(Math.round(b.damage * incomingScale(sessionState.run.time)));
       if (hit || b.life <= 0) sessionState.run.bullets.splice(i, 1);
     }
   }

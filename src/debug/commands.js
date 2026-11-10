@@ -70,7 +70,7 @@ export function createDebugCommands(context, settings) {
   const snapshot=()=>{run();return encodeSave(sessionState.profile,sessionState.run);};
   function saveCheckpoint(){checkpoint=snapshot();return true;}
   function loadCheckpoint(){if(!checkpoint)throw Error('저장한 체크포인트가 없습니다.');return loadSnapshot(checkpoint);}
-  function report(){const r=sessionState.run;return {mode:view.mode,panic:view.panic,held:inspector.held,settings:{...settings},time:r?.time||0,seed:r?.rng?.seed,hp:r?.player.hp,maxHp:r?statistics.stats().maxHp:0,enemies:r?.enemies.length||0,shots:r?.shots.length||0,bullets:r?.bullets.length||0,kills:r?.kills||0,level:r?.level||0,build:r?{up:{...r.up},branches:{...r.branches}}:null,checkpoint:!!checkpoint};}
+  function report(){const r=sessionState.run;return {mode:view.mode,panic:view.panic,held:inspector.held,settings:{...settings},time:r?.time||0,seed:r?.rng?.seed,hp:r?.player.hp,maxHp:r?statistics.stats().maxHp:0,enemies:r?.enemies.length||0,shots:r?.shots.length||0,bullets:r?.bullets.length||0,fields:r?.arsenal?.fields.length||0,fx:r?.fx.length||0,waves:r?.waves.length||0,arcs:r?.arcs.length||0,effects:r?Object.values(r.fusionStates||{}).reduce((n,q)=>n+(q.effects?.length||0)+(q.visuals?.length||0),0):0,kills:r?.kills||0,level:r?.level||0,build:r?{up:{...r.up},branches:{...r.branches}}:null,checkpoint:!!checkpoint};}
 
   wrap(context.population,'spawnPopulation',(next,...args)=>settings.autoSpawn?next(...args):undefined);
   for(const [object,names]of [[context.weapons,['weaponTick']],[context.specializations,['specializationTick']],[context.fusions,['fusionTick']]])for(const name of names)wrap(object,name,(next,...args)=>settings.playerAttacks?next(...args):false);
@@ -82,7 +82,7 @@ export function createDebugCommands(context, settings) {
   wrap(context.combat,'hurtPlayer',(next,...args)=>settings.godMode?undefined:next(...args));
   wrap(context.combat,'damage',(next,...args)=>settings.blockEnemyDamage?undefined:next(...args));
   wrap(screen,'setMode',(next,mode)=>!settings.choices&&['branch','levelup'].includes(mode)?undefined:next(mode));
-  for(const [object,names]of [[context.story,['spawnWitness','spawnLegacy','tickWitness','openSignal','openAnomaly']],[context.sites,['spawnSite']],[context.objectives,['spawnObjective','updateObjective']],[context.encounters,['spawnEcho','spawnFront']],[context.journey,['journeyTick']],[context.finale,['openFinale']]])for(const name of names)wrap(object,name,(next,...args)=>settings.worldEvents?next(...args):false);
+  for(const [object,names]of [[context.story,['spawnWitness','tickWitness','openSignal','openAnomaly']],[context.sites,['spawnSite']],[context.objectives,['spawnObjective','updateObjective']],[context.journey,['journeyTick']],[context.finale,['openFinale']]])for(const name of names)wrap(object,name,(next,...args)=>settings.worldEvents?next(...args):false);
   inspector.advance=(dt,next)=>{
     let remaining=inspector.held?1/60:dt*settings.timeScale,total=0;
     while(remaining>1e-9&&canControlLiveCombat(view)){const step=Math.min(.035,remaining);next(step);total+=step;remaining-=step;}return total;

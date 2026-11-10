@@ -1,7 +1,7 @@
 import { movePlayer } from '../input/movement.js';
 import { branchReady } from '../growth/build.js';
 
-export function createUpdate({ sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, encounters, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, inspector }) {
+export function createUpdate({ sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, inspector }) {
   const { keys } = platform;
 
   function update(dt) {
@@ -10,9 +10,10 @@ export function createUpdate({ sessionState, view, platform, screen, feedback, s
     if (sessionState.run.relicPending) { screen.setMode('relic'); return; }
     feedback.tickSkillEchoes(dt);const p = sessionState.run.player, s = statistics.stats(); sessionState.run.time += dt;difficulty.directorTick(dt); p.hurt = Math.max(0, p.hurt - dt);
     const moving = movePlayer(sessionState.run,keys,s,dt);
-    story.spawnWitness(); sites.spawnSite(); objectives.spawnObjective(); encounters.spawnEcho(); encounters.spawnFront(); story.spawnLegacy();
+    story.spawnWitness(); sites.spawnSite(); objectives.spawnObjective();
     if (journey.journeyTick(dt)) return;
     if (story.tickWitness(dt,moving)) return;
+    story.tickGuardian(dt,moving);
     population.maintainEnemies();
     objectives.updateObjective(dt);
     population.spawnPopulation(dt);
@@ -26,7 +27,8 @@ export function createUpdate({ sessionState, view, platform, screen, feedback, s
     enemyRuntime.tickHazards();
     collisions.tickBullets(dt,s);
     if (p.hp <= 0) { session.finish(); return; } // Collected EXP must not revive a lethal hit.
-    sessionState.run.enemies = sessionState.run.enemies.filter(e => e.hp > 0);
+    // 무기를 내린 감시자(hp 0, bossChoiceId)는 결정이 날 때까지 남긴다.
+    sessionState.run.enemies = sessionState.run.enemies.filter(e => e.hp > 0 || e.id === sessionState.run.bossChoiceId);
     progression.tickGems(dt,s.magnet);
     pickups.updatePickups(dt);
     progression.tickAmbientXp(dt);

@@ -1,5 +1,5 @@
 import { canSimulate, canRenderScene, canRefreshHud, canAutoSave } from '../core/view-policy.js';
-export function createLoop({ sessionState, view, update, cameraView, scene, hud, storage, inspector }) {
+export function createLoop({ sessionState, view, update, cameraView, scene, hud, storage, inspector, finale }) {
   function frame(now) {
     if (view.disposed) return;
     const dt = Math.min(0.035, Math.max(0, (now - view.lastFrame) / 1000)); view.lastFrame = now;
@@ -9,6 +9,7 @@ export function createLoop({ sessionState, view, update, cameraView, scene, hud,
     let advancedDt=0;
     if (advance) { if(inspector?.advance)advancedDt=inspector.advance(dt,update.update);else{advancedDt=inspector?.held?1/60:dt;update.update(advancedDt);} }
     const updated = measuring ? performance.now() : 0;
+    finale?.watchStillness(now);
     if (canRenderScene(view)) { cameraView.followCamera(advancedDt); scene.draw(); }
     if (measuring) { if (advance) inspector.measureFrame(updated-started,performance.now()-updated); else inspector.idleFrame(); inspector.draw(); }
     if (canRefreshHud(view) && now - view.lastHud >= 200) { hud.updateHud(); view.lastHud = now; }

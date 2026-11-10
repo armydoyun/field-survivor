@@ -1,0 +1,4 @@
+# Prettier는 지금 CI용으로 새로 넣은 tools/ 파일에만 쓴다(npm run format).
+# 원본 게임·테스트 코드는 테스트가 소스 문자열을 검사하므로, 그 테스트를 정리한 뒤에 따로 적용한다.
+tools/fusion-benchmark.mjs
+tools/visual-audit.mjs

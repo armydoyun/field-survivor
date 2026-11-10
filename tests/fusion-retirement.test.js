@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
-import { fusionRecipes, fusionRules } from '../src/data/fusions.js';
+import { readFileSync } from 'node:fs';
+import { fusionRecipes } from '../src/data/fusions.js';
 import { retiredFusionIds } from '../src/save/retired-fusions.js';
 import { upgrades } from '../src/data/upgrades.js';
 import { branches } from '../src/data/specializations.js';

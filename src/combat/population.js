@@ -1,5 +1,5 @@
 import { runRandom } from '../core/random.js';
-import { DESPAWN_RADIUS, RUN_END, ENEMY_LIMIT } from '../core/config.js';
+import { DESPAWN_RADIUS, RUN_END, ENEMY_LIMIT, GUARDIAN_MEETINGS } from '../core/config.js';
 
 // Population timing, pressure and off-screen retention have one owner.
 export function createPopulation({ sessionState, difficulty, enemyRuntime, encounters, feedback, onGuardianSpawned }) {
@@ -10,7 +10,7 @@ export function createPopulation({ sessionState, difficulty, enemyRuntime, encou
       const x = e.x - p.x, y = e.y - p.y, dist = Math.hypot(x, y);
       if (dist > DESPAWN_RADIUS) { e.x = p.x + x / dist * 620; e.y = p.y + y / dist * 620; }
     }
-    sessionState.run.enemies = sessionState.run.enemies.filter(e => e.hp > 0 && (e.kind === 3 || e.id === sessionState.run.objective?.targetId || e.id === sessionState.run.journey.active?.targetId || e.coreNode || (e.x-p.x)**2+(e.y-p.y)**2 < DESPAWN_RADIUS**2));
+    sessionState.run.enemies = sessionState.run.enemies.filter(e => e.id === sessionState.run.bossChoiceId || e.hp > 0 && (e.kind === 3 || e.id === sessionState.run.objective?.targetId || e.id === sessionState.run.journey.active?.targetId || e.coreNode || (e.x-p.x)**2+(e.y-p.y)**2 < DESPAWN_RADIUS**2));
     if (sessionState.run.objective?.id === 'hunter' && sessionState.run.objective.phase) {
       const target = sessionState.run.enemies.find(e => e.id === sessionState.run.objective.targetId);
       if (target) { const dx = target.x - p.x, dy = target.y - p.y, dist = Math.hypot(dx, dy); if (dist > DESPAWN_RADIUS) { target.x = p.x + dx / dist * 620; target.y = p.y + dy / dist * 620; } }
@@ -25,9 +25,10 @@ export function createPopulation({ sessionState, difficulty, enemyRuntime, encou
     if(sessionState.run.finalStep<2&&sessionState.run.time>=960&&sessionState.run.time<RUN_END){const start=sessionState.run.time>=1380?1380:960,cadence=sessionState.run.time>=1380?45:60;if(Math.floor((sessionState.run.time-start)/cadence)>Math.floor((sessionState.run.time-dt-start)/cadence))encounters.spawnTacticalWave(100+Math.floor((sessionState.run.time-start)/cadence),true);}
     if (sessionState.run.finalStep < 2 && sessionState.run.time < RUN_END && sessionState.run.time >= sessionState.run.nextBoss) {
       const cadence = sessionState.run.time >= 600 ? 240 : 180;
-      if (!sessionState.run.enemies.some(e => e.kind === 3 && e.hp > 0) && sessionState.run.enemies.length < ENEMY_LIMIT - 1) {
-        enemyRuntime.spawnEnemy(3); sessionState.run.nextBoss = Math.max(sessionState.run.nextBoss + cadence, sessionState.run.time + 1);
-        onGuardianSpawned();
+      if (!sessionState.run.enemies.some(e => e.kind === 3 && (e.hp > 0 || e.phase === 3)) && sessionState.run.enemies.length < ENEMY_LIMIT - 1) {
+        const guardian = enemyRuntime.spawnEnemy(3), r = sessionState.run; r.nextBoss = Math.max(r.nextBoss + cadence, r.time + 1);
+        if ((r.guardianMeet || 0) < GUARDIAN_MEETINGS.length && r.time >= GUARDIAN_MEETINGS[r.guardianMeet || 0]) { guardian.named = true; r.guardianMeet = (r.guardianMeet || 0) + 1; } else guardian.hollow = true;
+        onGuardianSpawned(guardian);
       } else sessionState.run.nextBoss = Math.max(sessionState.run.nextBoss + cadence, sessionState.run.time + cadence);
     }
     sessionState.run.spawnClock -= dt;

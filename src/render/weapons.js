@@ -1,4 +1,4 @@
-import { createSkillDesign, skillStyle } from './skill-style.js';
+import { createSkillDesign } from './skill-style.js';
 import { beaconRange, specTiming, novaEdgeWidth, specRiftWidth, specBeaconRadius } from '../combat/weapon-parameters.js';
 import { W, H } from '../core/config.js';
 import { easeSkill } from '../math/geometry.js';
@@ -67,6 +67,7 @@ export function createWeaponView({ sessionState, renderState, platform, primitiv
         for(let i=0;i<4;i++)primitives.skillCircle(wave.x,wave.y,r,color,true,1.5,i*Math.PI/2+.12,i*Math.PI/2+1.1);
         ctx.globalAlpha=(t)*renderState.opacity; primitives.drawShape(wave.x,wave.y,4+t*3,color,4);
       }
+      else if(wave.kind==='pop'){const r=wave.radius*(1.45-.45*t);ctx.globalAlpha=(t*.85)*renderState.opacity;ctx.strokeStyle=color;ctx.lineWidth=.8+2.4*t;ctx.beginPath();ctx.arc(wave.x,wave.y,r,0,Math.PI*2);ctx.stroke();}
       else if(wave.kind==='muzzle'){ctx.globalAlpha=(t*.5)*renderState.opacity;primitives.drawShape(wave.x,wave.y,4+6*t,color,4);}
       else{
         ctx.globalAlpha=(t*.7)*renderState.opacity; ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.beginPath();
@@ -110,7 +111,7 @@ export function createWeaponView({ sessionState, renderState, platform, primitiv
     ctx.save();
     for(const arc of sessionState.run.arcs){
       if(Math.max(arc.x1,arc.x2)<cx-W/2-12||Math.min(arc.x1,arc.x2)>cx+W/2+12||Math.max(arc.y1,arc.y2)<cy-H/2-12||Math.min(arc.y1,arc.y2)>cy+H/2+12)continue;
-      const dx=arc.x2-arc.x1,dy=arc.y2-arc.y1,d=Math.hypot(dx,dy)||1,fade=clamp(arc.life/(arc.max||.18),0,1),color=arc.kind==='rift'?'#d4b9ff':arc.kind==='reflect'?skillColors.rift[0]:skillColors.chain[0];
+      const dx=arc.x2-arc.x1,dy=arc.y2-arc.y1,fade=clamp(arc.life/(arc.max||.18),0,1),color=arc.kind==='rift'?'#d4b9ff':arc.kind==='reflect'?skillColors.rift[0]:skillColors.chain[0];
       if(arc.kind==='chain')design.lightning(arc.x1,arc.y1,arc.x2,arc.y2,skillColors.chain[0],{fade,detail,seed:arc.seed||2});
       else if(arc.kind==='rift')drawRiftScar(arc.x1,arc.y1,arc.x2,arc.y2,10,fade,'#ceb5ff',detail);
       else{

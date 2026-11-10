@@ -31,6 +31,10 @@
 | 융합 그림만 수정 | `src/render/fusions.js` |
 | 저장 입출력·복원 | `src/core/storage.js`, `src/save/format.js`, `src/save/restore-run.js`, `src/save/restore-weapons.js` |
 | 구 융합 발견 이력 ID 허용 목록 | `src/save/retired-fusions.js` |
+| 서사 축·결말 판정 | `src/world/route.js`, `src/world/ending-decisions.js`, `src/world/finale.js` |
+| 감시자(무기 내림 · 멈춤 · 분해) | `src/world/story.js`, `src/world/story-decisions.js`, `src/combat/population.js` |
+| 결말 전투 회수(방패 · 연결점 · 목소리 · 박자) | `src/combat/core-boss.js` (`CORE_PAYOFF`, `VOICE`) |
+| 서사 문구 · 시작 장면 · 진실 조각 | `src/data/world.js` |
 | 렌더링·피드백 | `src/render/scene.js`, `src/render/weapons.js`, `src/render/feedback.js` |
 | 도감·표시 모델 | `src/ui/build-guide.js`, `src/ui/build-model.js`, `src/ui/growth-metrics.js`, `src/ui/hud-model.js` |
 | 입력·화면 | `src/input/keyboard.js`, `src/ui/screen.js`, `src/app/actions.js` |

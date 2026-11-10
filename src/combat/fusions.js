@@ -8,7 +8,7 @@ import { tickFields } from './fusions/basic-fields.js';
 import { tickMobile } from './fusions/basic-mobile.js';
 import { tickHigher } from './fusions/higher.js';
 import { tickEffects } from './fusions/effects.js';
-export function createFusions({sessionState,view,statistics,combat,inspector}){
+export function createFusions({sessionState,view,combat,inspector}){
   function fusionTick(dt,s){
     const r=sessionState.run;if(!r||view.mode!=='playing')return;
     r.fusionRemainder=(r.fusionRemainder||0)+dt;

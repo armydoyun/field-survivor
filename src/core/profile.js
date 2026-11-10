@@ -1,15 +1,10 @@
 import { fusionRecipes } from '../data/fusions.js';
 import { retiredFusionIds } from '../save/retired-fusions.js';
 import { shopItems } from '../data/shop.js';
-import { legacies, fronts, echoes, objectives, sites, anomalies, relics, finalEndings } from '../data/world.js';
+import { phases } from '../data/progression.js';
+import { objectives, sites, anomalies, relics, finalEndings } from '../data/world.js';
 
 import { n, integer } from './utils.js';
-
-const legacyDefault = () => Object.fromEntries(Object.entries(legacies).map(([id, x]) => [id, { [x.options[0].id]: 0, [x.options[1].id]: 0, silent: 0 }]));
-
-const frontDefault = () => Object.fromEntries(fronts.map(f => [f.id, { [f.paths[0].id]: 0, [f.paths[1].id]: 0, silent: 0 }]));
-
-const echoDefault = () => Object.fromEntries(echoes.map(e => [e.id, { keep: 0, use: 0, silent: 0 }]));
 
 const objectiveDefault = () => Object.fromEntries(objectives.map(o => [o.id, { complete: 0, failed: 0, ignored: 0 }]));
 
@@ -17,9 +12,10 @@ const siteDefault = () => Object.fromEntries(sites.map(site => [site.id, { keep:
 
 const anomalyDefault = () => ({ clock: { hold: 0, rush: 0 }, border: { ward: 0, harvest: 0 }, echo: { keep: 0, erase: 0 } });
 
-const initialProfile = () => ({ gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, chapters: [], witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), echoes: echoDefault(), fronts: frontDefault(), legacies: legacyDefault(), lastResolution: null } });
+const initialProfile = () => ({ gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), lastResolution: null, deaths: 0, lastDeathPhase: '' } });
 
-const initialEndings = () => ({ preserve: 0, consume: 0, release: 0 });
+// v2.6.27의 잔향·전선·지난 결말 답장 기억(memory.echoes/fronts/legacies)은 서사 재설계로 폐지했다. 저장값은 읽지 않는다.
+const initialEndings = () => Object.fromEntries(finalEndings.map(e => [e.id, 0]));
 
 const initialWitness = () => ({ met: 0, heard: 0, taken: 0, quiet: false });
 
@@ -28,7 +24,7 @@ function hydrateProfile(profile, p) {
   for (const item of shopItems) profile.perks[item.id] = integer(p.perks?.[item.id], 0, 0, item.max);
   profile.memory.heard = integer(p.memory?.heard, 0, 0, 10000); profile.memory.burned = integer(p.memory?.burned, 0, 0, 10000);
   profile.memory.archive = Array.isArray(p.memory?.archive) ? p.memory.archive.filter(x => typeof x === 'string').slice(-8).map(x => x.slice(0, 110)) : [];
-  profile.memory.chapters = Array.isArray(p.memory?.chapters) ? p.memory.chapters.filter(x => ['새벽의 기록', '식지 않는 엔진', '두 개의 목소리'].includes(x)).slice(0, 3) : [];
+  // v2.6.27 이전의 신호 챕터(memory.chapters)는 최종 결말과 이름이 겹쳐 폐지했다. 저장값은 읽지 않는다.
   const witness = p.memory?.witness; if (witness && typeof witness === 'object') profile.memory.witness = { met: integer(witness.met, 0, 0, 99999), heard: integer(witness.heard, 0, 0, 99999), taken: integer(witness.taken, 0, 0, 99999), quiet: witness.quiet === true };
   const guardian = p.memory?.guardian; if (guardian && typeof guardian === 'object') profile.memory.guardian = { spared: integer(guardian.spared, 0, 0, 99999), ended: integer(guardian.ended, 0, 0, 99999) };
   const savedSites = p.memory?.sites;
@@ -36,13 +32,11 @@ function hydrateProfile(profile, p) {
     profile.memory.sites[site.id][option.id] = integer(savedSites[site.id]?.[option.id], 0, 0, 99999);
   }
   for (const objective of objectives) for (const result of ['complete', 'failed', 'ignored']) profile.memory.objectives[objective.id][result] = integer(p.memory?.objectives?.[objective.id]?.[result], 0, 0, 99999);
-  for (const e of echoes) for (const result of ['keep','use','silent']) profile.memory.echoes[e.id][result] = integer(p.memory?.echoes?.[e.id]?.[result], 0, 0, 99999);
-  for (const f of fronts) for (const result of [...f.paths.map(x => x.id), 'silent']) profile.memory.fronts[f.id][result] = integer(p.memory?.fronts?.[f.id]?.[result], 0, 0, 99999);
-  for (const [id, legacy] of Object.entries(legacies)) for (const result of [...legacy.options.map(x => x.id), 'silent']) profile.memory.legacies[id][result] = integer(p.memory?.legacies?.[id]?.[result], 0, 0, 99999);
   const savedRelics = p.memory?.relics;
   if (savedRelics && typeof savedRelics === 'object') for (const relic of relics) profile.memory.relics[relic.id] = integer(savedRelics[relic.id], 0, 0, 99999);
+  profile.memory.deaths = integer(p.memory?.deaths, 0, 0, 99999); profile.memory.lastDeathPhase = phases.some(x => x.name === p.memory?.lastDeathPhase) ? p.memory.lastDeathPhase : '';
   const savedEndings = p.memory?.endings; if (savedEndings && typeof savedEndings === 'object') for (const ending of finalEndings) profile.memory.endings[ending.id] = integer(savedEndings[ending.id], 0, 0, 99999);
-  const savedResolution = p.memory?.lastResolution; profile.memory.lastResolution = savedResolution && finalEndings.some(e => e.id === savedResolution.ending) && Array.isArray(savedResolution.threads) ? { ending: savedResolution.ending, scenes: Array.isArray(savedResolution.scenes) ? savedResolution.scenes.filter(t=>typeof t==='string').slice(0,3).map(t=>t.slice(0,300)) : [], threads: savedResolution.threads.filter(t => typeof t === 'string').slice(0, 40).map(t => t.slice(0, 180)) } : null;
+  const savedResolution = p.memory?.lastResolution; profile.memory.lastResolution = savedResolution && finalEndings.some(e => e.id === savedResolution.ending) && Array.isArray(savedResolution.threads) ? { ending: savedResolution.ending, variant: savedResolution.variant === 'hollow' && savedResolution.ending === 'consume' ? 'hollow' : '', scenes: Array.isArray(savedResolution.scenes) ? savedResolution.scenes.filter(t=>typeof t==='string').slice(0,3).map(t=>t.slice(0,300)) : [], threads: savedResolution.threads.filter(t => typeof t === 'string').slice(0, 40).map(t => t.slice(0, 180)) } : null;
   const savedAnomalies = p.memory?.anomalies;
   if (savedAnomalies && typeof savedAnomalies === 'object') for (const event of anomalies) for (const choice of event.options) {
     profile.memory.anomalies[event.id][choice.id] = integer(savedAnomalies[event.id]?.[choice.id], 0, 0, 99999);

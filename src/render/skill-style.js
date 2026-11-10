@@ -1,5 +1,5 @@
 // Presentation contract shared by original weapons and fusions. No combat state or RNG.
-export const skillStyle=Object.freeze({core:'#effbf1',housing:'#152c38',outline:'#0c1c27',fill:.045,band:.07,warning:.24,echo:.22,stroke:1.5,maxEchoes:24});
+export const skillStyle=Object.freeze({core:'#effbf1',housing:'#152c38',outline:'#0c1c27',fill:.085,band:.12,warning:.3,echo:.3,stroke:2,maxEchoes:24,glow:.3});
 export const fusionStyle=Object.freeze({
  F01:['#f7d989','#d5bdff','rail'],F02:['#f7d989','#a3dbf6','guns'],F03:['#e6ca8f','#f7d989','mines'],F04:['#80e3c4','#f7d989','wave'],
  F05:['#ade1ff','#8fe4c8','fleet'],F06:['#9de7ff','#8fe4c8','network'],F07:['#d5bdff','#8fe4c8','cutters'],F08:['#8fe4c8','#e6ca8f','meteors'],
@@ -15,17 +15,18 @@ export function createSkillDesign(ctx){
  const begin=(color,fade=1)=>{ctx.save();ctx.globalCompositeOperation='source-over';ctx.globalAlpha=Math.max(0,Math.min(1,fade));ctx.setLineDash([]);ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineCap='round';ctx.lineJoin='round';ctx.lineWidth=skillStyle.stroke;};
  const pathLine=(x,y,x2,y2)=>{ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x2,y2);};
  function bolt(x,y,angle,r,color,{fade=1,detail=true,aux=false,lance=false,cold=false,crit=false}={}){
-  begin(color,fade);ctx.translate(x,y);ctx.rotate(angle);const tail=lance?28:aux?10:17;
-  pathLine(-tail,0,-r,0);ctx.globalAlpha=fade*.16;ctx.lineWidth=Math.max(2,r*1.8);ctx.stroke();ctx.globalAlpha=fade*.85;ctx.lineWidth=lance?2:1.3;ctx.stroke();
+  begin(color,fade);ctx.translate(x,y);ctx.rotate(angle);const tail=lance?36:aux?14:24;r*=aux?1.15:1.35;
+  pathLine(-tail,0,-r*.4,0);ctx.globalAlpha=fade*.12;ctx.lineWidth=Math.max(5,r*3.2);ctx.stroke();ctx.globalAlpha=fade*skillStyle.glow;ctx.lineWidth=Math.max(3,r*1.9);ctx.stroke();ctx.globalAlpha=fade*.95;ctx.lineWidth=lance?2.4:1.8;ctx.stroke();
+  if(detail){ctx.globalAlpha=fade*.2;ctx.beginPath();ctx.arc(0,0,r*1.7,0,Math.PI*2);ctx.fill();ctx.globalAlpha=fade;}
   ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(-r*.7,r*.62);if(lance)ctx.lineTo(-r*.22,0);ctx.lineTo(-r*.7,-r*.62);ctx.closePath();ctx.fill();
-  if(detail){ctx.strokeStyle=skillStyle.core;ctx.globalAlpha=fade*.8;ctx.lineWidth=.8;pathLine(-r*.5,0,r*.7,0);ctx.stroke();}
+  if(detail){ctx.strokeStyle=skillStyle.core;ctx.globalAlpha=fade*.95;ctx.lineWidth=1.2;pathLine(-r*.8,0,r*.75,0);ctx.stroke();}
   if(cold){ctx.strokeStyle='#d6f5ff';ctx.globalAlpha=fade*.65;ctx.lineWidth=1;pathLine(0,-r,0,r);ctx.stroke();}
   if(crit&&detail){ctx.strokeStyle=skillStyle.core;ctx.globalAlpha=fade*.65;pathLine(0,-r-2,0,-r-5);ctx.moveTo(0,r+2);ctx.lineTo(0,r+5);ctx.stroke();}ctx.restore();
  }
  function lightning(x,y,x2,y2,color,{fade=1,detail=true,seed=0}={}){
   begin(color,fade);const dx=x2-x,dy=y2-y,d=Math.hypot(dx,dy)||1,n=detail?Math.min(8,Math.max(3,Math.ceil(d/35))):3;
   ctx.beginPath();ctx.moveTo(x,y);for(let i=1;i<n;i++){const t=i/n,zig=Math.sin(i*2.71+seed*.61)*Math.min(7,d*.055);ctx.lineTo(x+dx*t-dy/d*zig,y+dy*t+dx/d*zig);}ctx.lineTo(x2,y2);
-  if(detail){ctx.globalAlpha=fade*.12;ctx.lineWidth=5;ctx.stroke();}ctx.globalAlpha=fade*.85;ctx.lineWidth=1.5;ctx.stroke();if(detail){ctx.strokeStyle=skillStyle.core;ctx.globalAlpha=fade*.65;ctx.lineWidth=.65;ctx.stroke();}ctx.restore();
+  if(detail){ctx.globalAlpha=fade*.1;ctx.lineWidth=12;ctx.stroke();ctx.globalAlpha=fade*.24;ctx.lineWidth=6;ctx.stroke();}ctx.globalAlpha=fade*.95;ctx.lineWidth=2.4;ctx.stroke();ctx.strokeStyle=skillStyle.core;ctx.globalAlpha=fade*.9;ctx.lineWidth=1.1;ctx.stroke();ctx.restore();
  }
  function slash(x,y,angle,rx,ry,color,{fade=1,detail=true,accent=skillStyle.core}={}){
   begin(color,fade);ctx.translate(x,y);ctx.rotate(angle);ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,Math.PI*2);ctx.globalAlpha=fade*.2;ctx.lineWidth=1;ctx.stroke();

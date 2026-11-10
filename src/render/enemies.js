@@ -1,10 +1,11 @@
-import { W, H } from '../core/config.js';
+import { W, H, GUARDIAN_REACH, GUARDIAN_STILL } from '../core/config.js';
 import { enemyType } from '../data/enemies.js';
 import { hazardGeometry } from '../math/geometry.js';
 import { clamp } from '../core/utils.js';
 import { advanceEnemyBullet } from '../combat/hostile-attacks.js';
 import { wardRadius } from '../combat/rules.js';
 import { guardianSpread, guardianMood } from '../combat/guardians.js';
+import { VOICE } from '../combat/core-boss.js';
 
 export function createEnemyView({ sessionState, platform, primitives, enemyRuntime, cameraView }) {
   const { ctx } = platform;
@@ -52,7 +53,7 @@ export function createEnemyView({ sessionState, platform, primitives, enemyRunti
     drawCoreTelegraph();ctx.restore();
   }
 
-  function drawCoreTelegraph(){const a=sessionState.run.journey.core?.attack;if(!a)return;if(a.kind==='sweep'){drawEliteHazard({...a,shape:'beam'});return;}const live=sessionState.run.time>=a.fireAt,color=live?'#ff7f69':'#f2b46e';ctx.save();ctx.translate(a.x,a.y);ctx.rotate(a.angle);ctx.strokeStyle=color;ctx.lineCap='butt';ctx.setLineDash([]);ctx.globalAlpha=live?.23:.09;ctx.lineWidth=46;ctx.beginPath();if(a.kind==='ring')ctx.arc(0,0,110,0,Math.PI*2);else{ctx.moveTo(-1800,0);ctx.lineTo(1800,0);ctx.moveTo(0,-1800);ctx.lineTo(0,1800);}ctx.stroke();ctx.globalAlpha=.85;ctx.lineWidth=live?2.5:1.5;ctx.setLineDash(live?[]:[7,6]);ctx.beginPath();if(a.kind==='ring'){ctx.arc(0,0,87,0,Math.PI*2);ctx.moveTo(133,0);ctx.arc(0,0,133,0,Math.PI*2);}else for(const sign of [-1,1]){ctx.moveTo(-1800,sign*23);ctx.lineTo(1800,sign*23);ctx.moveTo(sign*23,-1800);ctx.lineTo(sign*23,1800);}ctx.stroke();ctx.restore();drawDangerGlyph(a.x,a.y,color);if(!live){ctx.save();ctx.fillStyle=color;ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText(Math.max(0,a.fireAt-sessionState.run.time).toFixed(1),a.x,a.y+25);ctx.restore();}}
+  function drawCoreTelegraph(){const core=sessionState.run.journey.core,p=sessionState.run.player;if(core?.shields>0){ctx.save();ctx.textAlign='center';ctx.font='bold 11px system-ui';ctx.fillStyle='#a8cbbd';ctx.fillText(`감시자의 방패 ${'◆'.repeat(core.shields)}`,p.x,p.y-34);ctx.restore();}const a=core?.attack;if(!a)return;if(a.kind==='sweep'){drawEliteHazard({...a,shape:'beam'});return;}const live=sessionState.run.time>=a.fireAt,color=a.blocked?'#a8cbbd':live?'#ff7f69':'#f2b46e';ctx.save();ctx.translate(a.x,a.y);ctx.rotate(a.angle);ctx.strokeStyle=color;ctx.lineCap='butt';ctx.setLineDash([]);ctx.globalAlpha=live?.23:.09;ctx.lineWidth=46;ctx.beginPath();if(a.kind==='ring')ctx.arc(0,0,110,0,Math.PI*2);else if(a.kind==='voice'){ctx.moveTo(VOICE.core/2,0);ctx.arc(0,0,VOICE.core/2,0,Math.PI*2);ctx.moveTo(VOICE.ring,0);ctx.arc(0,0,VOICE.ring,0,Math.PI*2);}else{ctx.moveTo(-1800,0);ctx.lineTo(1800,0);ctx.moveTo(0,-1800);ctx.lineTo(0,1800);}ctx.stroke();ctx.globalAlpha=.85;ctx.lineWidth=live?2.5:1.5;ctx.setLineDash(live?[]:[7,6]);ctx.beginPath();if(a.kind==='ring'){ctx.arc(0,0,87,0,Math.PI*2);ctx.moveTo(133,0);ctx.arc(0,0,133,0,Math.PI*2);}else if(a.kind==='voice'){for(const radius of [VOICE.core,VOICE.ring-VOICE.width,VOICE.ring+VOICE.width]){ctx.moveTo(radius,0);ctx.arc(0,0,radius,0,Math.PI*2);}}else for(const sign of [-1,1]){ctx.moveTo(-1800,sign*23);ctx.lineTo(1800,sign*23);ctx.moveTo(sign*23,-1800);ctx.lineTo(sign*23,1800);}ctx.stroke();ctx.restore();drawDangerGlyph(a.x,a.y,color);if(!live){ctx.save();ctx.fillStyle=color;ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText(Math.max(0,a.fireAt-sessionState.run.time).toFixed(1),a.x,a.y+25);ctx.restore();}}
 
   function drawGuardian(e){
     const a=e.guardianAttack;if(!a||![1,2].includes(e.phase))return;ctx.save();ctx.strokeStyle='#f1baa9';ctx.lineWidth=2;ctx.globalAlpha=.7;
@@ -76,7 +77,12 @@ export function createEnemyView({ sessionState, platform, primitives, enemyRunti
       if(detail && pushed>2){const length=Math.min(22,pushed*.4),nx=e.pushX/pushed,ny=e.pushY/pushed;ctx.globalAlpha=.18;primitives.drawShape(e.x-nx*length,e.y-ny*length,e.radius,type.color,type.sides);ctx.globalAlpha=.55;ctx.strokeStyle='#d3edeb';ctx.lineWidth=1.5;ctx.beginPath();for(const side of [-1,1]){const x=e.x-ny*side*e.radius*.6,y=e.y+nx*side*e.radius*.6;ctx.moveTo(x,y);ctx.lineTo(x-nx*length,y-ny*length);}ctx.stroke();ctx.globalAlpha=1;}
       if(e.kind===10)primitives.drawShape(e.x,e.y,e.radius+4,'#75804a',4);
       if(e.kind===3&&e.phase===4){ctx.strokeStyle='#a3e6d0';ctx.lineWidth=3;ctx.beginPath();ctx.arc(e.x,e.y,e.radius+17,0,2*Math.PI);ctx.stroke();ctx.fillStyle='#b4efdb';ctx.textAlign='center';ctx.font='bold 12px system-ui';ctx.fillText(e.final?'고리 개방':'외피 이완',e.x,e.y-e.radius-29);}
-      if (e.kind === 3 && e.phase === 3) { ctx.strokeStyle = '#d8e3df'; ctx.lineWidth = 2; ctx.setLineDash([5, 6]); ctx.beginPath(); ctx.arc(e.x, e.y, e.radius + 12, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]); }
+      if (e.kind === 3 && e.phase === 3) { ctx.strokeStyle = '#d8e3df'; ctx.lineWidth = 2; ctx.setLineDash([5, 6]); ctx.beginPath(); ctx.arc(e.x, e.y, e.radius + 12, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+        // 무기를 내린 감시자: 돌려보내는 반경, 멈춤 진행도, 남은 시간, 조작 안내
+        if (e.named && !e.final) { const run = sessionState.run, p = run.player, near = Math.hypot(p.x - e.x, p.y - e.y) <= GUARDIAN_REACH, left = Math.max(0, (e.yieldUntil || run.time) - run.time);
+          ctx.strokeStyle = near ? 'rgba(168,203,189,.55)' : 'rgba(216,227,223,.22)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(e.x, e.y, GUARDIAN_REACH, 0, Math.PI * 2); ctx.stroke();
+          if (e.yieldStill > 0) { ctx.strokeStyle = '#a8cbbd'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(e.x, e.y, e.radius + 20, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, e.yieldStill / GUARDIAN_STILL)); ctx.stroke(); }
+          ctx.textAlign = 'center'; ctx.font = 'bold 12px system-ui'; ctx.fillStyle = '#e6f1ec'; ctx.fillText(near ? '가만히 서 있기 · 돌려보냄   E · 분해' : '가까이 다가가기', e.x, e.y - e.radius - 30); ctx.font = '11px system-ui'; ctx.fillStyle = '#b9c9c3'; ctx.fillText(`${Math.ceil(left)}초 후 물러남`, e.x, e.y - e.radius - 15); } }
       if (e.elite) { ctx.strokeStyle = '#e5c77b'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(e.x, e.y, e.radius + 6, 0, 2 * Math.PI); ctx.stroke();for(let i=0;i<4;i++){const a=i*Math.PI/2;primitives.drawShape(e.x+Math.cos(a)*(e.radius+9),e.y+Math.sin(a)*(e.radius+9),2.5,'#f6d88d',4);} }
       primitives.drawShape(e.x, e.y, e.radius, e.flash > 0 ? '#fff4d2' : e.final ? '#e4c5a1' : type.color, e.final ? 8 : type.sides);
       if (e.final) { ctx.strokeStyle = '#f2d7a9'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(e.x, e.y, e.radius + 8 + Math.sin(sessionState.run.time * 4) * 3, 0, Math.PI * 2); ctx.stroke(); primitives.drawShape(e.x, e.y, 12, '#394250', 4); }

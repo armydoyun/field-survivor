@@ -1,11 +1,9 @@
 import { signalReward, witnessReward, anomalyDuration } from '../data/world-choices.js';
-import { signals, anomalies, legacies } from '../data/world.js';
+import { signals, anomalies, guardianLines, truthFound } from '../data/world.js';
 import { GUARDIAN_SALVAGE } from '../core/config.js';
-import { rewardGold } from '../growth/rewards.js';
-import { dropXp, reserveXp } from '../growth/experience.js';
 import { appendRecord } from '../core/profile.js';
 
-export function createStoryDecisions({ sessionState, statistics, difficulty, combat }) {
+export function createStoryDecisions({ sessionState, statistics, combat }) {
   const record = line => appendRecord(sessionState.profile,sessionState.run,line);
   function chooseWitness(choice) {
     if (!sessionState.run?.npc?.encounterPending || !['hear', 'take'].includes(choice)) return false;
@@ -23,24 +21,31 @@ export function createStoryDecisions({ sessionState, statistics, difficulty, com
 
   function acknowledgeSilence() {
     if (!sessionState.run?.npc?.secretPending) return false;
-    sessionState.run.npc.secretPending = false; const witness = sessionState.profile.memory.witness;
-    if (!witness.quiet) {
+    sessionState.run.npc.secretPending = false; sessionState.run.npc.silenced = true; const witness = sessionState.profile.memory.witness;
+    if (witness.quiet) record('숨겨진 기록 · 이번에도 멈춰 있던 시간이 저장되었다.');
+    else {
       witness.quiet = true; sessionState.run.player.hp = Math.min(statistics.stats().maxHp, sessionState.run.player.hp + witnessReward.silenceHeal);
-      record('숨겨진 기록 · 아무것도 하지 않은 시간이 처음으로 저장되었다. 영구 최대 HP +10.');
+      record('숨겨진 기록 · 아무것도 하지 않은 시간이 처음으로 저장되었다. 영구 최대 HP +10.'); record(truthFound);
     }
     return true;
   }
 
+  // 무기를 내린 감시자(이름 있는 감시자, phase 3)에 대한 결정. 돌려보내면 보상 없이 증표(guardianFate.spare)만 남는다.
+  function yieldingGuardian(){
+    return sessionState.run?.enemies.find(enemy => enemy.id === sessionState.run.bossChoiceId && enemy.kind === 3 && enemy.phase === 3 && enemy.named && !enemy.final) || null;
+  }
   function chooseBoss(choice) {
     if (!['spare', 'end'].includes(choice)) return false;
-    const e = sessionState.run?.enemies.find(enemy => enemy.id === sessionState.run.bossChoiceId && enemy.kind === 3 && enemy.phase === 3); if (!e) return false;
+    const e = yieldingGuardian(); if (!e) return false;
     sessionState.run.bossChoiceId = 0; sessionState.run.guardianFate[choice]++; sessionState.run.guardianOrder = choice;
-    if (choice === 'spare') {
-      sessionState.profile.memory.guardian.spared++; sessionState.run.gold += rewardGold(e);
-      if (!dropXp(sessionState.run, e.x, e.y, difficulty.rewardXp(e))) reserveXp(sessionState.run,difficulty.rewardXp(e));
-      e.hp = 0; record('감시자 · 내려놓은 무기 옆으로 지나갔다. 등 뒤에서 껍질이 닫혔다.');
-    } else { sessionState.profile.memory.guardian.ended++; combat.killEnemy(e,0,GUARDIAN_SALVAGE); record('감시자 · 껍질 안쪽까지 분해했다. 끊어진 명령이 한 번 더 점멸했다.'); }
+    if (choice === 'spare') { sessionState.profile.memory.guardian.spared++; e.hp = 0; record(guardianLines.spare); }
+    else { sessionState.profile.memory.guardian.ended++; combat.killEnemy(e,0,GUARDIAN_SALVAGE); record(guardianLines.end); }
     sessionState.run.enemies = sessionState.run.enemies.filter(enemy => enemy.hp > 0); return { enemy:e, spared:choice==='spare' };
+  }
+  // 기다리는 시간 안에 아무것도 고르지 않으면 감시자는 물러난다. 축에는 남지 않는다.
+  function guardianLeaves() {
+    const e = yieldingGuardian(); if (!e) return false;
+    sessionState.run.bossChoiceId = 0; e.hp = 0; sessionState.run.enemies = sessionState.run.enemies.filter(enemy => enemy.hp > 0); record(guardianLines.leave); return true;
   }
 
   function chooseSignal(choice) {
@@ -48,11 +53,6 @@ export function createStoryDecisions({ sessionState, statistics, difficulty, com
     const event = signals[sessionState.run.signalStep]; sessionState.run.signalChoices.push(choice); sessionState.run.signalStep++;
     if (choice === 'hear') { sessionState.run.signalHp += signalReward.hp; sessionState.run.player.hp = Math.min(statistics.stats().maxHp, sessionState.run.player.hp + signalReward.hp); sessionState.profile.memory.heard++; record(`${event.title} · 목소리를 기억했다.`); }
     else { sessionState.run.signalPower++; sessionState.run.gold += signalReward.goldBase + signalReward.goldStep * sessionState.run.signalStep; sessionState.profile.memory.burned++; record(`${event.title} · 신호를 연료로 바꿨다.`); }
-    if (sessionState.run.signalStep === signals.length) {
-      const chapter = sessionState.run.signalHp >= 40 ? '새벽의 기록' : sessionState.run.signalPower >= 2 ? '식지 않는 엔진' : '두 개의 목소리';
-      if (!sessionState.profile.memory.chapters.includes(chapter)) sessionState.profile.memory.chapters.push(chapter);
-      record(`기록의 결말 · ${chapter}. 목소리는 사라지지 않고 다음 시작을 기다린다.`);
-    }
     return true;
   }
 
@@ -68,14 +68,5 @@ export function createStoryDecisions({ sessionState, statistics, difficulty, com
     return true;
   }
 
-  function chooseLegacy(choice) {
-    if (!sessionState.run?.legacyOrigin || sessionState.run.legacyChoice || !sessionState.run.legacySite || ![...legacies[sessionState.run.legacyOrigin].options.map(x=>x.id),'silent'].includes(choice)) return false;
-    const origin = sessionState.run.legacyOrigin, def = legacies[origin], option = def.options.find(x=>x.id===choice);
-    sessionState.run.legacyChoice = choice; sessionState.run.legacySite = null; sessionState.run.legacyPending = false; sessionState.profile.memory.legacies[origin][choice]++;
-    sessionState.run.player.hp = Math.min(sessionState.run.player.hp, statistics.stats().maxHp);
-    record(`지난 결말의 답장 · ${def.name} / ${option?.name || '응답하지 않음'}`);
-    return true;
-  }
-
-  return { chooseWitness, acknowledgeSilence, chooseBoss, chooseSignal, chooseAnomaly, chooseLegacy };
+  return { chooseWitness, acknowledgeSilence, yieldingGuardian, chooseBoss, guardianLeaves, chooseSignal, chooseAnomaly };
 }
