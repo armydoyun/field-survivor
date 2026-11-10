@@ -34,3 +34,10 @@ test('guardian and shield hints follow their states; the banner draws while acti
   const restored = initialProfile(); hydrateProfile(restored, { memory: { hints: ['route', 'bogus', 'route', 'shield'] } });
   assert.deepEqual(restored.memory.hints, hints.map(h => h.id).filter(id => ['route', 'shield'].includes(id)));
 });
+
+test('pillar and drift hints appear when the battlefield changes', () => {
+  const t = harness();
+  t.run.time = 600; assert.equal(t.h.tickHints().id, 'pillar');
+  t.run.time += HINT_SECONDS + 1; assert.equal(t.h.tickHints(), null);
+  t.run.drift = { next: 0, count: 1, zones: [{ x: 0, y: 0 }] }; assert.equal(t.h.tickHints().id, 'drift');
+});

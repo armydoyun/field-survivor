@@ -4,12 +4,15 @@ import { routeAxes } from '../world/route.js';
 import { fusionRecipes } from '../data/fusions.js';
 import { fusionReady } from '../growth/build.js';
 import { W } from '../core/config.js';
+import { pillarsActive } from '../world/pillars.js';
 
 const triggers = {
   witness: r => r.npc?.spawned && r.npc.state === 'waiting',
   guardian: r => r.enemies.some(e => e.kind === 3 && e.named && e.phase === 3 && e.id === r.bossChoiceId),
   route: r => Math.abs(routeAxes(r).memory) >= 2,
   fusion: r => fusionRecipes.some(f => fusionReady(f, r)),
+  pillar: r => pillarsActive(r),
+  drift: r => r.drift?.zones?.length > 0 && r.finalStep < 2,
   shield: r => r.finalStep === 2 && r.journey?.core?.shields > 0,
 };
 
