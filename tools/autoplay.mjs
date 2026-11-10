@@ -86,6 +86,7 @@ export function autoplay({
   immortal = true,
   objectives = true,
   planner = true,
+  startWeapon = "pulse",
 } = {}) {
   const env = createMockBrowser({ observers: true }),
     descriptors = new Map();
@@ -122,6 +123,13 @@ export function autoplay({
       settings: { autoSpawn: true, worldEvents: true, choices: true, godMode: false, timeScale },
     });
     const t = app.tools;
+    // 시작 무기(새 게임의 시작 무기 선택과 같은 상태): 그 무기 Lv1 + 펄스 휴면.
+    if (startWeapon !== "pulse") {
+      const data = JSON.parse(t.snapshot());
+      data.run.startWeapon = startWeapon;
+      data.run.up[startWeapon] = 1;
+      t.loadSnapshot(JSON.stringify(data));
+    }
     t.hold(false);
     const timeline = [],
       decisions = {};
