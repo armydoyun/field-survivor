@@ -96,7 +96,10 @@ export function autoplay({
       decisions = {};
     let frame = 0,
       minute = 0,
-      damage = 0, virtualDeaths = 0, pool = Infinity, lastTime = 0,
+      damage = 0,
+      virtualDeaths = 0,
+      pool = Infinity,
+      lastTime = 0,
       lastHp = t.report().hp,
       run = JSON.parse(t.snapshot()).run,
       stuck = 0,
@@ -115,7 +118,10 @@ export function autoplay({
       if (report.mode === "playing") {
         const dt = Math.max(0, report.time - lastTime);
         pool = Math.min(report.maxHp, pool + (report.regen || 0) * dt) - lost;
-        if (pool <= 0) { virtualDeaths++; pool = report.maxHp; }
+        if (pool <= 0) {
+          virtualDeaths++;
+          pool = report.maxHp;
+        }
       }
       lastTime = report.time || lastTime;
       if (immortal && report.hp > 0 && report.hp < report.maxHp && report.mode === "playing") t.setHp(report.maxHp);
