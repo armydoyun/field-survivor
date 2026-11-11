@@ -29,3 +29,19 @@ test('every weapon has a small SVG icon that follows the label color', async () 
   assert.equal(weaponSvg('unknown'), '');
   assert.equal(new Set(Object.values(weaponSvgPaths)).size, Object.keys(weaponSvgPaths).length);
 });
+
+test('level-up cards show one short current → next line, and new weapons say so', async () => {
+  const { initialProfile } = await import('../src/core/profile.js');
+  const { createRun } = await import('../src/core/run.js');
+  const { createStatistics } = await import('../src/core/statistics.js');
+  const { createGrowthMetrics } = await import('../src/ui/growth-metrics.js');
+  const { createModalContent } = await import('../src/ui/modal-content.js');
+  const profile = initialProfile(), run = createRun(profile, { maxHp: 100, xpNext: 24 }), s = { profile, run };
+  const statistics = createStatistics({ sessionState: s }), g = createGrowthMetrics({ sessionState: s, statistics, buildModel: { branchLabel: () => '', fusionGuideState: () => ({}), fusionMaterialName: () => '' } });
+  assert.equal(g.upgradeChange('power'), '공통 공격력 14 → 17.08');
+  assert.ok(g.upgradeChange('nova').startsWith('새 무기 · 충격파 반경 '));
+  assert.ok(!g.upgradeChange('burst').includes('0% →'));
+  run.up.nova = 2; assert.ok(/충격파 반경 \d+ → \d+/.test(g.upgradeChange('nova')));
+  run.choices = ['power', 'nova']; const html = createModalContent({ sessionState: s, view: { mode: 'levelup' }, growthMetrics: g, route: () => null }).buildModal();
+  assert.equal((html.match(/class="option-change"/g) || []).length, 2); assert.ok(html.includes('weapon-icon'));
+});

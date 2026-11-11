@@ -11,6 +11,8 @@ import { recoveryScale } from '../combat/recovery.js';
 import { burstChance } from '../combat/death.js';
 import { xpCollectionScale } from '../growth/experience.js';
 import { hasRelic } from '../world/effects.js';
+import { weaponNames } from '../data/weapons.js';
+const WEAPON_IDS = new Set(Object.keys(weaponNames));
 import { armorScale } from '../combat/rules.js';
 
 export function createGrowthMetrics({ sessionState, statistics, buildModel }) {
@@ -83,5 +85,15 @@ export function createGrowthMetrics({ sessionState, statistics, buildModel }) {
     return '';
   }
 
-  return { fusionInvestment, branchLabel, specialWeaponRow, fusionGuideState, guideRequirements, fusionMetric, fusionSuccessors, specializationPaths, upgradeDescription, fusionUpgradeChange, upgradeMetric };
+  // 레벨업 카드의 한 줄 변화(v3.1): '항목 현재 → 다음'. 자세한 수치는 '자세히 보기' 창에 그대로 둔다.
+  function upgradeChange(id){
+    const r=sessionState.run;if(!r)return '';const current=r.up[id]||0;
+    if(id.startsWith('fusion_'))return current?`단계별 피해 ×${(1+.18*(current-1)).toFixed(2)} → ×${(1+.18*current).toFixed(2)}`:'새 융합 무기';
+    const projected=statistics.projectedUpgrade(id),metric=upgradeMetric(id,statistics.stats(),statistics.stats(projected),current,current+1,r,projected);
+    const first=(metric||'').split(' · ')[0].replace(': ',' ');
+    if(!current&&WEAPON_IDS.has(id))return '새 무기'+(first?` · ${first.replace(/ 0(\.0+)?(초|명|개|%| HP\/s)? → /,' ')}`:'');
+    return first.length>44?first.slice(0,43)+'…':first;
+  }
+
+  return { fusionInvestment, branchLabel, specialWeaponRow, fusionGuideState, guideRequirements, fusionMetric, fusionSuccessors, specializationPaths, upgradeDescription, fusionUpgradeChange, upgradeMetric, upgradeChange };
 }
