@@ -51,7 +51,8 @@ export function drawPillars(ctx, r, cx, cy) {
 // 표류 구역: 예고 중에는 점선 원이 차오르고, 활성 중에는 종류별 무늬가 흐른다.
 // 연소는 주황 빗금, 정체는 청회색 가로줄, 흡인은 보라 동심원이 안쪽으로 줄어든다.
 const DRIFT_COLORS = { burn: [240, 150, 70], still: [140, 170, 190], pull: [180, 140, 230] };
-export function drawDrift(ctx, r) {
+const DRIFT_NAMES = { burn: '연소', still: '정체', pull: '흡인' };
+export function drawDrift(ctx, r, labels = false) {
   const zones = r.drift?.zones;
   if (!zones?.length || !driftActive(r)) return;
   ctx.save();
@@ -71,6 +72,7 @@ export function drawDrift(ctx, r) {
     else if (z.kind === 'still') for (let k = -z.radius; k < z.radius; k += 18) { ctx.moveTo(z.x - z.radius, z.y + k + (shift % 18) / 3); ctx.lineTo(z.x + z.radius, z.y + k + (shift % 18) / 3); }
     else for (let k = -z.radius * 2; k < z.radius * 2; k += 28) { ctx.moveTo(z.x + k + shift - z.radius, z.y - z.radius); ctx.lineTo(z.x + k + shift + z.radius, z.y + z.radius); }
     ctx.stroke(); ctx.restore();
+    if (labels) { ctx.font = 'bold 13px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = c(1); ctx.fillText(DRIFT_NAMES[z.kind] || DRIFT_NAMES.burn, z.x, z.y + 4); }
   }
   ctx.restore();
 }
@@ -86,5 +88,23 @@ export function drawStoker(ctx, r) {
   ctx.fillStyle = '#2b2321'; ctx.fillRect(k.x - 9, k.y + 6, 18, 6);
   if (k.still > 0) { ctx.strokeStyle = '#9fc7d6'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(k.x, k.y, 24, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, k.still / STOKER.still)); ctx.stroke(); }
   if (near) { ctx.textAlign = 'center'; ctx.font = 'bold 12px system-ui'; ctx.fillStyle = '#f7d2b4'; ctx.fillText('E · 불을 지핀다 / 멈춰 서면 불을 끈다', k.x, k.y - 34); }
+  ctx.restore();
+}
+
+// 감시자 조준(v3.1): 켜져 있으면 감시자 둘레에 회전하는 조준선, 꺼져 있으면 'T · 조준' 안내만 작게.
+export function drawGuardianFocus(ctx, r) {
+  const g = r.enemies?.find(e => e.kind === 3 && e.hp > 0 && e.phase !== 3);
+  if (!g) return;
+  const radius = (g.radius || 26) + 12;
+  ctx.save();
+  if (r.focusGuardian) {
+    const spin = r.time * 1.6; ctx.strokeStyle = '#ffd36b'; ctx.lineWidth = 2.2;
+    for (let k = 0; k < 4; k++) { const a = spin + k * Math.PI / 2; ctx.beginPath(); ctx.arc(g.x, g.y, radius, a - .32, a + .32); ctx.stroke(); }
+    ctx.beginPath();
+    for (let k = 0; k < 4; k++) { const a = spin + Math.PI / 4 + k * Math.PI / 2; ctx.moveTo(g.x + Math.cos(a) * (radius + 3), g.y + Math.sin(a) * (radius + 3)); ctx.lineTo(g.x + Math.cos(a) * (radius + 11), g.y + Math.sin(a) * (radius + 11)); }
+    ctx.stroke();
+  } else {
+    ctx.font = 'bold 11px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,224,160,.8)'; ctx.fillText('T · 조준', g.x, g.y + radius + 16);
+  }
   ctx.restore();
 }

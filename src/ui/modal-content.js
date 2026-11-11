@@ -11,6 +11,8 @@ import { upgrades, upgradeFamilies } from '../data/upgrades.js';
 import { branches } from '../data/specializations.js';
 import { canReroll } from '../growth/cards.js';
 import { VARIANTS } from '../world/route.js';
+import { settingsHtml } from './settings.js';
+import { ledgerOverviewHtml } from './ledger.js';
 import { loadouts, unlockedLoadouts, startWeaponLevel } from '../data/loadouts.js';
 
 // 이번 판의 축 위치(NARRATIVE-REDESIGN.md 3.3절). 기억 축 −7(연소) ~ +7(보존)과 감시자 결정.
@@ -34,8 +36,8 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const ongoing = !!sessionState.run, stored = hasRecords(sessionState.profile,sessionState.run);
       const summary = ongoing ? `<div class="summary"><span>보관된 도전 <strong>${timeText(sessionState.run.time)}</strong></span><span>레벨 <strong>${sessionState.run.level}</strong></span><span>현재 HP <strong>${Math.ceil(sessionState.run.player.hp)}</strong></span></div>` : stored ? `<div class="summary"><span>최장 기록 <strong>${timeText(sessionState.profile.bestTime)}</strong></span><span>총 <strong>${sessionState.profile.runs.toLocaleString('ko-KR')}회</strong> 도전</span></div>` : '';
       const description = ongoing ? '진행 중인 도전이 저장되어 있습니다. 이어서 플레이하면 마지막 상태로 복귀하며, 처음부터 시작하면 해당 도전만 포기합니다.' : '빈 전장에 같은 신호가 다시 울린다.';
-      const buttons = (ongoing ? actionHtml('resume', '이어서 플레이', true) : '') + actionHtml('new', ongoing ? '처음부터 시작' : stored ? '새 도전 시작' : '게임 시작', !ongoing) + (sessionState.profile.memory.lastResolution ? actionHtml('ledger-open', '지난 결말의 기록 열람') : '');
-      return  modalHtml(`MODULAR ARCHITECTURE · V${VERSION}`, '끝없는 전장의 기록', description, buttons + (stored ? `<div class="menu-secondary">${actionHtml('reset-open', '모든 기록 초기화')}</div>` : ''), summary);
+      const buttons = (ongoing ? actionHtml('resume', '이어서 플레이', true) : '') + actionHtml('new', ongoing ? '처음부터 시작' : stored ? '새 도전 시작' : '게임 시작', !ongoing) + (sessionState.profile.memory.lastResolution || stored ? actionHtml('ledger-open', sessionState.profile.memory.lastResolution ? '지난 결말의 기록 열람' : '기록 보관소') : '');
+      return  modalHtml(`MODULAR ARCHITECTURE · V${VERSION}`, '끝없는 전장의 기록', description, buttons + (stored ? `<div class="menu-secondary">${actionHtml('reset-open', '모든 기록 초기화')}</div>` : ''), summary + settingsHtml(sessionState.profile, view.settingsOpen));
     } else if (view.mode === 'loadout') {
       // 시작 무기: 열린 것만 고를 수 있고, 잠긴 것은 여는 조건을 보여 준다.
       const memory=sessionState.profile.memory,open=new Set(unlockedLoadouts(memory)),label=id=>weaponLabel(id,upgrades.find(u=>u.id===id)?.name||id);
@@ -50,7 +52,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const found=truthPieces.filter(x=>x.id==='stillness'?m.witness.quiet:x.id==='origin'?m.stoker?.origin===true:m.endings[x.id]>0), allFound=found.length===truthPieces.length;
       const pieces=truthPieces.map(x=>found.includes(x)?`<li>${htmlEscape(x.text)}</li>`:`<li class="muted">잠김 · ${htmlEscape(x.unlock)}</li>`).join('');
       const epilogue = `<div class="closure-reveal"><strong>진실 조각 ${found.length}/${truthPieces.length}</strong><ul>${pieces}</ul>${allFound?`<p>${htmlEscape(truthReveal)}</p>`:''}</div>`;
-      const summary=`<div class="summary">${finalEndings.map(x=>`<span>${x.name} <strong>${m.endings[x.id]}회</strong></span>`).join('')}</div>`;
+      const summary=ledgerOverviewHtml(m);
       const recordLines=(last?.threads||[]).map(line=>`<li>${htmlEscape(line)}</li>`).join('');
       return modalHtml('ECHO ARCHIVE · CONCLUSION','결말과 남겨진 사람들','전투에서 내린 선택과 지나친 선택은 사라지지 않습니다. 마지막 도전의 기록과 발견한 결말을 다시 읽을 수 있습니다.',actionHtml('ledger-back','제목 화면으로',true),summary+epilogue+routeAxisHtml(last?.axes)+sceneHtml(last?.scenes)+(last?`<details class="ending-ledger" open><summary>마지막 결말 · ${finalEndings.find(x=>x.id===last.ending)?.name} · ${last.threads.length}건</summary><ul>${recordLines}</ul></details>`:''),true);
     } else if (view.mode === 'newconfirm') {
@@ -58,7 +60,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
     } else if (view.mode === 'resetconfirm') {
       return  modalHtml('DATA MANAGEMENT · PERMANENT', '모든 기록을 초기화할까요?', '되돌릴 수 없습니다. 현재 도전, 골드, 영구 강화, 최고 기록, NPC·신호·이상 현상·탐사·작전·유물의 기억, 엔딩 발견 기록을 이 실행 환경에서 전부 삭제합니다. 다른 사이트 데이터는 삭제하지 않습니다.', actionHtml('reset-cancel', '취소', true) + actionHtml('reset-confirm', '모든 기록을 영구 삭제'));
     } else if (view.mode === 'paused') {
-      return  modalHtml('PAUSED', '일시정지', '게임 시간과 전투가 멈췄습니다. 자동 저장 결과는 상단 저장 상태에서 확인할 수 있습니다.', actionHtml('resume', '계속하기', true) + actionHtml('menu', '제목 화면'));
+      return  modalHtml('PAUSED', '일시정지', '게임 시간과 전투가 멈췄습니다. 자동 저장 결과는 상단 저장 상태에서 확인할 수 있습니다.', actionHtml('resume', '계속하기', true) + actionHtml('menu', '제목 화면'), settingsHtml(sessionState.profile, view.settingsOpen));
     } else if (view.mode === 'encounter') {
       const witness = sessionState.profile.memory.witness, wasTaken = witness.taken > 0, wasHeard = witness.heard > 0;
       const deaths = sessionState.profile.memory.deaths, deathLine = deathLines.witness.filter(x => deaths >= x.from).at(-1)?.line.replace('{phase}', sessionState.profile.memory.lastDeathPhase || '이 벌판').replace('{count}', deaths);
@@ -87,7 +89,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const b=branchReady(sessionState.run);if(!b)return null;
       return decisionHtml('SPECIALIZATION',`${b.name} · 전문화`,'Lv.3 · 이번 도전 동안 유지되며 선택권을 소모하지 않습니다. 지정 전문화 2개를 각각 Lv.5까지 성장시키면 G로 융합할 수 있습니다.',b.options.map(o=>({id:'branch-'+o.id,name:o.name,effect:o.desc+' · '+growthMetrics.specializationPaths(b.id,o.id)})));
     } else if (view.mode === 'levelup') {
-      const options = (sessionState.run.choices || []).map((id, i) => { const item = upgrades.find(x => x.id === id), level = (sessionState.run.up[id] || 0) + 1; return `<div class="option-card" data-family="${upgradeFamilies[id]}"><button type="button" class="option" data-choice="${id}"><span class="option-level"><kbd>${i + 1}</kbd><span class="option-family">${upgradeFamilies[id]}</span><span class="option-rank">LV ${level}/${item.max}</span></span><strong id="upgradeName-${id}">${weaponLabel(id,item.name)}</strong><span class="option-desc">${growthMetrics.upgradeDescription(id)}</span>${branches.some(b => b.id === id) && level === 3 && !growthMetrics.branchLabel(id) ? `<span class="combo-ready">◆ 무기 전문화 선택 가능</span>` : ''}<span class="option-select">이 스킬 선택 <span aria-hidden="true">→</span></span></button><button type="button" class="option-more" data-upgrade-info="${id}" aria-label="${i + 1}번 선택지 상세 정보" aria-describedby="upgradeName-${id}"><span>효과와 수치 자세히 보기</span><span aria-hidden="true">↗</span></button></div>`; }).join('');
+      const options = (sessionState.run.choices || []).map((id, i) => { const item = upgrades.find(x => x.id === id), level = (sessionState.run.up[id] || 0) + 1; return `<div class="option-card" data-family="${upgradeFamilies[id]}"><button type="button" class="option" data-choice="${id}"><span class="option-level"><kbd>${i + 1}</kbd><span class="option-family">${upgradeFamilies[id]}</span><span class="option-rank">LV ${level}/${item.max}</span></span><strong id="upgradeName-${id}">${weaponLabel(id,item.name)}</strong><span class="option-desc">${growthMetrics.upgradeDescription(id)}</span>${(change=>change?`<span class="option-change">${htmlEscape(change)}</span>`:'')(growthMetrics.upgradeChange?.(id))}${branches.some(b => b.id === id) && level === 3 && !growthMetrics.branchLabel(id) ? `<span class="combo-ready">◆ 무기 전문화 선택 가능</span>` : ''}<span class="option-select">이 스킬 선택 <span aria-hidden="true">→</span></span></button><button type="button" class="option-more" data-upgrade-info="${id}" aria-label="${i + 1}번 선택지 상세 정보" aria-describedby="upgradeName-${id}"><span>효과와 수치 자세히 보기</span><span aria-hidden="true">↗</span></button></div>`; }).join('');
       const reroll = `<button type="button" class="button" data-action="reroll" ${!sessionState.run.rerolls || !canReroll(sessionState.run) ? 'disabled' : ''}>선택지 새로고침 <kbd>R</kbd> · ${sessionState.run.rerolls || 0}회</button>`;
       return  modalHtml('LEVEL UP · SELECT ONE', `레벨 ${sessionState.run.level} 달성`, '업그레이드 하나를 고르세요. 선택하는 동안 게임은 멈춥니다.', reroll, `<div class="option-grid">${options}</div><p class="reroll-note">${!canReroll(sessionState.run) ? '남은 스킬이 같아 새로고침할 다른 후보가 없습니다.' : sessionState.run.rerolls ? '레벨업 선택권을 소모하지 않습니다. 새로고침 횟수와 후보는 저장됩니다.' : '전술 재설계 영구 강화로 새 도전 시작 시 횟수를 충전할 수 있습니다.'}</p>`, true);
     } else if (view.mode === 'finalintro') {

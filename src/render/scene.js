@@ -1,5 +1,7 @@
 import { W, H } from '../core/config.js';
-import { floorAt, drawFloorMarks, drawPillars, drawDrift, drawStoker } from './floor.js';
+import { viewSetting } from '../ui/settings.js';
+import { drawWeaponStrip } from './weapon-strip.js';
+import { floorAt, drawFloorMarks, drawPillars, drawDrift, drawStoker, drawGuardianFocus } from './floor.js';
 
 export function createScene({ sessionState, platform, cameraView, worldView, primitives, statistics, weaponView, fusionView, playerView, feedback, enemyView, navigation, hints }) {
   const { ctx } = platform;
@@ -19,18 +21,19 @@ export function createScene({ sessionState, platform, cameraView, worldView, pri
 
     worldView.drawJourney();
     const detail=primitives.visualDetail(),s=statistics.stats();
-    worldView.drawMarkers();drawDrift(ctx,sessionState.run);drawPillars(ctx,sessionState.run,cx,cy);drawStoker(ctx,sessionState.run);
+    worldView.drawMarkers();drawDrift(ctx,sessionState.run,viewSetting(sessionState.profile,'labels'));drawPillars(ctx,sessionState.run,cx,cy);drawStoker(ctx,sessionState.run);
     weaponView.drawAuxiliaryFields();weaponView.drawBaseDevices(s,cx,cy);
     worldView.drawCollectibles(s,detail,cx,cy);
     feedback.drawSkillEchoes();weaponView.drawPlayerShots(detail,cx,cy);weaponView.drawCombatWaves(detail,cx,cy);weaponView.drawCombatArcs(detail,cx,cy);
     ctx.globalAlpha = 1;
     weaponView.drawSpecializations();fusionView?.drawFusions();enemyView.drawHostileMarks();enemyView.drawEnemyTelegraphs();
     weaponView.drawEnemyBullets(cx,cy);
-    enemyView.drawEnemies(detail,cx,cy);
+    enemyView.drawEnemies(detail,cx,cy);drawGuardianFocus(ctx,sessionState.run);
     playerView.drawOrbitAndMotion(s,detail);
     playerView.drawStatus(s);
     feedback.drawFeedback(detail,cx,cy);
     ctx.globalAlpha = 1;navigation.drawNavigation(cx,cy);ctx.restore();
+    drawWeaponStrip(ctx,sessionState.run,s,statistics);
     hints?.drawHint();
   }
 

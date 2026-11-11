@@ -1,5 +1,6 @@
 import { skillStyle, skillDetail } from './skill-style.js';
 import { skillColors } from '../data/visuals.js';
+import { viewSetting } from '../ui/settings.js';
 import { clamp } from '../core/utils.js';
 
 export function createPrimitives({ sessionState, renderState, platform, cameraView }) {
@@ -14,7 +15,7 @@ export function createPrimitives({ sessionState, renderState, platform, cameraVi
 
   const skillColor=id=>skillColors[id][0];
 
-  const visualDetail=()=>skillDetail(sessionState.run,cameraView.reducedMotion());
+  const visualDetail=()=>skillDetail(sessionState.run,cameraView.reducedMotion()||!viewSetting(sessionState.profile,'effects'));
 
   function skillLine(x1,y1,x2,y2,color,width=2,active=true,band=0,strength=1){ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash(active?[]:[5,7]);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);if(active){if(visualDetail()){ctx.strokeStyle='#11232b';ctx.globalAlpha=(.7*strength)*renderState.opacity;ctx.lineWidth=width+2;ctx.stroke();}if(band>0){ctx.strokeStyle=color;ctx.globalAlpha=(skillStyle.band*strength)*renderState.opacity;ctx.lineWidth=band*2;ctx.stroke();}}ctx.strokeStyle=color;ctx.globalAlpha=((active?.88:.28)*strength)*renderState.opacity;ctx.lineWidth=width;ctx.stroke();if(active&&visualDetail()){ctx.globalAlpha=(.5*strength)*renderState.opacity;ctx.strokeStyle='#f2fff1';ctx.lineWidth=.7;ctx.stroke();}ctx.restore();}
 

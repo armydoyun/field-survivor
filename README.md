@@ -1,8 +1,14 @@
-# FIELD SURVIVOR v3.0.0
+# FIELD SURVIVOR v3.1.0
 
 선택이 결말을 정하는 서바이버. ESM 소스이며 외부 런타임 라이브러리는 없다. 단일 파일 배포본은 `npm run build`로 만든다.
 
 변경 내역은 [CHANGELOG.md](CHANGELOG.md). v2.6.27까지의 융합 · 그래픽 설계는 아래 절과 [FUSION-REDESIGN.md](FUSION-REDESIGN.md) · [SKILL-VISUAL-DESIGN.md](SKILL-VISUAL-DESIGN.md)에 있다.
+
+## v3.1 읽히는 전장
+
+- **읽히는 무기**: 무기 이름은 색감만 살짝, 아이콘은 동작이 보이는 그림. 전장 오른쪽 아래에 무기 줄과 재사용 대기 고리.
+- **레벨업 카드**: '현재 → 다음' 한 줄 변화.
+- **감시자 조준(T)**, **화면 설정**(흔들림 · 이펙트 · 피해 숫자 · 색 대신 글자), **기록 보관소** 한눈에 보기.
 
 ## v3.0 시험과 합창
 

@@ -140,6 +140,7 @@ export function autoplay({
   immortal = true,
   dodge = true,
   escape = false,
+  focus = false,
   objectives = true,
   planner = true,
   startWeapon = "pulse",
@@ -322,7 +323,12 @@ export function autoplay({
               hp: Math.round(e.maxHp || e.hp),
               level: run.level,
             });
-        for (const g of guardianLog) if (g.yield == null && run.bossChoiceId === g.id) g.yield = +run.time.toFixed(1);
+        for (const g of guardianLog) {
+          const live = run.enemies.find(e => e.id === g.id);
+          if (live && live.hp > 0) g.left = +(live.hp / (live.maxHp || live.hp)).toFixed(2);
+          if (live && run.focusGuardian) g.focused = true;
+          if (g.yield == null && run.bossChoiceId === g.id) g.yield = +run.time.toFixed(1);
+        }
         const p = run.player;
         // 무기를 내린 감시자: 정책대로 멈추거나 E
         const yielding = run.enemies.find(e => e.id === run.bossChoiceId && e.phase === 3);
@@ -333,6 +339,11 @@ export function autoplay({
           }
           env.dispatch("keydown", { code: "KeyE" });
           env.dispatch("keyup", { code: "KeyE" });
+        }
+        // 감시자 조준(v3.1): focus 옵션이면 감시자가 보일 때 T를 켠다.
+        if (focus && !run.focusGuardian && run.enemies.some(e => e.kind === 3 && e.hp > 0 && e.phase !== 3)) {
+          env.dispatch("keydown", { code: "KeyT" });
+          env.dispatch("keyup", { code: "KeyT" });
         }
         // 화부: 보존 정책은 곁에서 멈춰 불을 끄고, 연소 정책은 E로 불을 지핀다.
         const stoker = run.stoker?.state === "waiting" ? run.stoker : null;

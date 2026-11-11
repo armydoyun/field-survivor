@@ -25,6 +25,7 @@ export function restoreRun(raw,profile) {
   restoreLoadout(r,raw);
   restoreWorld(r,raw,profile);
   if (raw.startWeapon !== 'pulse' && loadouts.some(l => l.id === raw.startWeapon)) r.startWeapon = raw.startWeapon;
+  if (raw.focusGuardian === true) r.focusGuardian = true;
   // 표류 구역: 순번 · 다음 생성 시각과 떠 있던 구역(최대 DRIFT.max개)을 이어 간다.
   if (raw.drift && typeof raw.drift === 'object') r.drift = { next: n(raw.drift.next, r.time, 0, 1e7), count: integer(raw.drift.count, 0, 0, 1e6), zones: (Array.isArray(raw.drift.zones) ? raw.drift.zones : []).filter(z => z && DRIFT_KINDS.includes(z.kind ?? 'burn')).slice(0, DRIFT.max).map(z => ({ kind: z.kind ?? 'burn', x: n(z.x, 0, -1e7, 1e7), y: n(z.y, 0, -1e7, 1e7), vx: n(z.vx, 0, -DRIFT.speed, DRIFT.speed), vy: n(z.vy, 0, -DRIFT.speed, DRIFT.speed), radius: DRIFT.radius, liveAt: n(z.liveAt, 0, 0, 1e7), endAt: n(z.endAt, 0, 0, 1e7) })) };
   r.player = { x: n(p.x, W / 2, -1e7, 1e7), y: n(p.y, H / 2, -1e7, 1e7), hp: n(p.hp, 100, 0, 1e7), hurt: n(p.hurt, 0, 0, 2) };

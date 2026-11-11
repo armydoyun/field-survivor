@@ -6,6 +6,7 @@ import { hints } from '../data/hints.js';
 import { objectives, sites, anomalies, relics, finalEndings } from '../data/world.js';
 
 import { VARIANTS } from '../world/route.js';
+import { hydrateView } from '../ui/settings.js';
 import { n, integer } from './utils.js';
 
 const objectiveDefault = () => Object.fromEntries(objectives.map(o => [o.id, { complete: 0, failed: 0, ignored: 0 }]));
@@ -14,7 +15,7 @@ const siteDefault = () => Object.fromEntries(sites.map(site => [site.id, { keep:
 
 const anomalyDefault = () => ({ clock: { hold: 0, rush: 0 }, border: { ward: 0, harvest: 0 }, echo: { keep: 0, erase: 0 } });
 
-const initialProfile = () => ({ audio: { muted: false, volume: .6 }, gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), lastResolution: null, deaths: 0, lastDeathPhase: '', hints: [], stoker: initialStoker() } });
+const initialProfile = () => ({ audio: { muted: false, volume: .6 }, view: hydrateView(null), gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), lastResolution: null, deaths: 0, lastDeathPhase: '', hints: [], stoker: initialStoker(), variants: { hollow: 0, chorus: 0 } } });
 
 // v2.6.27의 잔향·전선·지난 결말 답장 기억(memory.echoes/fronts/legacies)은 서사 재설계로 폐지했다. 저장값은 읽지 않는다.
 const initialEndings = () => Object.fromEntries(finalEndings.map(e => [e.id, 0]));
@@ -24,6 +25,7 @@ const initialWitness = () => ({ met: 0, heard: 0, taken: 0, quiet: false });
 
 function hydrateProfile(profile, p) {
   profile.audio = { muted: p.audio?.muted === true, volume: n(p.audio?.volume, .6, 0, 1) };
+  profile.view = hydrateView(p.view);
   profile.gold = integer(p.gold); profile.bestTime = n(p.bestTime, 0, 0, 1e7); profile.bestKills = integer(p.bestKills); profile.runs = integer(p.runs);
   for (const item of shopItems) profile.perks[item.id] = integer(p.perks?.[item.id], 0, 0, item.max);
   profile.memory.heard = integer(p.memory?.heard, 0, 0, 10000); profile.memory.burned = integer(p.memory?.burned, 0, 0, 10000);
@@ -31,6 +33,7 @@ function hydrateProfile(profile, p) {
   // v2.6.27 이전의 신호 챕터(memory.chapters)는 최종 결말과 이름이 겹쳐 폐지했다. 저장값은 읽지 않는다.
   const witness = p.memory?.witness; if (witness && typeof witness === 'object') profile.memory.witness = { met: integer(witness.met, 0, 0, 99999), heard: integer(witness.heard, 0, 0, 99999), taken: integer(witness.taken, 0, 0, 99999), quiet: witness.quiet === true };
   const stoker = p.memory?.stoker; if (stoker && typeof stoker === 'object') profile.memory.stoker = { met: integer(stoker.met, 0, 0, 99999), stoked: integer(stoker.stoked, 0, 0, 99999), quenched: integer(stoker.quenched, 0, 0, 99999), origin: stoker.origin === true };
+  profile.memory.variants = { hollow: integer(p.memory?.variants?.hollow, 0, 0, 99999), chorus: integer(p.memory?.variants?.chorus, 0, 0, 99999) };
   const guardian = p.memory?.guardian; if (guardian && typeof guardian === 'object') profile.memory.guardian = { spared: integer(guardian.spared, 0, 0, 99999), ended: integer(guardian.ended, 0, 0, 99999) };
   const savedSites = p.memory?.sites;
   if (savedSites && typeof savedSites === 'object') for (const site of sites) for (const option of site.options) {
