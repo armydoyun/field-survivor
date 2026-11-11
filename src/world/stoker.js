@@ -11,7 +11,7 @@ export const STOKER = Object.freeze({ at: 780, reach: 80, still: 3, stay: 40, of
 export function stokerEligible(r) {
   if (!r || r.stoker || r.finalStep >= 1) return false;
   const at = r.legacyVariant === 'chorus' ? startEffects.chorusStokerAt : STOKER.at;
-  return r.time >= at && (r.npc?.state !== 'heard' || routeAxes(r).memory <= STOKER.heardMemory || r.legacyVariant === 'chorus');
+  return r.time >= at && (r.npc?.state !== 'heard' || routeAxes(r).memory <= STOKER.heardMemory || r.legacyVariant === 'chorus' || !!r.lastRecord);
 }
 
 export function stokerWaiting(r) { return r?.stoker?.state === 'waiting'; }

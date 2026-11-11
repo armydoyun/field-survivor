@@ -4,7 +4,7 @@ import { hasRecords } from '../core/profile.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../data/world-choices.js';
 import { timeText } from '../core/utils.js';
 import { VERSION } from '../core/config.js';
-import { finalEndings, endingTexts, signals, anomalies, sites as siteDefinitions, firstSignalAfterPreserve, witnessAfterRelease, deathLines, truthPieces, truthReveal } from '../data/world.js';
+import { finalEndings, endingTexts, signals, anomalies, sites as siteDefinitions, firstSignalAfterPreserve, witnessAfterRelease, deathLines, truthPieces, truthReveal, lastRecord } from '../data/world.js';
 import { relicChoices } from '../world/effects.js';
 import { branchReady } from '../growth/build.js';
 import { upgrades, upgradeFamilies } from '../data/upgrades.js';
@@ -13,6 +13,7 @@ import { canReroll } from '../growth/cards.js';
 import { VARIANTS } from '../world/route.js';
 import { settingsHtml } from './settings.js';
 import { ledgerOverviewHtml } from './ledger.js';
+import { truthFoundIds } from '../world/last-record.js';
 import { loadouts, unlockedLoadouts, startWeaponLevel } from '../data/loadouts.js';
 
 // 이번 판의 축 위치(NARRATIVE-REDESIGN.md 3.3절). 기억 축 −7(연소) ~ +7(보존)과 감시자 결정.
@@ -35,7 +36,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
     if (view.mode === 'menu') {
       const ongoing = !!sessionState.run, stored = hasRecords(sessionState.profile,sessionState.run);
       const summary = ongoing ? `<div class="summary"><span>보관된 도전 <strong>${timeText(sessionState.run.time)}</strong></span><span>레벨 <strong>${sessionState.run.level}</strong></span><span>현재 HP <strong>${Math.ceil(sessionState.run.player.hp)}</strong></span></div>` : stored ? `<div class="summary"><span>최장 기록 <strong>${timeText(sessionState.profile.bestTime)}</strong></span><span>총 <strong>${sessionState.profile.runs.toLocaleString('ko-KR')}회</strong> 도전</span></div>` : '';
-      const description = ongoing ? '진행 중인 도전이 저장되어 있습니다. 이어서 플레이하면 마지막 상태로 복귀하며, 처음부터 시작하면 해당 도전만 포기합니다.' : '빈 전장에 같은 신호가 다시 울린다.';
+      const description = ongoing ? '진행 중인 도전이 저장되어 있습니다. 이어서 플레이하면 마지막 상태로 복귀하며, 처음부터 시작하면 해당 도전만 포기합니다.' : sessionState.profile.memory.lastRecord > 0 ? '장치는 한 번 멈췄다. 그래도 빈 전장에 같은 신호가 다시 울린다.' : '빈 전장에 같은 신호가 다시 울린다.';
       const buttons = (ongoing ? actionHtml('resume', '이어서 플레이', true) : '') + actionHtml('new', ongoing ? '처음부터 시작' : stored ? '새 도전 시작' : '게임 시작', !ongoing) + (sessionState.profile.memory.lastResolution || stored ? actionHtml('ledger-open', sessionState.profile.memory.lastResolution ? '지난 결말의 기록 열람' : '기록 보관소') : '');
       return  modalHtml(`MODULAR ARCHITECTURE · V${VERSION}`, '끝없는 전장의 기록', description, buttons + (stored ? `<div class="menu-secondary">${actionHtml('reset-open', '모든 기록 초기화')}</div>` : ''), summary + settingsHtml(sessionState.profile, view.settingsOpen));
     } else if (view.mode === 'loadout') {
@@ -49,12 +50,12 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
     } else if (view.mode === 'ledger') {
       const m=sessionState.profile.memory, last=m.lastResolution;
       // 진실 조각: 결말 4개와 정지 비밀이 하나씩 연다. 모두 모이면 전체 진실이 열린다.
-      const found=truthPieces.filter(x=>x.id==='stillness'?m.witness.quiet:x.id==='origin'?m.stoker?.origin===true:m.endings[x.id]>0), allFound=found.length===truthPieces.length;
+      const foundIds=truthFoundIds(m),found=truthPieces.filter(x=>foundIds.includes(x.id)), allFound=found.length===truthPieces.length;
       const pieces=truthPieces.map(x=>found.includes(x)?`<li>${htmlEscape(x.text)}</li>`:`<li class="muted">잠김 · ${htmlEscape(x.unlock)}</li>`).join('');
       const epilogue = `<div class="closure-reveal"><strong>진실 조각 ${found.length}/${truthPieces.length}</strong><ul>${pieces}</ul>${allFound?`<p>${htmlEscape(truthReveal)}</p>`:''}</div>`;
       const summary=ledgerOverviewHtml(m);
       const recordLines=(last?.threads||[]).map(line=>`<li>${htmlEscape(line)}</li>`).join('');
-      return modalHtml('ECHO ARCHIVE · CONCLUSION','결말과 남겨진 사람들','전투에서 내린 선택과 지나친 선택은 사라지지 않습니다. 마지막 도전의 기록과 발견한 결말을 다시 읽을 수 있습니다.',actionHtml('ledger-back','제목 화면으로',true),summary+epilogue+routeAxisHtml(last?.axes)+sceneHtml(last?.scenes)+(last?`<details class="ending-ledger" open><summary>마지막 결말 · ${finalEndings.find(x=>x.id===last.ending)?.name} · ${last.threads.length}건</summary><ul>${recordLines}</ul></details>`:''),true);
+      return modalHtml('ECHO ARCHIVE · CONCLUSION','결말과 남겨진 사람들','전투에서 내린 선택과 지나친 선택은 사라지지 않습니다. 마지막 도전의 기록과 발견한 결말을 다시 읽을 수 있습니다.',actionHtml('ledger-back','제목 화면으로',true),summary+epilogue+routeAxisHtml(last?.axes)+sceneHtml(last?.scenes)+(last?`<details class="ending-ledger" open><summary>마지막 결말 · ${last.ending==='last'?lastRecord.name:finalEndings.find(x=>x.id===last.ending)?.name} · ${last.threads.length}건</summary><ul>${recordLines}</ul></details>`:''),true);
     } else if (view.mode === 'newconfirm') {
       return  modalHtml('NEW RUN · CONFIRM', '진행 중인 도전을 포기할까요?', `현재 ${timeText(sessionState.run?.time || 0)}까지 플레이한 도전과 획득한 전투 골드 ${sessionState.run?.gold || 0}G가 사라집니다. 영구 강화와 과거 기록은 유지됩니다.`, actionHtml('new-cancel', '계속 이어서 하기', true) + actionHtml('new-confirm', '현재 도전 포기하고 새로 시작'));
     } else if (view.mode === 'resetconfirm') {
@@ -99,9 +100,10 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const current=route?.()||{ending:'divided',release:false},text=endingTexts[current.ending],seen=finalEndings.filter(x=>sessionState.profile.memory.endings[x.id]>0).length;
       // 해방 힌트는 결말을 2개 이상 본 뒤에만 직접 말한다. 그 전에는 기록원이 기다리는 모습만 보인다.
       const witness=current.release?(seen>=2?' 기록원이 속삭인다. "누르지 마. 네가 서 있던 시간을 기억해."':' 기록원이 무언가를 기다리듯 너를 본다.'):'';
-      return decisionHtml('THE LOOP · DECISION','반복의 중심',`중심핵의 빛이 멎는다. ${text.prompt}${witness}`,[{id:'final-'+current.ending,name:text.confirm,effect:`결말 보상 · ${endingReward}G`}]);
+      const last=sessionState.run?.lastRecord?[{id:'final-last',name:endingTexts.last.confirm,effect:`${lastRecord.effect} · 결말 보상 ${endingReward}G`}]:[];
+      return decisionHtml('THE LOOP · DECISION','반복의 중심',`중심핵의 빛이 멎는다. ${text.prompt}${witness}${last.length?' '+endingTexts.last.prompt:''}`,[...last,{id:'final-'+current.ending,name:text.confirm,effect:`결말 보상 · ${endingReward}G`}]);
     } else if (view.mode === 'ending') {
-      const ending = finalEndings.find(x => x.id === view.lastResult?.endingId) || finalEndings[0], intro = (endingTexts[view.lastResult?.variant] || endingTexts[ending.id]).intro;
+      const ending = view.lastResult?.endingId === 'last' ? { id: 'last', name: lastRecord.name } : finalEndings.find(x => x.id === view.lastResult?.endingId) || finalEndings[0], intro = (endingTexts[view.lastResult?.variant] || endingTexts[ending.id]).intro;
       const summary = `<div class="summary"><span>생존 <strong>${timeText(view.lastResult?.time || 0)}</strong></span><span>획득 <strong>${view.lastResult?.gold || 0} G</strong></span></div>`;
       const receipts=view.lastResult?.threads||[], epilogue=receipts.length?`<details class="ending-ledger"><summary>세부 기록 · ${receipts.length}건</summary><ul>${receipts.map(line=>`<li>${htmlEscape(line)}</li>`).join('')}</ul></details>`:'<p class="ending-ledger-empty">이번 도전에서 추가로 회수할 선택 기록은 없었습니다.</p>';
       return  modalHtml('ENDING · THE LOOP', VARIANTS[view.lastResult?.variant] ? `${ending.name} · ${VARIANTS[view.lastResult.variant].name}` : ending.name, intro, actionHtml('menu', '기록으로 돌아가기', true) + actionHtml('new', '새로운 도전') + actionHtml('ledger-open', '이 결말의 기록 열람'), summary+routeAxisHtml(view.lastResult?.axes)+sceneHtml(view.lastResult?.scenes)+epilogue, true);

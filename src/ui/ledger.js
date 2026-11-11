@@ -1,5 +1,6 @@
 // 결말 기록 한눈에 보기(v3.1): 결말 4종과 변주, 인물 기록, 시작 무기 해금. 읽기 전용 HTML이다.
-import { finalEndings } from '../data/world.js';
+import { finalEndings, lastRecord } from '../data/world.js';
+import { lastRecordOpen } from '../world/last-record.js';
 import { loadouts, unlockedLoadouts } from '../data/loadouts.js';
 import { VARIANTS } from '../world/route.js';
 import { escapeHtml } from './html.js';
@@ -28,6 +29,12 @@ export function loadoutHtml(memory) {
   return `<div class="ledger-loadouts"><strong>시작 무기 ${open.size}/${loadouts.length}</strong><span>${loadouts.map(l => `<i data-open="${open.has(l.id)}" title="${escapeHtml(open.has(l.id) ? weaponNames[l.id] : `잠김 · ${l.unlock}`)}">${weaponSvg(l.id)}</i>`).join('')}</span></div>`;
 }
 
+export function lastRecordHtml(memory) {
+  if (memory.lastRecord > 0) return `<div class="ledger-last" data-done="true"><strong>${escapeHtml(lastRecord.name)}</strong><span>장치를 멈췄다 · ${memory.lastRecord}회</span></div>`;
+  if (lastRecordOpen(memory)) return `<div class="ledger-last" data-done="false"><strong>${escapeHtml(lastRecord.name)}</strong><span>${escapeHtml(lastRecord.ledger)}</span></div>`;
+  return '';
+}
+
 export function ledgerOverviewHtml(memory) {
-  return `<section class="ledger-overview">${endingGridHtml(memory)}${peopleHtml(memory)}${loadoutHtml(memory)}</section>`;
+  return `<section class="ledger-overview">${lastRecordHtml(memory)}${endingGridHtml(memory)}${peopleHtml(memory)}${loadoutHtml(memory)}</section>`;
 }

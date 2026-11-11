@@ -54,7 +54,8 @@ const startScenes = {
   divided: { line: '두 목소리가 동시에 들린다. 기록원이 먼저 다가온다.', change: '기록원이 0:20에 나타난다' },
   release: { line: '문은 닫혀 있지만 문틈에 빛이 남아 있다.', change: '기록원의 첫 마디가 바뀐다' },
   hollow: { line: '수신기가 조용하다. 이번에는 아무도 말을 걸지 않는다.', change: '이번 판에는 기록원이 나타나지 않는다' },
-  chorus: { line: '두 목소리가 같은 박자로 들린다. 기록원도 화부도 이번엔 일찍 와 있다.', change: '기록원이 0:20에, 화부가 6:30에 나타난다' }
+  chorus: { line: '두 목소리가 같은 박자로 들린다. 기록원도 화부도 이번엔 일찍 와 있다.', change: '기록원이 0:20에, 화부가 6:30에 나타난다' },
+  last: { line: '장치는 멈췄다. 그런데 누군가 다시 스위치를 올렸다. 이번엔 네가 남긴 기록이 맨 앞에 있다.', change: '새 회차 · 진실 조각과 결말 기록은 그대로 남아 있다' }
 };
 const startEffects = { consumeSpeed: 1.05, consumeUntil: 180, dividedWitnessAt: 20, witnessAt: 65, chorusStokerAt: 390 };
 const firstSignalAfterPreserve = '이 문장은 네가 남긴 것이다. 다음 사람도 이걸 읽을 것이다.';
@@ -71,6 +72,7 @@ const endingTexts = {
   release: { confirm: '', prompt: '', intro: '접속이 끊기자 엔진이 멎었다. 문이 열렸다. 감시자와 기록원이 네 뒤를 따랐다. 처음으로, 되감기지 않는 발소리였다.', tail: '이제 그 길을 닫으라는 명령은 도착하지 않는다.' },
   hollow: { intro: '엔진이 문을 밀어 올렸다. 뒤를 돌아봤지만 따라오는 소리는 없었다. 벌판에는 이름 하나 남지 않았다.' },
   // v3.0 합창: 기록원을 들어 주고 화부도 만난 판의 두 개의 목소리.
+  last: { confirm: '장치를 멈춘다', prompt: '제어판 맨 아래, 한 번도 눌린 적 없는 스위치가 보인다.', intro: '너는 제어판의 모든 스위치를 내렸다. 엔진의 숨이 길게 빠져나가고, 벌판의 격자가 하나씩 꺼졌다.', tail: '— 마지막 기록 · 기록원 · 화부 · 이안, 그리고 쓰러졌던 모든 도전자에게.' },
   chorus: { intro: '너는 제어판에서 손을 뗐다. 한쪽에서는 기록원이 문장을 읽고, 다른 쪽에서는 화부가 불을 고른다. 두 목소리가 처음으로 같은 박자로 겹쳤다.' }
 };
 
@@ -203,4 +205,24 @@ const stokerLines = {
   }
 };
 
-export { stokerLines, witnessReactions, deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };
+// 최종 결말 '마지막 기록'(THREAD-AUDIT.md 3절): 진실 조각을 모두 모은 뒤 시작한 판에서만 열린다.
+// 세 사람이 판 중 정해진 때에 마지막 말을 하고, 중심핵에서 경로와 상관없이 '장치를 멈춘다'를 고를 수 있다.
+const lastRecord = {
+  name: '마지막 기록',
+  start: '수신기에서 세 개의 신호가 동시에 잡힌다. 기록원, 화부, 그리고 이안. 이번 판이 마지막 기록이 될 수도 있다.',
+  change: '세 사람이 모두 이번 판에 나타난다 · 중심핵에서 장치를 멈출 수 있다',
+  effect: '세 사람의 기록을 남긴 채 반복을 끝낸다',
+  words: [
+    { at: 300, line: '기록원 · "남길 문장은 다 모였어. 이제 누가 마지막 줄을 쓸지만 남았지."' },
+    { at: 840, line: '화부 · "불을 끄면 우리도 끝이야. 그래도 이번엔 네가 정해. 나는 삽을 내려놓을게."' },
+    { at: 1260, line: '이안 · "처음 들어왔을 때 나는 출구를 찾았어. 이제 알아. 출구는 멈추는 거였어."' }
+  ],
+  scenes: [
+    '기록원은 마지막 문장을 적고 펜을 내려놓았다. "읽을 사람이 없어도 괜찮아. 남겼다는 게 중요해."',
+    '화부는 꺼진 화로 앞에 앉아 처음으로 손을 쬐지 않았다. "따뜻하지 않아도 되는 날이 오긴 하는군."',
+    '이안이 문을 열고 뒤를 돌아 네 이름을 불렀다. 너는 그 이름이 아직 네 것이라는 걸 알았다.'
+  ],
+  ledger: '진실 조각을 모두 모았다. 새 도전을 시작하면 마지막 기록이 열린다.'
+};
+
+export { lastRecord, stokerLines, witnessReactions, deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };

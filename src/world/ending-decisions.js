@@ -1,6 +1,6 @@
 import { commitRunResult } from '../core/run-lifecycle.js';
 import { endingReward } from '../data/world-choices.js';
-import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes, truthFound, stokerLines, guardianLines } from '../data/world.js';
+import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes, truthFound, stokerLines, guardianLines, lastRecord } from '../data/world.js';
 import { episodeTitle } from './effects.js';
 import { appendRecord } from '../core/profile.js';
 import { routeAxes, routeEnding, releaseOpen, endingVariant, VARIANTS } from './route.js';
@@ -71,9 +71,22 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     return true;
   }
 
-  // id는 경로가 정한 결말이거나, 해방 조건을 채운 판의 'release'만 받는다.
+  // 최종 결말 '마지막 기록': 진실 조각을 모두 모은 판에서 경로와 상관없이 고를 수 있다. 결말 횟수(endings)와 따로 센다.
+  function chooseLastRecord(r) {
+    const scenes = [...lastRecord.scenes.slice(0, -1), `${lastRecord.scenes.at(-1)} ${endingTexts.last.tail}`];
+    const result = { time: r.time, kills: r.kills, gold: r.gold + endingReward, level: r.level, ending: lastRecord.name, endingId: 'last', variant: '', axes: routeAxes(r), threads: threadResolution(r), scenes };
+    const memory = sessionState.profile.memory;
+    record(`최종 회수 · ${lastRecord.name} · 장치를 멈췄다`);
+    memory.lastRecord = (memory.lastRecord || 0) + 1;
+    memory.lastResolution = { ending: 'last', variant: '', axes: result.axes, threads: result.threads.slice(0, 40), scenes };
+    return commitRunResult(sessionState, result);
+  }
+
+  // id는 경로가 정한 결말이거나, 해방 조건을 채운 판의 'release', 마지막 기록이 열린 판의 'last'만 받는다.
   function chooseFinale(id) {
-    const r=sessionState.run, current=route(r);
+    const r=sessionState.run;
+    if (id === 'last') return r?.finalStep === 3 && r.lastRecord ? chooseLastRecord(r) : null;
+    const current=route(r);
     if (!r || r.finalStep !== 3 || !(id === current.ending || (id === 'release' && current.release))) return null;
     const ending = finalEndings.find(x => x.id === id), variant = endingVariant(id, r);
     const result = { time: r.time, kills: r.kills, gold: r.gold + endingReward, level: r.level, ending: ending.name, endingId: id, variant, axes: routeAxes(r), threads: threadResolution(r), scenes: endingSceneList(id, r) };
