@@ -84,6 +84,9 @@ export function createEnemyView({ sessionState, platform, primitives, enemyRunti
           if (e.yieldStill > 0) { ctx.strokeStyle = '#a8cbbd'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(e.x, e.y, e.radius + 20, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, e.yieldStill / GUARDIAN_STILL)); ctx.stroke(); }
           ctx.textAlign = 'center'; ctx.font = 'bold 12px system-ui'; ctx.fillStyle = '#e6f1ec'; ctx.fillText(near ? '가만히 서 있기 · 돌려보냄   E · 분해' : '가까이 다가가기', e.x, e.y - e.radius - 30); ctx.font = '11px system-ui'; ctx.fillStyle = '#b9c9c3'; ctx.fillText(`${Math.ceil(left)}초 후 물러남`, e.x, e.y - e.radius - 15); } }
       if (e.elite) { ctx.strokeStyle = '#e5c77b'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(e.x, e.y, e.radius + 6, 0, 2 * Math.PI); ctx.stroke();for(let i=0;i<4;i++){const a=i*Math.PI/2;primitives.drawShape(e.x+Math.cos(a)*(e.radius+9),e.y+Math.sin(a)*(e.radius+9),2.5,'#f6d88d',4);} }
+      // 스쿼시 앤 스트레치(v3.3): 몸체와 안쪽 무늬만 변형한다. 체력 막대 · 글자는 그대로.
+      const shape = cameraView.juice?.enemyShape(e);
+      if (shape) { ctx.save(); ctx.translate(e.x, e.y); ctx.rotate(shape.angle); ctx.scale(shape.sx, shape.sy); ctx.rotate(-shape.angle); ctx.translate(-e.x, -e.y); }
       primitives.drawShape(e.x, e.y, e.radius, e.flash > 0 ? '#fff4d2' : e.final ? '#e4c5a1' : type.color, e.final ? 8 : type.sides);
       if (e.final) { ctx.strokeStyle = '#f2d7a9'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(e.x, e.y, e.radius + 8 + Math.sin(sessionState.run.time * 4) * 3, 0, Math.PI * 2); ctx.stroke(); primitives.drawShape(e.x, e.y, 12, '#394250', 4); }
       if (e.kind === 4) primitives.drawShape(e.x, e.y, 4, '#254f53');
@@ -91,6 +94,7 @@ export function createEnemyView({ sessionState, platform, primitives, enemyRunti
       if (e.kind === 8) { primitives.drawShape(e.x, e.y, 8, '#254e65', 6); primitives.drawShape(e.x, e.y, 3, '#bfe9f4', 4); }
       if (e.kind === 9) { primitives.drawShape(e.x, e.y, 5, '#63483f', 3); }
       if (e.kind === 5 && e.phase === 1) { ctx.strokeStyle = '#f3d7b7'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(e.x, e.y, e.radius + 5, 0, Math.PI * 2); ctx.stroke(); }
+      if (shape) ctx.restore();
       if (sessionState.run.time < (e.slowUntil || 0)) {
         ctx.strokeStyle = '#a5d7f4'; ctx.globalAlpha = .5; ctx.lineWidth = 1.5;
         ctx.beginPath(); ctx.arc(e.x, e.y, e.radius + 3, -.75 * Math.PI, .25 * Math.PI); ctx.stroke(); ctx.globalAlpha = 1;

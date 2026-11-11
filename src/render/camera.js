@@ -1,5 +1,6 @@
 import { W, H } from '../core/config.js';
 import { viewSetting } from '../ui/settings.js';
+import { createJuice } from './juice.js';
 
 export function createCameraView({ sessionState, view }) {
   const camera = { x: W / 2, y: H / 2, owner: null, pickupAt: 0, shake: 0, shakeX: 0, shakeY: 0 };
@@ -25,5 +26,7 @@ export function createCameraView({ sessionState, view }) {
     camera.shakeX = Math.sin(sessionState.run.time * 121) * amplitude; camera.shakeY = Math.sin(sessionState.run.time * 167) * amplitude * .7;
   }
 
-  return { camera, reducedMotion, cameraKick, followCamera };
+  const juice = createJuice({ enabled: () => !!sessionState.run && !reducedMotion() && viewSetting(sessionState.profile, 'effects') });
+
+  return { camera, reducedMotion, cameraKick, followCamera, juice };
 }
