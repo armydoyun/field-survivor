@@ -88,3 +88,21 @@ export function drawStoker(ctx, r) {
   if (near) { ctx.textAlign = 'center'; ctx.font = 'bold 12px system-ui'; ctx.fillStyle = '#f7d2b4'; ctx.fillText('E · 불을 지핀다 / 멈춰 서면 불을 끈다', k.x, k.y - 34); }
   ctx.restore();
 }
+
+// 감시자 조준(v3.1): 켜져 있으면 감시자 둘레에 회전하는 조준선, 꺼져 있으면 'T · 조준' 안내만 작게.
+export function drawGuardianFocus(ctx, r) {
+  const g = r.enemies?.find(e => e.kind === 3 && e.hp > 0 && e.phase !== 3);
+  if (!g) return;
+  const radius = (g.radius || 26) + 12;
+  ctx.save();
+  if (r.focusGuardian) {
+    const spin = r.time * 1.6; ctx.strokeStyle = '#ffd36b'; ctx.lineWidth = 2.2;
+    for (let k = 0; k < 4; k++) { const a = spin + k * Math.PI / 2; ctx.beginPath(); ctx.arc(g.x, g.y, radius, a - .32, a + .32); ctx.stroke(); }
+    ctx.beginPath();
+    for (let k = 0; k < 4; k++) { const a = spin + Math.PI / 4 + k * Math.PI / 2; ctx.moveTo(g.x + Math.cos(a) * (radius + 3), g.y + Math.sin(a) * (radius + 3)); ctx.lineTo(g.x + Math.cos(a) * (radius + 11), g.y + Math.sin(a) * (radius + 11)); }
+    ctx.stroke();
+  } else {
+    ctx.font = 'bold 11px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,224,160,.8)'; ctx.fillText('T · 조준', g.x, g.y + radius + 16);
+  }
+  ctx.restore();
+}

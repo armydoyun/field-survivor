@@ -1,5 +1,5 @@
 import { W, H } from '../core/config.js';
-import { floorAt, drawFloorMarks, drawPillars, drawDrift, drawStoker } from './floor.js';
+import { floorAt, drawFloorMarks, drawPillars, drawDrift, drawStoker, drawGuardianFocus } from './floor.js';
 
 export function createScene({ sessionState, platform, cameraView, worldView, primitives, statistics, weaponView, fusionView, playerView, feedback, enemyView, navigation, hints }) {
   const { ctx } = platform;
@@ -26,7 +26,7 @@ export function createScene({ sessionState, platform, cameraView, worldView, pri
     ctx.globalAlpha = 1;
     weaponView.drawSpecializations();fusionView?.drawFusions();enemyView.drawHostileMarks();enemyView.drawEnemyTelegraphs();
     weaponView.drawEnemyBullets(cx,cy);
-    enemyView.drawEnemies(detail,cx,cy);
+    enemyView.drawEnemies(detail,cx,cy);drawGuardianFocus(ctx,sessionState.run);
     playerView.drawOrbitAndMotion(s,detail);
     playerView.drawStatus(s);
     feedback.drawFeedback(detail,cx,cy);

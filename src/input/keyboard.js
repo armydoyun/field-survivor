@@ -1,5 +1,7 @@
 import { canOpenShopWithKeyboard, canOpenUpgradeInfo, canInteractInWorld, canAcceptMovement, canTogglePause } from '../core/view-policy.js';
 // Global key priority only; menu navigation and gameplay actions have separate owners.
+// T: 감시자 조준 켜기/끄기(v3.1). 판 동안 유지되고 저장된다. 끄면 필드를 지워 기본 상태와 같게 둔다.
+export function toggleFocus(run) { if (run.focusGuardian) delete run.focusGuardian; else run.focusGuardian = true; return !!run.focusGuardian; }
 export function createKeyboardInput({ sessionState, view, platform, shop, buildGuide, menuInput, storage, growthActions, display, actions, session, audio = null }) {
   const { $, keys } = platform;
   function keydown(event){
@@ -15,6 +17,7 @@ export function createKeyboardInput({ sessionState, view, platform, shop, buildG
     if (event.code === 'KeyS' && !event.repeat && !event.ctrlKey && !event.metaKey && !event.altKey && canOpenShopWithKeyboard(view) && !(event.target instanceof Element && (event.target.isContentEditable || event.target.closest('input,textarea,select')))) { event.preventDefault(); shop.toggleShop(true); return; }
     if (event.code === 'KeyF' && !event.repeat && !event.ctrlKey && !event.altKey && !event.metaKey && !(event.target instanceof Element && (event.target.isContentEditable || event.target.closest('input,textarea,select')))) { event.preventDefault(); display.toggleFullscreen(); return; }
     if (event.code === 'KeyM' && !event.repeat && !event.ctrlKey && !event.metaKey && !event.altKey && audio && !(event.target instanceof Element && event.target.closest('input,textarea,select'))) { event.preventDefault(); audio.toggle(); return; }
+    if (event.code === 'KeyT' && !event.repeat && !event.ctrlKey && !event.metaKey && !event.altKey && canInteractInWorld(view) && sessionState.run) { event.preventDefault(); toggleFocus(sessionState.run); storage.save(); return; }
     if (event.code === 'KeyE' && !event.repeat) { if (canInteractInWorld(view)) { event.preventDefault(); actions.interact(); } return; }
     if ((event.code === 'Escape' || event.code === 'KeyP') && !event.repeat && canTogglePause(view)) { event.preventDefault(); session.pause(); return; }
     if (view.mode !== 'playing' && menuInput.keyboardMenu(event)) { event.preventDefault(); return; }
