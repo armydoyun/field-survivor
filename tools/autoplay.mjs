@@ -560,6 +560,7 @@ export function autoplay({
             damageTaken: Math.round(damage),
             virtualDeaths,
             kills: run.kills,
+            gold: run.gold,
             enemies: run.enemies.length,
             weapons: Object.fromEntries(WEAPONS.filter(w => run.up[w]).map(w => [w, run.up[w]])),
             branches: { ...run.branches },

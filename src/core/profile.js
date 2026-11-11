@@ -1,6 +1,7 @@
 import { fusionRecipes } from '../data/fusions.js';
 import { retiredFusionIds } from '../save/retired-fusions.js';
-import { shopItems } from '../data/shop.js';
+import { shopItems, LEGACY_SHOP, PERK_VERSION } from '../data/shop.js';
+import { shopSpent } from './perks.js';
 import { phases } from '../data/progression.js';
 import { hints } from '../data/hints.js';
 import { objectives, sites, anomalies, relics, finalEndings } from '../data/world.js';
@@ -15,7 +16,7 @@ const siteDefault = () => Object.fromEntries(sites.map(site => [site.id, { keep:
 
 const anomalyDefault = () => ({ clock: { hold: 0, rush: 0 }, border: { ward: 0, harvest: 0 }, echo: { keep: 0, erase: 0 } });
 
-const initialProfile = () => ({ audio: { muted: false, volume: .6 }, view: hydrateView(null), gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), lastResolution: null, deaths: 0, lastDeathPhase: '', hints: [], stoker: initialStoker(), variants: { hollow: 0, chorus: 0 } } });
+const initialProfile = () => ({ perkVersion: PERK_VERSION, audio: { muted: false, volume: .6 }, view: hydrateView(null), gold: 0, perks: Object.fromEntries(shopItems.map(item => [item.id, 0])), bestTime: 0, bestKills: 0, runs: 0, memory: { heard: 0, burned: 0, archive: [],fusions:{}, witness: initialWitness(), guardian: { spared: 0, ended: 0 }, anomalies: anomalyDefault(), sites: siteDefault(), objectives: objectiveDefault(), relics: {}, endings: initialEndings(), lastResolution: null, deaths: 0, lastDeathPhase: '', hints: [], stoker: initialStoker(), variants: { hollow: 0, chorus: 0 } } });
 
 // v2.6.27의 잔향·전선·지난 결말 답장 기억(memory.echoes/fronts/legacies)은 서사 재설계로 폐지했다. 저장값은 읽지 않는다.
 const initialEndings = () => Object.fromEntries(finalEndings.map(e => [e.id, 0]));
@@ -23,11 +24,27 @@ const initialEndings = () => Object.fromEntries(finalEndings.map(e => [e.id, 0])
 const initialStoker = () => ({ met: 0, stoked: 0, quenched: 0, origin: false });
 const initialWitness = () => ({ met: 0, heard: 0, taken: 0, quiet: false });
 
+// 영구 강화(v3.2 재조정): 이전 표로 산 레벨은 새 상한까지 남기고, 그 레벨의 새 가격보다 더 낸 골드는 돌려준다.
+function hydratePerks(profile, p) {
+  const legacy = integer(p.perkVersion, 1, 1, 99) < PERK_VERSION;
+  let refund = 0;
+  for (const item of shopItems) {
+    if (!legacy) { profile.perks[item.id] = integer(p.perks?.[item.id], 0, 0, item.max); continue; }
+    const [base, growth, oldMax] = LEGACY_SHOP[item.id] || [item.base, item.growth, item.max];
+    const oldLevel = integer(p.perks?.[item.id], 0, 0, oldMax), level = Math.min(oldLevel, item.max);
+    let paid = 0; for (let l = 0; l < oldLevel; l++) paid += Math.round(base * Math.pow(growth, l));
+    refund += Math.max(0, paid - shopSpent(item, level));
+    profile.perks[item.id] = level;
+  }
+  profile.perkVersion = PERK_VERSION; profile.gold += refund;
+  return refund;
+}
+
 function hydrateProfile(profile, p) {
   profile.audio = { muted: p.audio?.muted === true, volume: n(p.audio?.volume, .6, 0, 1) };
   profile.view = hydrateView(p.view);
   profile.gold = integer(p.gold); profile.bestTime = n(p.bestTime, 0, 0, 1e7); profile.bestKills = integer(p.bestKills); profile.runs = integer(p.runs);
-  for (const item of shopItems) profile.perks[item.id] = integer(p.perks?.[item.id], 0, 0, item.max);
+  const refund = hydratePerks(profile, p);
   profile.memory.heard = integer(p.memory?.heard, 0, 0, 10000); profile.memory.burned = integer(p.memory?.burned, 0, 0, 10000);
   profile.memory.archive = Array.isArray(p.memory?.archive) ? p.memory.archive.filter(x => typeof x === 'string').slice(-8).map(x => x.slice(0, 110)) : [];
   // v2.6.27 이전의 신호 챕터(memory.chapters)는 최종 결말과 이름이 겹쳐 폐지했다. 저장값은 읽지 않는다.
@@ -51,6 +68,7 @@ function hydrateProfile(profile, p) {
     profile.memory.anomalies[event.id][choice.id] = integer(savedAnomalies[event.id]?.[choice.id], 0, 0, 99999);
   }
   profile.memory.fusions={};for(const id of [...retiredFusionIds,...fusionRecipes.map(f=>f.id)]){const count=integer(p.memory?.fusions?.[id],0,0,99999);if(count)profile.memory.fusions[id]=count;}
+  if (refund > 0) { profile.memory.archive = [...profile.memory.archive, `영구 강화 재조정 · 새 상한을 넘던 투자 ${refund.toLocaleString('ko-KR')}G를 돌려받았다.`].slice(-8); }
   return profile;
 }
 

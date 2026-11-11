@@ -4,7 +4,7 @@ import { createMockBrowser } from './mock-browser.js';
 // 저장 모양이 바뀌어도 전투 회귀만 보도록 해시에서 뺀다. 무기·적·탄환·성장·유물·여정 등 나머지 저장 상태는 모두 포함한다.
 const NARRATIVE_RUN_KEY=/^(logs|npc|signal|anomaly|site|objective|echo|front|legacy|guardian(Fate|Order|Meet)|story|stoker)/;
 export function combatProjection(save){
- const data=JSON.parse(save);delete data.profile.memory;delete data.profile.audio;delete data.profile.view;
+ const data=JSON.parse(save);delete data.profile.memory;delete data.profile.audio;delete data.profile.view;delete data.profile.perkVersion;
  if(data.run)for(const key of Object.keys(data.run))if(NARRATIVE_RUN_KEY.test(key))delete data.run[key];
  return JSON.stringify(data);
 }

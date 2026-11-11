@@ -41,7 +41,7 @@ test('a new run carries the previous ending and its hollow variant as the start 
 });
 test('profile hydration retains save validation, whitelist filtering and size limits', () => {
   const p = initialProfile(), raw = {
-    gold: -10, bestTime: Infinity, runs: 3.9, perks: { power: 1e9, health: -2, unknown: 100 },
+    perkVersion: 2, gold: -10, bestTime: Infinity, runs: 3.9, perks: { power: 1e9, health: -2, unknown: 100 },
     memory: { heard: 1e9, witness: { met: -1, heard: 2.9, taken: '4', quiet: 1 },
       archive: Array.from({ length: 12 }, (_, i) => String(i) + 'x'.repeat(150)),
       chapters: ['새벽의 기록', 'unknown'], fusions: { fleet: 4.9, unknown: 99 },
