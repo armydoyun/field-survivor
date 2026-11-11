@@ -45,3 +45,12 @@ test('level-up cards show one short current → next line, and new weapons say s
   run.choices = ['power', 'nova']; const html = createModalContent({ sessionState: s, view: { mode: 'levelup' }, growthMetrics: g, route: () => null }).buildModal();
   assert.equal((html.match(/class="option-change"/g) || []).length, 2); assert.ok(html.includes('weapon-icon'));
 });
+
+test('icon SVG is valid XML for the in-game strip: no element repeats an attribute', async () => {
+  const { weaponSvgPaths } = await import('../src/ui/weapon-icons.js');
+  for (const [id, paths] of Object.entries(weaponSvgPaths))
+    for (const tag of paths.match(/<[a-z]+[^>]*>/g)) {
+      const names = [...tag.matchAll(/\s([a-z-]+)="/g)].map(m => m[1]);
+      assert.equal(new Set(names).size, names.length, `${id}: ${tag}`);
+    }
+});
