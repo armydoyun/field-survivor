@@ -16,7 +16,7 @@ import { createModalContent } from '../src/ui/modal-content.js';
 import { sites, relics, anomalies, startEffects, startScenes, firstSignalAfterPreserve, witnessAfterRelease, deathLines, truthPieces, truthFound, truthReveal, witnessReactions } from '../src/data/world.js';
 import { createSession } from '../src/core/session.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../src/data/world-choices.js';
-import { endingTexts, endingScenes, stokerLines } from '../src/data/world.js';
+import { endingTexts, endingScenes, stokerLines, guardianLines } from '../src/data/world.js';
 import { GUARDIAN_SALVAGE, ENEMY_LIMIT, GUARDIAN_REACH, GUARDIAN_YIELD } from '../src/core/config.js';
 
 function state(){const s={profile:initialProfile(),run:null,replaceRun:r=>{s.run=r;}};s.run=createRun(s.profile,{maxHp:100,xpNext:xpNeed(1)});return s;}
@@ -124,7 +124,7 @@ test('ending scenes follow the witness, guardians and the lost coordinate; the h
   assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.heard.preserve,endingScenes.guardian.spared]);assert.ok(result.scenes[2].startsWith(endingScenes.exit.keep));assert.equal(result.variant,'');
   result=scenes(r=>{prepareRoute(r,-6);r.guardianFate={spare:0,end:3};},'consume');assert.equal(result.variant,'hollow');assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.hollow,endingScenes.guardian.hollow]);
   result=scenes(r=>{prepareRoute(r,-6);r.guardianFate={spare:0,end:2};},'consume');assert.equal(result.variant,'');assert.equal(result.scenes[0],`${endingScenes.witness.taken} ${stokerLines.ending}`);
-  result=scenes(r=>{prepareRelease(r);r.siteDecisions.coordinate='keep';},'release');assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.release,endingScenes.guardian.release]);assert.ok(result.scenes[2].startsWith(endingScenes.exit.release));
+  result=scenes(r=>{prepareRelease(r);r.siteDecisions.coordinate='keep';},'release');assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.release,`${endingScenes.guardian.release} ${guardianLines.signal}`]);assert.ok(result.scenes[2].startsWith(endingScenes.exit.release));
   result=scenes(r=>{prepareRoute(r,0);r.time=1800;},'divided');assert.ok(result.scenes[2].includes('지나친 표식 3개'));
 });
 test('decision factories follow replacement state and reject missing runs without touching previous sessions',()=>{

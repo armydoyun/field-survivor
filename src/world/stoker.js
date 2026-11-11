@@ -27,6 +27,12 @@ export function createStoker({ sessionState, statistics, feedback, storage }) {
     const p = r.player, a = (r.time * 2.399) % (Math.PI * 2);
     r.stoker = { state: 'waiting', x: p.x + Math.cos(a) * STOKER.offset, y: p.y + Math.sin(a) * STOKER.offset, still: 0, until: r.time + STOKER.stay };
     record(stokerLines.arrive);
+    // 화부의 이야기: 전에 만난 횟수만큼 한 문단씩 이어 말한다(첫 만남은 소개만).
+    const met = memory().met;
+    if (met > 0) record(stokerLines.story[Math.min(stokerLines.story.length, met) - 1]);
+    // 닫힌 저장고를 안에서 봉인한 사람: 이번 판의 저장고 선택에 반응한다.
+    const sealed = r.siteDecisions?.reservoir;
+    if (sealed && stokerLines.reservoir[sealed]) record(stokerLines.reservoir[sealed]);
     return true;
   }
 

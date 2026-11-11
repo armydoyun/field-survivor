@@ -1,6 +1,6 @@
 import { commitRunResult } from '../core/run-lifecycle.js';
 import { endingReward } from '../data/world-choices.js';
-import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes, truthFound, stokerLines } from '../data/world.js';
+import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes, truthFound, stokerLines, guardianLines } from '../data/world.js';
 import { episodeTitle } from './effects.js';
 import { appendRecord } from '../core/profile.js';
 import { routeAxes, routeEnding, releaseOpen, endingVariant, VARIANTS } from './route.js';
@@ -26,15 +26,16 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
   }
   function guardianScene(id,variant,a){
     const g=endingScenes.guardian;
-    if(id==='release')return g.release;
+    if(id==='release')return `${g.release} ${guardianLines.signal}`;
     if(a.spared&&a.ended)return g.mixed;
     if(a.ended)return variant==='hollow'?g.hollow:g.ended;
     return a.spared?g.spared:g.none;
   }
   function exitScene(id,r,a){
     const e=endingScenes.exit,decision=r.siteDecisions.coordinate;
-    const base=id==='release'&&decision==='keep'?e.release:decision==='keep'?e.keep:decision==='take'?e.take:e.none;
-    return a.silence?`${base} ${e.silence.replace('{count}',a.silence)}`:base;
+    const base=id==='release'&&decision==='keep'?e.release:decision==='keep'?e.keep:decision==='take'?e.take:e.none,archive=e.archive[r.siteDecisions.archive];
+    const scene=archive?`${base} ${archive}`:base;
+    return a.silence?`${scene} ${e.silence.replace('{count}',a.silence)}`:scene;
   }
   // 도입 문단은 결말 화면 본문이 맡고, 여기서는 기록원 · 감시자 · 출구 장면을 만든다. 꼬리말은 마지막 장면에 붙는다.
   function endingSceneList(id,r=sessionState.run){
