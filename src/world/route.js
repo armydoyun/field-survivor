@@ -3,7 +3,8 @@
 // 그래서 이전 버전 저장을 불러와도 별도 변환이 필요 없다.
 import { sites } from '../data/world.js';
 
-export const ROUTE = Object.freeze({ preserveAt: 3, consumeAt: -3, releaseSpared: 2, hollowEnded: 3 });
+// 기억 축 범위: 신호 3 + 기록원 1 + 탐사 지점 3 + 화부 1 = ±8(v3.2 검수: 화부를 더한 뒤 ±7을 넘을 수 있었다).
+export const ROUTE = Object.freeze({ preserveAt: 3, consumeAt: -3, releaseSpared: 2, hollowEnded: 3, memoryRange: 8 });
 
 // 결말 변주와 그 이름. 빈 껍질은 식지 않는 엔진, 합창은 두 개의 목소리에만 붙는다.
 export const VARIANTS = Object.freeze({ hollow: { ending: 'consume', name: '빈 껍질' }, chorus: { ending: 'divided', name: '합창' } });

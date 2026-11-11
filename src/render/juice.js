@@ -9,7 +9,7 @@ export const JUICE = Object.freeze({
   spawnTime: .22,        // 적이 나타날 때 커지는 시간
   hitSquash: .26,        // 적이 맞을 때 눌리는 정도
   pushStretch: .32,      // 밀려날 때 늘어나는 최대치
-  moveStretch: .14,      // 플레이어 이동 늘어남 최대치
+  moveStretch: .06,      // 플레이어 이동 늘어남 최대치(v3.2 피드백: .14는 과해서 절반 이하로)
   hurtSquash: .3,        // 플레이어 피격 눌림
   recoil: .07,           // 발사 반동
   pop: .22,              // 레벨업 · 선택 확정 팽창
@@ -51,7 +51,7 @@ export function createJuice({ enabled }) {
     player.wasHurt = p.hurt || 0;
     const speed = Math.hypot(player.vx, player.vy), angle = speed > 1 ? Math.atan2(player.vy, player.vx) : 0;
     const st = Math.min(JUICE.moveStretch, speed / 190 * JUICE.moveStretch);
-    let sx = 1 + st, sy = 1 - st * .6;
+    let sx = 1 + st, sy = 1 - st * .5;
     const hurt = player.hurtAt < 0 ? 1 : clock - player.hurtAt;
     if (hurt < .45) { const w = spring(hurt, 24, 9) * JUICE.hurtSquash; sx *= 1 - w; sy *= 1 + w; }
     const kick = player.kickAt < 0 ? 1 : clock - player.kickAt;

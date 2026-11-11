@@ -7,11 +7,11 @@ const shopItems = [
   { id: 'power', name: '기본 공격력', desc: '모든 무기 피해 +3%', base: 150, growth: 1.62, max: 10, value: lv => `+${Math.round(lv * PERK.power * 100)}% 피해` },
   { id: 'health', name: '최대 체력', desc: '기본 최대 HP +10', base: 120, growth: 1.62, max: 10, value: lv => `${100 + lv * PERK.health} HP` },
   { id: 'speed', name: '이동 속도', desc: '기본 이동 속도 +6', base: 200, growth: 1.75, max: 6, value: lv => `${190 + lv * PERK.speed} 속도` },
-  { id: 'luck', name: '치명타 확률', desc: 'PULSE 치명타 확률 +2%p · 다른 무기 미적용', base: 150, growth: 1.62, max: 8, value: lv => `+${Math.round(lv * PERK.luck * 100)}%p` },
-  { id: 'regen', name: '영구 체력 재생', desc: '초당 HP +0.08 · 피격 후 3초간 반복 회복 25%', base: 180, growth: 1.65, max: 8, value: lv => `+${(lv * PERK.regen).toFixed(2)} HP/s` },
+  { id: 'luck', name: '치명타 확률', desc: '펄스 코어 치명타 확률 +2%p · 다른 무기에는 적용되지 않음', base: 150, growth: 1.62, max: 8, value: lv => `+${Math.round(lv * PERK.luck * 100)}%p` },
+  { id: 'regen', name: '영구 체력 재생', desc: '초당 HP +0.08 회복 · 맞은 뒤 3초 동안은 25%만 회복', base: 180, growth: 1.65, max: 8, value: lv => `+${(lv * PERK.regen).toFixed(2)} HP/s` },
   { id: 'magnet', name: '회수 장비', desc: '보석 흡수 반경 +12', base: 100, growth: 1.8, max: 5, value: lv => `+${lv * PERK.magnet} 반경` },
-  { id: 'learning', name: '전투 분석', desc: '획득 경험치 +4%p · 소수 보너스 누적', base: 300, growth: 1.9, max: 5, value: lv => `+${Math.round(lv * PERK.learning * 100)}% EXP` },
-  { id: 'armor', name: '기본 장갑', desc: '받는 피해 -1.5%p · 전투 장갑과 별도 곱연산', base: 250, growth: 1.8, max: 6, value: lv => `-${Number((lv * PERK.armor * 100).toFixed(1))}% 피해` },
+  { id: 'learning', name: '전투 분석', desc: '획득 경험치 +4%p', base: 300, growth: 1.9, max: 5, value: lv => `+${Math.round(lv * PERK.learning * 100)}% EXP` },
+  { id: 'armor', name: '기본 장갑', desc: '받는 피해 -1.5%p · 레벨업의 충격 장갑과 따로 곱해짐', base: 250, growth: 1.8, max: 6, value: lv => `-${Number((lv * PERK.armor * 100).toFixed(1))}% 피해` },
   { id: 'reroll', name: '전술 재설계', desc: '새 도전마다 레벨업 선택지 새로고침 +1회', base: 800, growth: 2.6, max: 3, value: lv => `${lv}회 / 새 도전` }
 ];
 

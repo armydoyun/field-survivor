@@ -8,9 +8,9 @@ const signals = [
 const anomalies = [
   { id: 'clock', at: 300, title: '정지된 초침', line: '초침은 움직이지 않는데 유리 안쪽에서 긁는 소리가 난다.', options: [
     { id: 'hold', name: '멈춤을 간직한다', effect: '90초 동안 12초마다 일반 적 행동 2초 정지 · 이미 발사된 탄환·지면 구역은 지속' },
-    { id: 'rush', name: '초침을 부순다', effect: '90초 동안 PULSE 기본 사격 간격 -25%, 적 통상 이동 속도 +12%(돌진 제외)' }] },
+    { id: 'rush', name: '초침을 부순다', effect: '90초 동안 펄스 코어 기본 사격 간격 -25%, 적 통상 이동 속도 +12%(돌진 제외)' }] },
   { id: 'border', at: 600, title: '뒤집힌 경계', line: '지도 바깥에 있던 선이 네 발밑을 지나간다. 먼 쪽의 표식들이 하나씩 꺼진다.', options: [
-    { id: 'ward', name: '경계를 보호한다', effect: '120초 동안 반경 125의 적 투사체 1개 자동 소거 · 첫 감지 즉시, 이후 16초 재사용' },
+    { id: 'ward', name: '경계를 보호한다', effect: '120초 동안 가까이(반경 125) 날아온 적 탄 1발을 지워 줌 · 지운 뒤 16초마다 다시 충전' },
     { id: 'harvest', name: '경계를 거둬들인다', effect: '120초 동안 흡수 범위 +90, 처치 보석 기본 EXP +30%, 적 탄속 +20%' }] },
   { id: 'echo', at: 960, title: '흔들리는 지반', line: '발밑의 지면이 일정한 박자로 꺼졌다가 솟는다. 버틸 자리를 만들지, 흐름에 올라탈지 정해야 한다.', options: [
     { id: 'keep', name: '지반을 다진다', effect: '이번 도전 내내 최대 HP +30, 초당 회복 +0.35' },
@@ -32,7 +32,7 @@ const sites = [
 
 // Optional field objectives complement (and never replace) the three legacy relic sites.
 const objectives = [
-  { id: 'relay', at: 240, name: '붕괴된 중계기', brief: 'E · 접속 / 장치 부근에서 16초 동기화', gold: 140, xp: 200 },
+  { id: 'relay', at: 240, name: '붕괴된 중계기', brief: 'E · 접속 / 장치 곁에서 16초 동기화 · 적이 붙으면 느려짐', gold: 140, xp: 200 },
   { id: 'courier', at: 660, name: '떠도는 신호', brief: 'E · 연결 / 이동한 신호 좌표에서 E · 회수', gold: 240, xp: 320 },
   { id: 'hunter', at: 1020, name: '오염된 전달자', brief: 'E · 활성화 / 지정 표적 처치', gold: 360, xp: 440 }
 ];
@@ -41,10 +41,10 @@ const objectives = [
 const relics = [
   { id: 'glass', site: 'coordinate', name: '유리 심장', desc: '모든 무기 피해 +35%, 최대 HP -20%' },
   { id: 'harvest', site: 'coordinate', name: '수확의 잔', desc: '획득 EXP 25당 HP 1 회복(초당 1.2 · 한 번에 3까지) · 대신 모든 무기 피해 -10%' },
-  { id: 'mirror', site: 'reservoir', name: '반향 거울', desc: 'ORBIT Lv.1 보장 · 위성이 적 탄환을 막으면 공통 공격력의 80% 반사탄 발사' },
+  { id: 'mirror', site: 'reservoir', name: '반향 거울', desc: '방어 위성 Lv.1 보장 · 위성이 적 탄환을 막으면 공통 공격력의 80% 반사탄 발사' },
   { id: 'clockwork', site: 'reservoir', name: '멎은 태엽', desc: '피해를 받으면 반경 225의 일반 적을 1.5초 정지 · 14초 재사용 대기 · 이미 발사된 탄환·지면 구역은 지속' },
   { id: 'capacitor', site: 'archive', name: '불안정한 축전기', desc: 'HP가 최대 HP의 50% 이하일 때 모든 무기 피해 +30%' },
-  { id: 'ember', site: 'archive', name: '잿빛 파편', desc: '처치 수 12의 배수마다 반경 170에 공통 공격력 ×1.4 광역 피해' }
+  { id: 'ember', site: 'archive', name: '잿빛 파편', desc: '적을 12마리 처치할 때마다 주변(반경 170)에 공통 공격력 ×1.4 폭발' }
 ];
 
 // 직전 결말의 여파(NARRATIVE-REDESIGN.md 6.2절). 다음 판 시작 장면 한 문단과 작은 변화 하나.
@@ -54,7 +54,8 @@ const startScenes = {
   divided: { line: '두 목소리가 동시에 들린다. 기록원이 먼저 다가온다.', change: '기록원이 0:20에 나타난다' },
   release: { line: '문은 닫혀 있지만 문틈에 빛이 남아 있다.', change: '기록원의 첫 마디가 바뀐다' },
   hollow: { line: '수신기가 조용하다. 이번에는 아무도 말을 걸지 않는다.', change: '이번 판에는 기록원이 나타나지 않는다' },
-  chorus: { line: '두 목소리가 같은 박자로 들린다. 기록원도 화부도 이번엔 일찍 와 있다.', change: '기록원이 0:20에, 화부가 6:30에 나타난다' }
+  chorus: { line: '두 목소리가 같은 박자로 들린다. 기록원도 화부도 이번엔 일찍 와 있다.', change: '기록원이 0:20에, 화부가 6:30에 나타난다' },
+  last: { line: '장치는 멈췄다. 그런데 누군가 다시 스위치를 올렸다. 이번엔 네가 남긴 기록이 맨 앞에 있다.', change: '새 회차 · 진실 조각과 결말 기록은 그대로 남아 있다' }
 };
 const startEffects = { consumeSpeed: 1.05, consumeUntil: 180, dividedWitnessAt: 20, witnessAt: 65, chorusStokerAt: 390 };
 const firstSignalAfterPreserve = '이 문장은 네가 남긴 것이다. 다음 사람도 이걸 읽을 것이다.';
@@ -71,6 +72,7 @@ const endingTexts = {
   release: { confirm: '', prompt: '', intro: '접속이 끊기자 엔진이 멎었다. 문이 열렸다. 감시자와 기록원이 네 뒤를 따랐다. 처음으로, 되감기지 않는 발소리였다.', tail: '이제 그 길을 닫으라는 명령은 도착하지 않는다.' },
   hollow: { intro: '엔진이 문을 밀어 올렸다. 뒤를 돌아봤지만 따라오는 소리는 없었다. 벌판에는 이름 하나 남지 않았다.' },
   // v3.0 합창: 기록원을 들어 주고 화부도 만난 판의 두 개의 목소리.
+  last: { confirm: '장치를 멈춘다', prompt: '제어판 맨 아래, 한 번도 눌린 적 없는 스위치가 보인다.', intro: '너는 제어판의 모든 스위치를 내렸다. 엔진의 숨이 길게 빠져나가고, 벌판의 격자가 하나씩 꺼졌다.', tail: '— 마지막 기록 · 기록원 · 화부 · 이안, 그리고 쓰러졌던 모든 도전자에게.' },
   chorus: { intro: '너는 제어판에서 손을 뗐다. 한쪽에서는 기록원이 문장을 읽고, 다른 쪽에서는 화부가 불을 고른다. 두 목소리가 처음으로 같은 박자로 겹쳤다.' }
 };
 
@@ -96,7 +98,9 @@ const endingScenes = {
     keep: '복구한 좌표가 벌판 끝을 가리킨다. 아직 누구도 그 끝까지 걸어가지 않았다.',
     take: '좌표의 핵심은 네 주머니에 있다. 그것이 어디를 가리켰는지는 이제 아무도 모른다.',
     none: '분실된 좌표는 끝내 흙 속에 남았다.',
-    silence: '지나친 표식 {count}개가 아직 깜박인다.'
+    silence: '지나친 표식 {count}개가 아직 깜박인다.',
+    // 침묵의 기록고(THREAD-AUDIT 5번): 안쪽이 따뜻했던 건 엔진의 열이 기록고까지 닿았기 때문이다.
+    archive: { keep: '기록고의 온기는 엔진에서 온 것이었다. 네가 보존한 기억은 그 열 위에서 식지 않는다.', take: '기록고는 식었다. 태운 기록의 열은 엔진으로 돌아가 다른 문장을 데운다.' }
   }
 };
 
@@ -117,7 +121,9 @@ const guardianLines = {
   trialLine: '감시자 · 너는 끝까지 서 있었다. 감시자가 먼저 무기를 내렸다. 가만히 서 있으면 돌려보내고, E로 분해한다.',
   spare: '감시자 · 네가 멈춰 있는 동안 껍질이 닫혔다. 그는 등을 돌려 돌아갔다.',
   end: '감시자 · 껍질 안쪽까지 분해했다. 끊어진 명령이 한 번 더 점멸했다.',
-  leave: '감시자 · 기다리던 껍질이 스스로 물러났다. 아무 선택도 남지 않았다.'
+  leave: '감시자 · 기다리던 껍질이 스스로 물러났다. 아무 선택도 남지 않았다.',
+  // 신호 02 '이름 없는 사람'(THREAD-AUDIT 3번)은 이안이 남긴 문장이다. 이름을 되찾은 판과 열린 문에서 밝힌다.
+  signal: '이안 · "4분에 들리던 신호, 이름 없는 사람의 문장 말이야. 그건 내가 남긴 거야. 그때는 이름이 없었으니까."'
 };
 
 // 중심핵 전투에서 이번 판의 선택이 돌아올 때 남는 기록.
@@ -147,11 +153,11 @@ const truthPieces = [
   { id: 'preserve', unlock: '남겨진 목소리', text: '신호는 지워지기 직전의 목소리다. 보존된 문장은 다음 사람에게 읽힌다.' },
   { id: 'consume', unlock: '식지 않는 엔진', text: '엔진은 이름을 태워 시간을 되감는다. 태울수록 뜨거워지고, 그만큼 중심핵도 강해진다.' },
   { id: 'divided', unlock: '두 개의 목소리', text: '쓰러질 때마다 엔진에 기록 한 장이 더해진다. 너도 처음부터 그 기록 중 하나였다.' },
-  { id: 'origin', unlock: '화부와 불을 지피고 식지 않는 엔진에 닿기', text: '엔진의 첫 설계도에는 기록원의 이름과 화부의 이름이 나란히 적혀 있다. 둘은 같은 장치를 만들었고, 하나는 기억을 남기려 했고 하나는 꺼지지 않게 하려 했다.' },
+  { id: 'origin', unlock: '화부와 불을 지피고 식지 않는 엔진에 닿기', text: '엔진의 첫 설계도에는 두 사람의 이름이 나란히 적혀 있었다. 둘 다 엔진에 넣은 뒤라 읽을 수 없다. 하나는 기억을 남기려 했고 하나는 꺼지지 않게 하려 했다. 닫힌 저장고를 안쪽에서 봉인한 것도 연료를 지키려던 화부였다.' },
   { id: 'release', unlock: '열린 문', text: '감시자는 먼저 들어온 도전자의 기록을 담은 껍질이다. 돌려보낼 때마다 이름을 되찾고, 분실된 좌표는 처음부터 문을 가리키고 있었다.' }
 ];
 const truthFound = '진실 조각을 하나 찾았다. 제목 화면의 결말 기록에서 읽을 수 있다.';
-const truthReveal = '이 전장은 실패를 재생하는 감옥이자, 결정을 태워 시간을 되감는 기록 장치였다. 보존은 증언을 다음 사람에게 남기고, 연소는 지금의 생존을 위해 이름을 희생하며, 고르지 않은 사람은 다음 반복으로 넘어간다. 열린 문은 누구도 다음 사람의 운명을 독점하지 못하게 만든다. 어느 길도 지난 선택을 없애지는 않는다.';
+const truthReveal = '이 전장은 두 사람이 함께 만든 기록 장치였다. 기록원은 지워지는 목소리를 남기려 했고, 화부는 그 장치가 꺼지지 않게 하려 했다. 엔진은 결정과 이름을 태워 시간을 되감고, 쓰러진 도전자마다 기록 한 장이 더해진다. 감시자 이안은 가장 먼저 들어온 도전자였고, 너도 처음부터 그 기록 중 하나였다. 보존은 증언을 다음 사람에게 남기고, 연소는 지금을 위해 이름을 희생하며, 고르지 않은 사람은 다음 반복으로 넘어간다. 열린 문은 누구도 다음 사람의 운명을 독점하지 못하게 만든다. 어느 길도 지난 선택을 없애지는 않는다.';
 
 // 판 중 진행(NARRATIVE-REDESIGN.md 3.3 · 5.1절): 기억 축이 움직일 때 기록원이 짧게 반응한다.
 // 들어 준 기록원은 목소리로, 추출한 기록원은 잡음으로. 아직 만나지 않았으면 반응하지 않는다.
@@ -185,7 +191,38 @@ const stokerLines = {
   quenched: '화부 · 너는 아무 말 없이 불씨 옆에 서 있었다. 그는 한참 뒤에야 삽을 내려놓았다. "…오늘은 쉬어도 되겠군."',
   left: '화부 · 대답을 기다리지 않고 엔진 쪽으로 돌아갔다.',
   endingStoked: '화부가 네 옆에서 마지막 석탄을 밀어 넣었다. "봐, 우리가 지핀 불이야." 엔진 깊은 곳에 오래된 설계도 한 장이 타고 있었다.',
-  endingQuenched: '화부의 자리는 비어 있었다. 꺼진 불씨 옆에 삽 한 자루만 기대어 있다.'
+  endingQuenched: '화부의 자리는 비어 있었다. 꺼진 불씨 옆에 삽 한 자루만 기대어 있다.',
+  // 화부의 이야기(THREAD-AUDIT 2번): 만날 때마다 한 문단씩. 합창(불을 끈 갈래)에서 '자기 이야기를 시작한' 내용이다.
+  story: [
+    '화부 · "처음엔 나도 도전자였어. 쓰러질 때마다 불이 약해지는 게 보였지. 그래서 삽을 들었어."',
+    '화부 · "기록원은 문장을 남기자고 했고, 나는 불을 지키자고 했어. 둘 다 맞는 말이라 갈라섰지."',
+    '화부 · "그 사람 목소리를 태운 적은 없어. 한 번도. 그건 내가 지킨 유일한 문장이야."'
+  ],
+  // 닫힌 저장고(THREAD-AUDIT 4번): 저장고를 안에서 봉인한 사람은 화부다. 그 판의 선택에 반응한다.
+  reservoir: {
+    keep: '화부 · "저장 장치를 조심히 떼어 갔더군. 안에서 덧대 둔 봉인, 그거 내가 한 거야."',
+    take: '화부 · "저장고 봉인을 뜯었지? 안쪽에서 덧댄 건 나야. 연료가 새지 않게 하려고."'
+  }
 };
 
-export { stokerLines, witnessReactions, deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };
+// 최종 결말 '마지막 기록'(THREAD-AUDIT.md 3절): 진실 조각을 모두 모은 뒤 시작한 판에서만 열린다.
+// 세 사람이 판 중 정해진 때에 마지막 말을 하고, 중심핵에서 경로와 상관없이 '장치를 멈춘다'를 고를 수 있다.
+const lastRecord = {
+  name: '마지막 기록',
+  start: '수신기에서 세 개의 신호가 동시에 잡힌다. 기록원, 화부, 그리고 이안. 이번 판이 마지막 기록이 될 수도 있다.',
+  change: '세 사람이 모두 이번 판에 나타난다 · 중심핵에서 장치를 멈출 수 있다',
+  effect: '세 사람의 기록을 남긴 채 반복을 끝낸다',
+  words: [
+    { at: 300, line: '기록원 · "남길 문장은 다 모였어. 이제 누가 마지막 줄을 쓸지만 남았지."' },
+    { at: 840, line: '화부 · "불을 끄면 우리도 끝이야. 그래도 이번엔 네가 정해. 나는 삽을 내려놓을게."' },
+    { at: 1260, line: '이안 · "처음 들어왔을 때 나는 출구를 찾았어. 이제 알아. 출구는 멈추는 거였어."' }
+  ],
+  scenes: [
+    '기록원은 마지막 문장을 적고 펜을 내려놓았다. "읽을 사람이 없어도 괜찮아. 남겼다는 게 중요해."',
+    '화부는 꺼진 화로 앞에 앉아 처음으로 손을 쬐지 않았다. "따뜻하지 않아도 되는 날이 오긴 하는군."',
+    '이안이 문을 열고 뒤를 돌아 네 이름을 불렀다. 너는 그 이름이 아직 네 것이라는 걸 알았다.'
+  ],
+  ledger: '진실 조각을 모두 모았다. 새 도전을 시작하면 마지막 기록이 열린다.'
+};
+
+export { lastRecord, stokerLines, witnessReactions, deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };

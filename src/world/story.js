@@ -9,7 +9,9 @@ export function createStory({ sessionState, view, platform, screen, storage, ses
     const memory=sessionState.profile.memory.guardian;
     if(!guardian?.named){session.record(guardianLines.hollow);return;}
     if(memory.ended>memory.spared){session.record(guardianLines.ended);return;}
-    session.record(guardianLines.arrival.filter(x=>memory.spared>=x.from).at(-1).line);
+    const arrival=guardianLines.arrival.filter(x=>memory.spared>=x.from).at(-1);session.record(arrival.line);
+    // 이름을 되찾은 이안은 그 판 첫 만남에서 신호 02의 주인이 자신이라고 말한다.
+    if(arrival.from>=6&&(sessionState.run?.guardianMeet||0)<=1)session.record(guardianLines.signal);
   }
 
   // 무기를 내린 감시자: 가까이에서 멈춰 서면 돌려보내고(GUARDIAN_STILL초), 시간이 지나면 물러난다.

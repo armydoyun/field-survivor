@@ -34,7 +34,7 @@ export function restoreWorld(r,raw,_profile){
   r.anomalyWardAt = n(raw.anomalyWardAt, 0, 0, 1e7);
   r.siteDecisions = {}; for (const site of sites) if (site.options.some(o => o.id === raw.siteDecisions?.[site.id])) r.siteDecisions[site.id] = raw.siteDecisions[site.id];
   // 직전 결말의 여파(시작 장면)만 남긴다. 잔향 · 전선 · 답장 필드는 서사 재설계 5단계에서 폐지했고 이전 저장값은 무시한다.
-  r.legacyOrigin = finalEndings.some(e => e.id === raw.legacyOrigin) ? raw.legacyOrigin : null;
+  r.legacyOrigin = finalEndings.some(e => e.id === raw.legacyOrigin) || raw.legacyOrigin === 'last' ? raw.legacyOrigin : null;
   r.legacyVariant = VARIANTS[raw.legacyVariant]?.ending === r.legacyOrigin ? raw.legacyVariant : '';
   r.objectiveOutcomes = {}; for (const task of objectives) if (['complete','failed','ignored'].includes(raw.objectiveOutcomes?.[task.id])) r.objectiveOutcomes[task.id] = raw.objectiveOutcomes[task.id];
   r.guardianFate = { spare: integer(raw.guardianFate?.spare,0,0,1000), end: integer(raw.guardianFate?.end,0,0,1000) }; r.guardianOrder = ['spare','end'].includes(raw.guardianOrder) ? raw.guardianOrder : ''; r.guardianMeet = integer(raw.guardianMeet, 0, 0, 3); if (Number.isFinite(raw.guardianMeetAt)) r.guardianMeetAt = n(raw.guardianMeetAt, 0, 0, 1e7);

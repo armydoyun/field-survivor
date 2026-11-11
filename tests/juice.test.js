@@ -18,7 +18,7 @@ test('the player stretches along movement, squashes when hurt and pops on level-
   const j = createJuice({ enabled: () => true }), r = { player: { x: 0, y: 0, hurt: 0 } };
   j.playerShape(r);
   for (let i = 0; i < 20; i++) { j.tick(1 / 60); r.player.x += 190 / 60; j.playerShape(r); }
-  const moving = j.playerShape(r); assert.ok(moving.sx > 1.08 && moving.sy < .96 && Math.abs(moving.angle) < .01);
+  const moving = j.playerShape(r); assert.ok(moving.sx > 1.04 && moving.sx <= 1 + JUICE.moveStretch + 1e-9 && moving.sy < .985 && Math.abs(moving.angle) < .01);
   for (let i = 0; i < 60; i++) { j.tick(1 / 60); j.playerShape(r); }
   r.player.hurt = .5; j.playerShape(r); j.tick(.04); const hurt = j.playerShape(r); assert.ok(hurt.sy > hurt.sx, 'hurt squash is vertical');
   advance(j, 1); r.player.hurt = 0; j.pop(); j.tick(.05); const pop = j.playerShape(r); assert.ok(pop.sx > 1.05 && pop.sy > 1.05);

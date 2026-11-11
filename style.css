@@ -405,3 +405,7 @@ background:#3a5a66}
 .ledger-loadouts span{display:flex;gap:6px;font-size:18px}
 .ledger-loadouts i{display:inline-flex;color:#3e5d66}
 .ledger-loadouts i[data-open="false"]{color:#c7d1d5}
+.ledger-last{display:flex;justify-content:space-between;align-items:center;gap:12px;border-radius:9px;padding:10px 12px;font-size:12px;background:linear-gradient(90deg,#f4efe1,#eef3f7);border:1px solid #e1d7bb}
+.ledger-last[data-done="true"]{background:linear-gradient(90deg,#e9f3ef,#eef0f7);border-color:#b9d8cc}
+.ledger-last strong{font-size:13px;color:#3c4a3f}
+.ledger-last span{color:#5c6d75;text-align:right}

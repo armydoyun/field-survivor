@@ -65,7 +65,7 @@ test('editing the shared rules propagates to actual simulation, live metrics and
     const changed=JSON.parse(execFileSync(process.execPath,['--input-type=module','--eval',script],{encoding:'utf8',maxBuffer:1e6}));
     for(const [i,key]of ['nova:boundary:3','chain:circuit:3','rift:trail:3'].entries())assert.notEqual(changed.traces[i].hash,baseline[key].hash,key+' simulation must change');
     const desc=(id,option)=>changed.branches.find(w=>w.id===id).options.find(o=>o.id===option).desc;
-    assert.ok(desc('nova','boundary').includes('확장 ×0.425'));assert.ok(desc('chain','circuit').includes('0.8초 간격 최대 2회'));assert.ok(desc('rift','trail').includes('후속 각 ×0.6'));
+    assert.ok(desc('nova','boundary').includes('퍼질 때 ×0.425'));assert.ok(desc('chain','circuit').includes('0.8초마다') && desc('chain','circuit').includes('최대 2번'));assert.ok(desc('rift','trail').includes('이후 각 ×0.6'));
     assert.ok(changed.traces[1].rows[0][2].includes('0.8초 간격 최대 2회'));// 표시 수치에는 밸런스 배율(src/data/balance.js)이 곱해진다: nova:boundary ×1.28 → 11.9→15.2, rift:trail ×0.73 → 17.9→13.1
     assert.ok(changed.traces[0].rows[0][2].includes('확장 15.2'));assert.ok(changed.traces[2].rows[0][2].includes('후속 각 13.1'));
   }finally{rmSync(directory,{recursive:true,force:true});}
