@@ -2,6 +2,7 @@ import { skillColors } from '../data/visuals.js';
 import { specialized } from '../growth/build.js';
 import { hasRelic } from '../world/effects.js';
 import { recoveryScale } from '../combat/recovery.js';
+import { RELIC } from '../data/world-choices.js';
 import { clamp } from '../core/utils.js';
 
 export function createPlayerView({ sessionState, renderState, platform, primitives, cameraView }) {
@@ -28,7 +29,7 @@ export function createPlayerView({ sessionState, renderState, platform, primitiv
         ctx.beginPath(); for (const side of [-1, 1]) { const x = p.x - ux * 13 + -uy * side * 5, y = p.y - uy * 13 + ux * side * 5; ctx.moveTo(x, y); ctx.lineTo(x - ux * 9, y - uy * 9); } ctx.stroke(); ctx.globalAlpha = 1;
       }
     }
-    if (hasRelic('capacitor',sessionState.run) && p.hp <= s.maxHp * .4) {
+    if (hasRelic('capacitor',sessionState.run) && p.hp <= s.maxHp * RELIC.capacitorHp) {
       ctx.strokeStyle = '#efc1a2'; ctx.lineWidth = 1.5; ctx.globalAlpha=cameraView.reducedMotion()?.5:.5+.08*Math.sin(sessionState.run.time*2);
       ctx.beginPath(); ctx.arc(p.x, p.y, 22, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1;
     }

@@ -40,10 +40,10 @@ const objectives = [
 // Each field site offers two distinct relics; effects are run-only, discoveries are remembered.
 const relics = [
   { id: 'glass', site: 'coordinate', name: '유리 심장', desc: '모든 무기 피해 +35%, 최대 HP -20%' },
-  { id: 'harvest', site: 'coordinate', name: '수확의 잔', desc: '경험치 -25%, 획득 EXP 25당 HP 1 회복 · 기본 초당 1.2/순간 3 · 피격 후 3초간 회복 25%' },
+  { id: 'harvest', site: 'coordinate', name: '수확의 잔', desc: '획득 EXP 25당 HP 1 회복(초당 1.2 · 한 번에 3까지) · 대신 모든 무기 피해 -10%' },
   { id: 'mirror', site: 'reservoir', name: '반향 거울', desc: 'ORBIT Lv.1 보장 · 위성이 적 탄환을 막으면 공통 공격력의 80% 반사탄 발사' },
   { id: 'clockwork', site: 'reservoir', name: '멎은 태엽', desc: '피해를 받으면 반경 225의 일반 적을 1.5초 정지 · 14초 재사용 대기 · 이미 발사된 탄환·지면 구역은 지속' },
-  { id: 'capacitor', site: 'archive', name: '불안정한 축전기', desc: 'HP가 최대 HP의 40% 이하일 때 PULSE 기본 사격 간격 -30%' },
+  { id: 'capacitor', site: 'archive', name: '불안정한 축전기', desc: 'HP가 최대 HP의 50% 이하일 때 모든 무기 피해 +30%' },
   { id: 'ember', site: 'archive', name: '잿빛 파편', desc: '처치 수 12의 배수마다 반경 170에 공통 공격력 ×1.4 광역 피해' }
 ];
 

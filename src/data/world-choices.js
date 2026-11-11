@@ -8,6 +8,8 @@ export const siteRewards = {
 export const signalReward = { hp:20, goldBase:70, goldStep:30, burnPower:.08, xp:.06 };
 export const witnessReward = { heal:15, gold:150, silenceHeal:40, takeDamage:.05, xp:.06 };
 // 화부: 불을 지피면 연소 화력(signalPower) +2, 불을 끄면 회복. 기억 축은 지피면 −1, 끄면 +1.
+// 유물 수치(v3.2): 수확의 잔은 경험치를 깎지 않고 피해 -10%를 대가로, 축전기는 낮은 HP에서 모든 무기 피해를 올린다.
+export const RELIC = { harvestDamage: .9, capacitorHp: .5, capacitorDamage: 1.3 };
 export const stokerReward = { power:2, heal:20 };
 export const anomalyDuration = { clock:90, border:120 };
 export const endingReward = 400;

@@ -34,3 +34,16 @@ test('old saves keep their levels up to the new caps and get back what they over
   assert.ok(p.memory.archive.at(-1).includes('영구 강화 재조정'));
   const again = initialProfile(); hydrateProfile(again, JSON.parse(JSON.stringify(p))); assert.equal(again.gold, p.gold, 'no double refund');
 });
+
+test('relics: the harvest chalice heals without cutting XP but costs 10% damage; the capacitor boosts every weapon below half HP', async () => {
+  const { RELIC } = await import('../src/data/world-choices.js');
+  const { xpCollectionScale } = await import('../src/growth/experience.js');
+  const profile = initialProfile(), run = createRun(profile, { maxHp: 100, xpNext: 24 }), st = createStatistics({ sessionState: { profile, run } });
+  run.player = { x: 0, y: 0, hp: 100, hurt: 0 };
+  const base = st.stats(run).damage;
+  assert.equal(xpCollectionScale(profile, run, true), xpCollectionScale(profile, run, false));
+  run.relics = ['harvest']; assert.ok(Math.abs(st.stats(run).damage / base - RELIC.harvestDamage) < 1e-9);
+  run.relics = ['capacitor']; assert.ok(Math.abs(st.stats(run).damage - base) < 1e-9);
+  run.player.hp = 50; assert.ok(Math.abs(st.stats(run).damage / base - RELIC.capacitorDamage) < 1e-9);
+  assert.equal(st.stats(run).interval, st.stats({ ...run, relics: [] }).interval, 'no pulse-only interval bonus anymore');
+});

@@ -6,7 +6,8 @@ import { commitRepeatedHealing } from '../combat/recovery.js';
 const xpNeed = level => Math.floor(24 * Math.pow(level, 1.34) * (.78 + .22 * Math.min(1, Math.max(0, level - 1) / 23)));
 // 기억한 신호 · 들어 준 기록원은 경험치를 더한다(보존 경로의 성장 축).
 const xpBonus=(profile,r)=>1+(r?.up.salvage||0)*.08+(profile.perks.learning||0)*PERK.learning+(r?.signalChoices||[]).filter(x=>x==='hear').length*signalReward.xp+(r?.npc?.state==='heard'?witnessReward.xp:0);
-const xpCollectionScale=(profile,r,harvest)=>(harvest?.75:1)*xpBonus(profile,r);
+// 수확의 잔은 v3.2부터 경험치를 깎지 않는다(회복만 더한다). 인자는 호출부 호환을 위해 남긴다.
+const xpCollectionScale=(profile,r,_harvest)=>xpBonus(profile,r);
 
 function dropXp(r, x, y, xp, count = 1) {
   for (const gem of r.gems) if (gem.xp === xp && (gem.x - x) ** 2 + (gem.y - y) ** 2 < 72 ** 2) { gem.count += count; return true; }
