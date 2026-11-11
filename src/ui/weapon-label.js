@@ -1,4 +1,5 @@
 import { weaponNames, weaponIcons } from '../data/weapons.js';
+import { weaponSvg } from './weapon-icons.js';
 import { skillColors } from '../data/visuals.js';
 import { escapeHtml } from './html.js';
 
@@ -11,4 +12,4 @@ export function labelColor(hex) {
   return '#' + color.map((v, i) => Math.round(v * LABEL_TINT.amount + base[i] * (1 - LABEL_TINT.amount)).toString(16).padStart(2, '0')).join('');
 }
 
-export function weaponLabel(id,fallback=id){return weaponNames[id]?`<span class="weapon-identity" style="color:${labelColor(skillColors[id]?.[0]||'#f7d989')}"><span aria-hidden="true">${weaponIcons[id]}</span> ${weaponNames[id]}</span>`:escapeHtml(fallback);}
+export function weaponLabel(id,fallback=id){return weaponNames[id]?`<span class="weapon-identity" style="color:${labelColor(skillColors[id]?.[0]||'#f7d989')}">${weaponSvg(id)||`<span aria-hidden="true">${weaponIcons[id]}</span>`} ${weaponNames[id]}</span>`:escapeHtml(fallback);}

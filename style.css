@@ -360,3 +360,7 @@ background:#3a5a66}
 /* 효과음 음량(v2.9) */
 .volume-slider { width: 84px; accent-color: #8fcfc0; vertical-align: middle; cursor: pointer; }
 .volume-slider:disabled { opacity: .4; cursor: default; }
+
+/* 무기 아이콘(SVG, 글자색을 따른다) */
+.weapon-identity{white-space:nowrap}
+.weapon-icon{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.16em;flex:none}

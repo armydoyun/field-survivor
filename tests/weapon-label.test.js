@@ -17,3 +17,15 @@ test('weapon names keep a hint of their skill color but stay readable on the lig
   }
   assert.equal(labelColor('#23303b'), '#23303b');
 });
+
+test('every weapon has a small SVG icon that follows the label color', async () => {
+  const { weaponSvg, weaponSvgPaths } = await import('../src/ui/weapon-icons.js');
+  for (const id of Object.keys(weaponNames)) {
+    const html = weaponLabel(id);
+    assert.ok(html.includes('<svg class="weapon-icon" viewBox="0 0 16 16"'), id);
+    assert.ok(weaponSvgPaths[id].includes('currentColor'), id);
+    assert.ok(!/#[0-9a-f]{3,6}/i.test(weaponSvgPaths[id]), `${id} uses only currentColor`);
+  }
+  assert.equal(weaponSvg('unknown'), '');
+  assert.equal(new Set(Object.values(weaponSvgPaths)).size, Object.keys(weaponSvgPaths).length);
+});
