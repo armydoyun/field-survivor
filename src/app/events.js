@@ -1,5 +1,5 @@
 import { canPauseGame } from '../core/view-policy.js';
-export function createEvents({ view, platform, shop, buildGuide, menuInput, storage, display, session, input, actions, inspector }) {
+export function createEvents({ view, platform, shop, buildGuide, menuInput, storage, display, session, input, actions, inspector, audio = null }) {
   const { $, keys, canvas } = platform;
 
   let unbind = null;
@@ -7,7 +7,7 @@ export function createEvents({ view, platform, shop, buildGuide, menuInput, stor
     if (unbind) return unbind;
     const listeners = [];
     const listen = (target, type, handler, options) => { target.addEventListener(type, handler, options); listeners.push([target, type, handler, options]); };
-    const touched = () => { view.inputSeen = true; };
+    const touched = () => { view.inputSeen = true; audio?.unlock(); };
     listen(window, 'keydown',event=>{touched();if(!inspector?.keydown(event))input.keydown(event);});
     listen(window, 'pointerdown', touched);
     listen(window, 'pointermove', touched);
@@ -24,6 +24,9 @@ export function createEvents({ view, platform, shop, buildGuide, menuInput, stor
     listen($('saveButton'), 'click', storage.save);
 
     listen($('pauseButton'), 'click', session.pause);
+
+    if (audio && $('soundButton')) listen($('soundButton'), 'click', audio.toggle);
+    if (audio && $('volumeSlider')) { listen($('volumeSlider'), 'input', event => { audio.setVolume(event.target.value); audio.play('select'); }); listen($('volumeSlider'), 'change', event => event.target.blur?.()); }
 
     listen($('hideButton'), 'click', menuInput.hideGame);
 

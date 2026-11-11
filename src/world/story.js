@@ -15,10 +15,10 @@ export function createStory({ sessionState, view, platform, screen, storage, ses
   // 무기를 내린 감시자: 가까이에서 멈춰 서면 돌려보내고(GUARDIAN_STILL초), 시간이 지나면 물러난다.
   function tickGuardian(dt,moving){
     const e=decisions.yieldingGuardian();if(!e)return false;
-    if(!e.yieldNoted){e.yieldNoted=true;session.record(guardianLines.yieldLine);storage.save();}
+    if(!e.yieldNoted){e.yieldNoted=true;session.record(e.trialYield?guardianLines.trialLine:guardianLines.yieldLine);feedback.sound?.('guardianYield');storage.save();}
     const p=sessionState.run.player,near=Math.hypot(p.x-e.x,p.y-e.y)<=GUARDIAN_REACH;
     e.yieldStill=near&&!moving?(e.yieldStill||0)+dt:0;
-    if(e.yieldStill>=GUARDIAN_STILL){const result=decisions.chooseBoss('spare');if(result)feedback.burst(result.enemy.x,result.enemy.y,'#a8cbbd',24);storage.save();return true;}
+    if(e.yieldStill>=GUARDIAN_STILL){const result=decisions.chooseBoss('spare');if(result){feedback.burst(result.enemy.x,result.enemy.y,'#a8cbbd',24);feedback.sound?.('guardianSpare');}storage.save();return true;}
     if(sessionState.run.time>=e.yieldUntil){decisions.guardianLeaves();storage.save();return true;}
     return false;
   }
@@ -27,7 +27,7 @@ export function createStory({ sessionState, view, platform, screen, storage, ses
   function dismantleGuardian(){
     if(!canInteractInWorld(view))return false;const e=decisions.yieldingGuardian(),p=sessionState.run?.player;
     if(!e||Math.hypot(p.x-e.x,p.y-e.y)>GUARDIAN_REACH)return false;
-    decisions.chooseBoss('end');storage.save();return true;
+    decisions.chooseBoss('end');feedback.sound?.('guardianEnd');storage.save();return true;
   }
 
   function tickWitness(dt,moving){

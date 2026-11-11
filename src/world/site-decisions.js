@@ -4,6 +4,7 @@ import { upgrades } from '../data/upgrades.js';
 import { relicChoices, hasRelic } from './effects.js';
 import { ENEMY_LIMIT } from '../core/config.js';
 import { appendRecord } from '../core/profile.js';
+import { witnessReaction, relicReaction } from './reactions.js';
 
 // Apply choices without presentation or persistence. Reject before any mutation.
 export function createSiteDecisions({ sessionState, statistics, progression, enemyRuntime }) {
@@ -26,6 +27,7 @@ export function createSiteDecisions({ sessionState, statistics, progression, ene
       else { sessionState.run.up.haste = Math.min(upgrades.find(x=>x.id==='haste').max, (sessionState.run.up.haste || 0) + reward.haste); progression.collect(reward.xp); }
     }
     record(`탐사 지점 · ${site.title} · ${site.options.find(o => o.id === choice).name}`);
+    const reaction = witnessReaction(sessionState.run, choice === 'keep' ? 'keep' : 'burn'); if (reaction) record(reaction);
     for(let i=0;i<(reward.enemies?.length||0)&&sessionState.run.enemies.length<ENEMY_LIMIT;i++){
       const enemy=enemyRuntime.spawnEnemy(reward.enemies[i]);if(reward.elite)enemyRuntime.promoteElite(enemy);
     }
@@ -36,7 +38,7 @@ export function createSiteDecisions({ sessionState, statistics, progression, ene
     if (!sessionState.run || !item || hasRelic(id,sessionState.run) || sessionState.run.relics.length >= sites.length || sessionState.run.relics.some(owned => relics.find(x => x.id === owned).site === item.site)) return false;
     sessionState.run.relics.push(id); if (id === 'mirror' && !sessionState.run.up.orbit) { sessionState.run.up.orbit = 1; record('반향 거울이 휴면 상태의 방어 위성 하나를 깨웠다.'); }
     sessionState.profile.memory.relics[id] = (sessionState.profile.memory.relics[id] || 0) + 1;
-    sessionState.run.player.hp = Math.min(sessionState.run.player.hp, statistics.stats().maxHp); record(`유물 획득 · ${item.name}. ${item.desc}`); return true;
+    sessionState.run.player.hp = Math.min(sessionState.run.player.hp, statistics.stats().maxHp); record(`유물 획득 · ${item.name}. ${item.desc}`); const said = relicReaction(sessionState.run, item.name); if (said) record(said); return true;
   }
   function chooseRelic(id) {
     if (!sessionState.run?.relicPending || !relicChoices(sessionState.run.relicPending).some(item => item.id === id) || !equipRelic(id)) return false;

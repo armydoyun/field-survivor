@@ -7,6 +7,7 @@ export function createHud({ platform, model }) {
     for(const [id,value]of Object.entries(next.width))$(id).style.width=value;
     for(const [id,value]of Object.entries(next.hidden))$(id).hidden=value;
     for(const [id,value]of Object.entries(next.keys)){$(id).dataset.key=value;keys[id]=value;}
+    for(const [id,values]of Object.entries(next.dataset||{}))for(const [name,value]of Object.entries(values))$(id).dataset[name]=value;
     $('openFusion').disabled=next.fusionDisabled;$('openFusion').setAttribute('aria-expanded',next.fusionExpanded);
   }
   return { updateHud };

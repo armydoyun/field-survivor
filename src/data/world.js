@@ -53,9 +53,10 @@ const startScenes = {
   consume: { line: '벌판이 조금 더 따뜻하다. 엔진이 아직 식지 않았다.', change: '첫 3분 동안 적 이동 속도 +5%' },
   divided: { line: '두 목소리가 동시에 들린다. 기록원이 먼저 다가온다.', change: '기록원이 0:20에 나타난다' },
   release: { line: '문은 닫혀 있지만 문틈에 빛이 남아 있다.', change: '기록원의 첫 마디가 바뀐다' },
-  hollow: { line: '수신기가 조용하다. 이번에는 아무도 말을 걸지 않는다.', change: '이번 판에는 기록원이 나타나지 않는다' }
+  hollow: { line: '수신기가 조용하다. 이번에는 아무도 말을 걸지 않는다.', change: '이번 판에는 기록원이 나타나지 않는다' },
+  chorus: { line: '두 목소리가 같은 박자로 들린다. 기록원도 화부도 이번엔 일찍 와 있다.', change: '기록원이 0:20에, 화부가 6:30에 나타난다' }
 };
-const startEffects = { consumeSpeed: 1.05, consumeUntil: 180, dividedWitnessAt: 20, witnessAt: 65 };
+const startEffects = { consumeSpeed: 1.05, consumeUntil: 180, dividedWitnessAt: 20, witnessAt: 65, chorusStokerAt: 390 };
 const firstSignalAfterPreserve = '이 문장은 네가 남긴 것이다. 다음 사람도 이걸 읽을 것이다.';
 const witnessAfterRelease = '돌아왔구나. 이번엔 네가 문을 열어 줄 차례야.';
 
@@ -68,7 +69,9 @@ const endingTexts = {
   consume: { confirm: '모든 기록을 엔진에 넣는다', prompt: '제어판이 뜨겁다. 네가 태운 기록들이 아직 그 안에서 타고 있다.', intro: '엔진이 문을 밀어 올렸다. 따뜻한 공기가 먼저 나갔고, 너는 빈 기록함을 지나 뒤따랐다. 발음할 수 없는 이름 하나가 입안에 남았다.', tail: '불빛은 그 자리를 지나 엔진으로 흘렀다.' },
   divided: { confirm: '아무것도 정하지 않고 손을 뗀다', prompt: '제어판 위에서 지킨 문장과 태운 문장이 반쯤씩 겹쳐 있다.', intro: '너는 제어판에서 손을 뗐다. 엔진은 잠시 멈췄다가, 다시 돌기 시작했다. 어느 쪽도 고르지 않은 기록은 다음 반복의 첫 줄이 된다.', tail: '엔진은 다음 사람을 기다린다. 아마 너를.' },
   release: { confirm: '', prompt: '', intro: '접속이 끊기자 엔진이 멎었다. 문이 열렸다. 감시자와 기록원이 네 뒤를 따랐다. 처음으로, 되감기지 않는 발소리였다.', tail: '이제 그 길을 닫으라는 명령은 도착하지 않는다.' },
-  hollow: { intro: '엔진이 문을 밀어 올렸다. 뒤를 돌아봤지만 따라오는 소리는 없었다. 벌판에는 이름 하나 남지 않았다.' }
+  hollow: { intro: '엔진이 문을 밀어 올렸다. 뒤를 돌아봤지만 따라오는 소리는 없었다. 벌판에는 이름 하나 남지 않았다.' },
+  // v3.0 합창: 기록원을 들어 주고 화부도 만난 판의 두 개의 목소리.
+  chorus: { intro: '너는 제어판에서 손을 뗐다. 한쪽에서는 기록원이 문장을 읽고, 다른 쪽에서는 화부가 불을 고른다. 두 목소리가 처음으로 같은 박자로 겹쳤다.' }
 };
 
 const endingScenes = {
@@ -77,6 +80,7 @@ const endingScenes = {
     heard: { preserve: '기록원은 봉인된 문장 옆에 남았다. 네가 들어 준 이야기가 맨 위에 적혀 있다.', consume: '기록원의 목소리는 끝까지 들렸다. 엔진이 그것마저 삼키기 전까지는.', divided: '기록원이 말했다. "다음에는 조금 더 오래 서 있어 줘."' },
     taken: '기록원의 목소리는 이제 엔진의 소음 속에서만 들린다. 네가 추출한 파형이 그 안에서 돌고 있다.',
     hollow: '기록원은 어디에도 없다. 수신기만 빈 원 안에 남았다.',
+    chorus: { stoked: '기록원이 읽는 문장 사이로 화부가 석탄을 밀어 넣었다. "꺼지지 않을 만큼만." 기록원이 고개를 끄덕였다.', quenched: '꺼진 불씨 옆에 화부와 기록원이 나란히 앉았다. "이번엔 네가 들어 줄 차례야." 화부가 처음으로 자기 이야기를 시작했다.' },
     none: '길가의 기록원은 끝내 말을 걸지 않았다. 수신기의 불빛만 너를 따라왔다.'
   },
   guardian: {
@@ -110,6 +114,7 @@ const guardianLines = {
   ended: '감시자가 나타났다. 이전에 부순 껍질의 흔적이 남아 있다.',
   hollow: '이름 없는 껍질이 나타났다. 안쪽에서는 아무 소리도 나지 않는다.',
   yieldLine: '감시자가 무기를 내렸다. 가만히 서 있으면 돌려보내고, E로 분해한다.',
+  trialLine: '감시자 · 너는 끝까지 서 있었다. 감시자가 먼저 무기를 내렸다. 가만히 서 있으면 돌려보내고, E로 분해한다.',
   spare: '감시자 · 네가 멈춰 있는 동안 껍질이 닫혔다. 그는 등을 돌려 돌아갔다.',
   end: '감시자 · 껍질 안쪽까지 분해했다. 끊어진 명령이 한 번 더 점멸했다.',
   leave: '감시자 · 기다리던 껍질이 스스로 물러났다. 아무 선택도 남지 않았다.'
@@ -142,9 +147,45 @@ const truthPieces = [
   { id: 'preserve', unlock: '남겨진 목소리', text: '신호는 지워지기 직전의 목소리다. 보존된 문장은 다음 사람에게 읽힌다.' },
   { id: 'consume', unlock: '식지 않는 엔진', text: '엔진은 이름을 태워 시간을 되감는다. 태울수록 뜨거워지고, 그만큼 중심핵도 강해진다.' },
   { id: 'divided', unlock: '두 개의 목소리', text: '쓰러질 때마다 엔진에 기록 한 장이 더해진다. 너도 처음부터 그 기록 중 하나였다.' },
+  { id: 'origin', unlock: '화부와 불을 지피고 식지 않는 엔진에 닿기', text: '엔진의 첫 설계도에는 기록원의 이름과 화부의 이름이 나란히 적혀 있다. 둘은 같은 장치를 만들었고, 하나는 기억을 남기려 했고 하나는 꺼지지 않게 하려 했다.' },
   { id: 'release', unlock: '열린 문', text: '감시자는 먼저 들어온 도전자의 기록을 담은 껍질이다. 돌려보낼 때마다 이름을 되찾고, 분실된 좌표는 처음부터 문을 가리키고 있었다.' }
 ];
 const truthFound = '진실 조각을 하나 찾았다. 제목 화면의 결말 기록에서 읽을 수 있다.';
 const truthReveal = '이 전장은 실패를 재생하는 감옥이자, 결정을 태워 시간을 되감는 기록 장치였다. 보존은 증언을 다음 사람에게 남기고, 연소는 지금의 생존을 위해 이름을 희생하며, 고르지 않은 사람은 다음 반복으로 넘어간다. 열린 문은 누구도 다음 사람의 운명을 독점하지 못하게 만든다. 어느 길도 지난 선택을 없애지는 않는다.';
 
-export { deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };
+// 판 중 진행(NARRATIVE-REDESIGN.md 3.3 · 5.1절): 기억 축이 움직일 때 기록원이 짧게 반응한다.
+// 들어 준 기록원은 목소리로, 추출한 기록원은 잡음으로. 아직 만나지 않았으면 반응하지 않는다.
+const witnessReactions = {
+  keep: [
+    '기록원 · "방금 그 문장, 나도 들었어."',
+    '기록원 · "또 하나 남겼네. 수신기가 조금 따뜻해졌어."',
+    '기록원 · "이제 네 발소리보다 네가 남긴 문장이 더 많아."'
+  ],
+  burn: [
+    '기록원 · "…태웠구나. 이해는 해."',
+    '기록원 · "엔진 소리가 커졌어. 너도 들리지?"',
+    '기록원 · "이 속도면 남는 이름이 없겠어."'
+  ],
+  taken: '수신기 · 잡음 사이로 추출한 파형이 짧게 떨린다.',
+  relic: '기록원 · "{relic}… 그건 내가 두고 간 거야. 잘 써 줘."'
+};
+
+// 화부: 엔진을 지키는 인물(NEXT-UPDATE-PLAN.md 4순위). 기록원을 듣지 않은 판에서 태우는 선택에 반응하고,
+// 식지 않는 엔진 결말 장면에 한 줄 남는다. 기록원과 대칭되는 연소 경로의 목소리.
+const stokerLines = {
+  burn: [
+    '화부 · "좋아. 그 정도면 한동안 꺼지지 않아."',
+    '화부 · "더 넣어. 문은 뜨거울 때만 움직여."',
+    '화부 · "이제 너도 엔진 소리를 좋아하게 됐군."'
+  ],
+  ending: '화부가 마지막 석탄을 밀어 넣었다. "이제 따뜻하지?"',
+  // v2.9 만남(NEXT-UPDATE-PLAN.md 8절): 기록원을 듣지 않은 판의 13분에 전장에 나타난다.
+  arrive: '화부 · 엔진 쪽에서 열기가 번져 왔다. 석탄 자루를 멘 사람이 불씨 옆에 서 있다.',
+  stoked: '화부 · "그래, 같이 지피자. 이 불이 꺼지면 우리도 끝이야." 불꽃이 무기에 옮겨붙었다.',
+  quenched: '화부 · 너는 아무 말 없이 불씨 옆에 서 있었다. 그는 한참 뒤에야 삽을 내려놓았다. "…오늘은 쉬어도 되겠군."',
+  left: '화부 · 대답을 기다리지 않고 엔진 쪽으로 돌아갔다.',
+  endingStoked: '화부가 네 옆에서 마지막 석탄을 밀어 넣었다. "봐, 우리가 지핀 불이야." 엔진 깊은 곳에 오래된 설계도 한 장이 타고 있었다.',
+  endingQuenched: '화부의 자리는 비어 있었다. 꺼진 불씨 옆에 삽 한 자루만 기대어 있다.'
+};
+
+export { stokerLines, witnessReactions, deathLines, truthPieces, truthFound, truthReveal, signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, guardianLines, coreLines, startScenes, startEffects, firstSignalAfterPreserve, witnessAfterRelease, episodeKinds };

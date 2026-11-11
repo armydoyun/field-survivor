@@ -1,7 +1,10 @@
 import { movePlayer } from '../input/movement.js';
 import { branchReady } from '../growth/build.js';
+import { createDrift } from '../world/drift.js';
 
-export function createUpdate({ sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, inspector }) {
+export function createUpdate({ stoker, sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, inspector, hints }) {
+  let lastShields=null,lastDrift=0,driftOwner=null;
+  const drift=createDrift({sessionState,combat});
   const { keys } = platform;
 
   function update(dt) {
@@ -13,7 +16,9 @@ export function createUpdate({ sessionState, view, platform, screen, feedback, s
     story.spawnWitness(); sites.spawnSite(); objectives.spawnObjective();
     if (journey.journeyTick(dt)) return;
     if (story.tickWitness(dt,moving)) return;
-    story.tickGuardian(dt,moving);
+    story.tickGuardian(dt,moving);stoker?.spawnStoker();stoker?.tickStoker(dt,moving);
+    hints?.tickHints();
+    const shields=sessionState.run.journey.core?.shields;if(shields!=null&&lastShields!=null&&shields<lastShields)feedback.sound?.('shield');lastShields=shields??null;
     population.maintainEnemies();
     objectives.updateObjective(dt);
     population.spawnPopulation(dt);
@@ -24,7 +29,7 @@ export function createUpdate({ sessionState, view, platform, screen, feedback, s
     collisions.tickEnemies(dt,s);
     if (view.mode !== 'playing') return;
     if (!collisions.tickShots(dt,s)) return;
-    enemyRuntime.tickHazards();
+    enemyRuntime.tickHazards();drift.tickDrift(dt,s);const driftCount=sessionState.run.drift?.count??0;if(driftOwner!==sessionState.run){driftOwner=sessionState.run;lastDrift=driftCount;}if(driftCount>lastDrift)feedback.sound?.('drift');lastDrift=driftCount;
     collisions.tickBullets(dt,s);
     if (p.hp <= 0) { session.finish(); return; } // Collected EXP must not revive a lethal hit.
     // 무기를 내린 감시자(hp 0, bossChoiceId)는 결정이 날 때까지 남긴다.

@@ -2,6 +2,10 @@ import { canInteractInWorld } from '../core/view-policy.js';
 import { runRandom } from '../core/random.js';
 import { objectives } from '../data/world.js';
 import { ENEMY_LIMIT } from '../core/config.js';
+
+// 붕괴된 중계기 동기화(v3.0 완화): 경합 중 진행 속도, 떠났을 때 풀리는 속도, 증원 간격(초).
+export const RELAY = Object.freeze({ contested: .35, decay: .4, reinforce: 12, pulse: 2, pulseRadius: 150, push: 70 });
+import { pushEnemy } from '../combat/control.js';
 import { enemyType } from '../data/enemies.js';
 
 export function createObjectives({ sessionState, view, progression, feedback, session, storage, enemyRuntime, difficulty, screen }) {
@@ -11,7 +15,12 @@ export function createObjectives({ sessionState, view, progression, feedback, se
     const o = sessionState.run?.objective, task = o && objectives[sessionState.run.objectiveStep]; if (!task || o.id !== task.id) return false;
     sessionState.run.objective = null; sessionState.run.objectiveStep++; sessionState.profile.memory.objectives[task.id][success ? 'complete' : 'failed']++; sessionState.run.objectiveOutcomes[task.id] = success ? 'complete' : 'failed';
     if (success) { sessionState.run.gold += task.gold; progression.collect(task.xp); feedback.popup(sessionState.run.player.x, sessionState.run.player.y - 48, 'OBJECTIVE CLEAR', '#a3e5d3'); }
-    else feedback.popup(sessionState.run.player.x, sessionState.run.player.y - 48, 'SIGNAL LOST', '#e8b7a0');
+    else {
+      feedback.popup(sessionState.run.player.x, sessionState.run.player.y - 48, 'SIGNAL LOST', '#e8b7a0');
+      // 놓친 표적은 신호와 함께 물러난다. 강화된 정예가 판 끝까지 남아 압박하지 않게 한다(보상도 없다).
+      const target = o.targetId && sessionState.run.enemies.find(e => e.id === o.targetId && e.hp > 0);
+      if (target) { feedback.burst(target.x, target.y, '#e8b7a0', 10); target.hp = 0; sessionState.run.enemies = sessionState.run.enemies.filter(e => e !== target); }
+    }
     session.record(`작전 · ${task.name} · ${success ? `완수 +${task.gold}G / EXP ${task.xp}` : '신호 소실'}`); storage.save(); return true;
   }
 
@@ -56,11 +65,18 @@ export function createObjectives({ sessionState, view, progression, feedback, se
     o.left = Math.max(0, o.left - dt);
     if (o.id === 'relay') {
       const p = sessionState.run.player, near = Math.hypot(p.x - o.x, p.y - o.y) < 115, contested = sessionState.run.enemies.some(e => e.hp > 0 && e.kind !== 3 && Math.hypot(e.x - o.x, e.y - o.y) < 78);
-      o.progress = Math.max(0, Math.min(16, o.progress + (near && !contested ? dt : -dt * .4)));
+      // v3.0: 적이 장치 곁에 있어도 동기화는 느리게(35%) 이어진다. 장치를 떠나면 천천히 풀린다.
+      o.progress = Math.max(0, Math.min(16, o.progress + (near ? (contested ? dt * RELAY.contested : dt) : -dt * RELAY.decay)));
       if (sessionState.run.time >= o.reinforceAt && sessionState.run.enemies.length < ENEMY_LIMIT - 2) {
         const angle = runRandom(sessionState.run) * Math.PI * 2;
         for (let i = 0; i < 2; i++) { const e = enemyRuntime.spawnEnemy(i ? 1 : sessionState.run.time >= 600 ? 7 : 0); e.x = o.x + Math.cos(angle + i * 1.5) * 190; e.y = o.y + Math.sin(angle + i * 1.5) * 190; }
-        o.reinforceAt = sessionState.run.time + 9;
+        o.reinforceAt = sessionState.run.time + RELAY.reinforce;
+      }
+      // 동기화 중인 장치는 2초마다 주변 적을 밀어낸다(감시자 · 중심핵 제외). 곁에 서 있는 플레이어의 숨 돌릴 틈.
+      if (near && sessionState.run.time >= (o.pulseAt || 0)) {
+        o.pulseAt = sessionState.run.time + RELAY.pulse;
+        for (const e of sessionState.run.enemies) if (Math.hypot(e.x - o.x, e.y - o.y) < RELAY.pulseRadius) pushEnemy(e, o.x, o.y, RELAY.push);
+        feedback.ring?.(o.x, o.y, RELAY.pulseRadius, '#a3e5d3', .3, 'ring');
       }
       if (o.progress >= 16) { closeObjective(true); return; }
     }

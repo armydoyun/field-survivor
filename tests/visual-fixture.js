@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
 import { createMockBrowser } from './mock-browser.js';
-// 서사 계층(프로필 기억·판 안의 이야기 진행·기록 로그)은 이 검사의 대상이 아니다. 서사 재설계(NARRATIVE-REDESIGN.md)로
+// 서사 계층(프로필 기억·판 안의 이야기 진행·기록 로그)과 소리 설정(profile.audio)은 이 검사의 대상이 아니다. 서사 재설계(NARRATIVE-REDESIGN.md)로
 // 저장 모양이 바뀌어도 전투 회귀만 보도록 해시에서 뺀다. 무기·적·탄환·성장·유물·여정 등 나머지 저장 상태는 모두 포함한다.
-const NARRATIVE_RUN_KEY=/^(logs|npc|signal|anomaly|site|objective|echo|front|legacy|guardian(Fate|Order|Meet)|story)/;
+const NARRATIVE_RUN_KEY=/^(logs|npc|signal|anomaly|site|objective|echo|front|legacy|guardian(Fate|Order|Meet)|story|stoker)/;
 export function combatProjection(save){
- const data=JSON.parse(save);delete data.profile.memory;
+ const data=JSON.parse(save);delete data.profile.memory;delete data.profile.audio;
  if(data.run)for(const key of Object.keys(data.run))if(NARRATIVE_RUN_KEY.test(key))delete data.run[key];
  return JSON.stringify(data);
 }

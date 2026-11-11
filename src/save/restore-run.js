@@ -8,7 +8,9 @@ import { xpNeed, dropXp, reserveXp } from '../growth/experience.js';
 import { upgrades } from '../data/upgrades.js';
 import { upgradeUseful } from '../growth/cards.js';
 import { restoreJourney, restoreWorld } from './restore-world.js';
+import { loadouts } from '../data/loadouts.js';
 import { restoreLoadout, restoreWeaponStates } from './restore-weapons.js';
+import { DRIFT, DRIFT_KINDS } from '../world/drift.js';
 import { restoreCombat, restorePickups } from './restore-combat.js';
 
 // Explicit saved input and profile; no current session or browser state.
@@ -22,6 +24,9 @@ export function restoreRun(raw,profile) {
   r.kills = integer(raw.kills); r.gold = integer(raw.gold); r.xpReserve = integer(raw.xpReserve, 0, 0, 1e8); r.nextId = integer(raw.nextId, 1, 1); r.attackClock = n(raw.attackClock, 0, 0, 2); r.spawnClock = n(raw.spawnClock, 0.5, 0, 2); r.nextBoss = n(raw.nextBoss, FIRST_GUARDIAN, FIRST_GUARDIAN, 1e7); r.novaClock = n(raw.novaClock, 2.8, 0, 6); r.chainClock = n(raw.chainClock, 0, 0, 6); r.stage = paceAt(r.time).index; r.lanceClock = n(raw.lanceClock, 1, 0, 10); r.mineClock = n(raw.mineClock, 2.5, 0, 10); r.momentumTime = n(raw.momentumTime, 0, 0, 1); r.waveIndex = r.time < 360 ? 0 : 1 + Math.floor((r.time - 360) / 300); r.orbitGuards = Array.isArray(raw.orbitGuards) ? raw.orbitGuards.slice(0, 5).map(x => n(x, 0, 0, 1e7)) : [];
   restoreLoadout(r,raw);
   restoreWorld(r,raw,profile);
+  if (raw.startWeapon !== 'pulse' && loadouts.some(l => l.id === raw.startWeapon)) r.startWeapon = raw.startWeapon;
+  // 표류 구역: 순번 · 다음 생성 시각과 떠 있던 구역(최대 DRIFT.max개)을 이어 간다.
+  if (raw.drift && typeof raw.drift === 'object') r.drift = { next: n(raw.drift.next, r.time, 0, 1e7), count: integer(raw.drift.count, 0, 0, 1e6), zones: (Array.isArray(raw.drift.zones) ? raw.drift.zones : []).filter(z => z && DRIFT_KINDS.includes(z.kind ?? 'burn')).slice(0, DRIFT.max).map(z => ({ kind: z.kind ?? 'burn', x: n(z.x, 0, -1e7, 1e7), y: n(z.y, 0, -1e7, 1e7), vx: n(z.vx, 0, -DRIFT.speed, DRIFT.speed), vy: n(z.vy, 0, -DRIFT.speed, DRIFT.speed), radius: DRIFT.radius, liveAt: n(z.liveAt, 0, 0, 1e7), endAt: n(z.endAt, 0, 0, 1e7) })) };
   r.player = { x: n(p.x, W / 2, -1e7, 1e7), y: n(p.y, H / 2, -1e7, 1e7), hp: n(p.hp, 100, 0, 1e7), hurt: n(p.hurt, 0, 0, 2) };
   r.player.hp = Math.min(r.player.hp, statistics.stats(r).maxHp);
   if (r.player.hp <= 0) return null;

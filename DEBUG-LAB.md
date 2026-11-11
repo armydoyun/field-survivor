@@ -1,4 +1,4 @@
-# DEBUG LAB — v2.6.27
+# DEBUG LAB — v2.7.0
 
 로컬 서버에서 `debug.html?seed=42`를 연다. 일반 게임은 `index.html`이다. 개발 실험실은 독립 세션/메모리 저장을 사용하며 일반 localStorage를 읽거나 쓰지 않는다. 새로고침 전 필요한 실험은 JSON으로 저장한다.
 

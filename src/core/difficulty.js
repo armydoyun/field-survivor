@@ -4,7 +4,7 @@ import { phases } from '../data/progression.js';
 import { RUN_END } from './config.js';
 import { rewardXp as enemyRewardXp } from '../growth/rewards.js';
 import { anomalyActive } from '../world/effects.js';
-import { weaponConsumed, hasBranch, specialized, activeFusions } from '../growth/build.js';
+import { hasBranch, specialized, activeFusions, pulseActive } from '../growth/build.js';
 import { clamp } from './utils.js';
 import { tacticalKind } from '../combat/rules.js';
 
@@ -16,13 +16,15 @@ export function paceAt(time) {
   return { index, name: a.name, interval: lerp('interval'), extra: lerp('extra'), hp: lerp('hp') * (t > RUN_END ? 1 + Math.min(1, (t - RUN_END) / 3600) : 1), speed: lerp('speed'), cap: Math.round(lerp('cap')), xp: lerp('xp'), elite: lerp('elite'), surge: t >= 360 && (t - 360) % 300 < 22 };
 }
 
+export const CORE_PACE = Object.freeze({ seconds: 75, efficiency: 1.25, minHp: 40000, maxHp: 600000 });
+
 export function createDifficulty({ sessionState, statistics }) {
 
   const rewardXp = enemy => enemyRewardXp(enemy, { time: sessionState.run.time, paceXp: paceAt(sessionState.run.time).xp, harvest: anomalyActive('border','harvest',sessionState.run) });
 
   function combatPower(r=sessionState.run){
     const s=statistics.stats(r),crit=1+statistics.pulseCritChance(s)*(s.critMult-1),auxCrit=1+statistics.pulseCritChance(s)*(s.critMult-1),damage=type=>statistics.weaponDamage(type,s,0,r);
-    let total=(weaponConsumed('pulse',r)?0:damage('pulse')*(crit+Math.max(0,s.shots-1)*.38*.55*auxCrit)/s.interval);
+    let total=(!pulseActive(r)?0:damage('pulse')*(crit+Math.max(0,s.shots-1)*.38*.55*auxCrit)/s.interval);
     if(s.orbit)total+=damage('orbit')/.38*.65;
     if(s.nova)total+=damage('nova')/statistics.novaInterval(s.nova)*(hasBranch('nova','boundary',r)?1.2:hasBranch('nova','reflux',r)?1.3:1);
     if(s.chain)total+=damage('chain')/statistics.chainReload(s);
@@ -30,7 +32,7 @@ export function createDifficulty({ sessionState, statistics }) {
     if(s.rift)total+=damage('rift')/statistics.riftInterval(s);
     if(s.beacon)total+=damage('beacon')*1.5/statistics.beaconShotInterval(s);
     if(s.mine)total+=damage('mine')/statistics.mineInterval(s)*(.75);
-    for(const f of activeFusions(r)){const p=fusionParameters(f,r,s),base=f.base?fusionById[f.base]:f;/* Director heuristic, not measured DPS. */total+=p.damage*(1/fusionInterval(base,p)+(f.base?.5/fusionInterval(f,p):0));}return Math.max(1,total);
+    for(const f of activeFusions(r)){const p=fusionParameters(f,r,s),base=f.base?fusionById[f.base]:f,critical=1+p.crit*(p.critMult-1),volley=f.needs.some(([w])=>w==='pulse')?1+.17*p.multishot:1;/* Director heuristic, not measured DPS. 융합도 치명타 기대값 · 펄스 계열 보조탄을 반영한다. */total+=p.damage*critical*volley*(1/fusionInterval(base,p)+(f.base?.5/fusionInterval(f,p):0));}return Math.max(1,total);
   }
 
   function directorTick(dt){
@@ -51,7 +53,9 @@ export function createDifficulty({ sessionState, statistics }) {
 
   function enemyHealthScale(kind,elite=false,r=sessionState.run){const p=pressureProfile(r);return p.hp*(kind===3?1:(1+lateCombat(r)*((tacticalKind(kind)?.35:0)+(elite?.2:0)))*(tacticalKind(kind)||elite?p.tough:1));}
 
-  function finalRating(r=sessionState.run){const power=combatPower({...r,momentumTime:Math.max(1,r.momentumTime)});return {power,hp:Math.round(85000*(1+.35*clamp(Math.log2(Math.max(1,power/1400)),0,2))),nodeHp:Math.round(1500+Math.min(2500,Math.max(0,power-1200)*.35))};}
+  // 중심핵 HP는 빌드의 추정 화력으로 목표 시간(CORE_PACE.seconds)을 맞춘다. 약한 빌드는 하한 때문에 더 오래 걸린다.
+  // efficiency: 추정 전투력 대비 중심핵 상대 실제 피해 비율(tools/route-benchmark.mjs로 측정).
+  function finalRating(r=sessionState.run){const power=combatPower({...r,momentumTime:Math.max(1,r.momentumTime)});return {power,hp:Math.round(clamp(power*CORE_PACE.efficiency*CORE_PACE.seconds,CORE_PACE.minHp,CORE_PACE.maxHp)),nodeHp:Math.round(1500+Math.min(2500,Math.max(0,power-1200)*.35))};}
 
   return { paceAt, rewardXp, directorTick, pressureProfile, lateCombat, enemyHealthScale, finalRating };
 }

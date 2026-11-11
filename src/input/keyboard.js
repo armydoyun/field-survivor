@@ -1,6 +1,6 @@
 import { canOpenShopWithKeyboard, canOpenUpgradeInfo, canInteractInWorld, canAcceptMovement, canTogglePause } from '../core/view-policy.js';
 // Global key priority only; menu navigation and gameplay actions have separate owners.
-export function createKeyboardInput({ sessionState, view, platform, shop, buildGuide, menuInput, storage, growthActions, display, actions, session }) {
+export function createKeyboardInput({ sessionState, view, platform, shop, buildGuide, menuInput, storage, growthActions, display, actions, session, audio = null }) {
   const { $, keys } = platform;
   function keydown(event){
     if (event.code === 'F9') { event.preventDefault(); if (!event.repeat) { if (view.shopOpen) shop.toggleShop(false); if (view.skillInfoOpen) buildGuide.closeUpgradeInfo(); if (view.buildOpen) buildGuide.toggleBuildGuide(false); menuInput.hideGame(); } return; }
@@ -14,6 +14,7 @@ export function createKeyboardInput({ sessionState, view, platform, shop, buildG
     if (event.code === 'KeyB' && !event.repeat && !event.ctrlKey && !event.altKey && !event.metaKey && !(event.target instanceof Element && event.target.closest('input,textarea,select'))) { event.preventDefault(); buildGuide.toggleBuildGuide(true); return; }
     if (event.code === 'KeyS' && !event.repeat && !event.ctrlKey && !event.metaKey && !event.altKey && canOpenShopWithKeyboard(view) && !(event.target instanceof Element && (event.target.isContentEditable || event.target.closest('input,textarea,select')))) { event.preventDefault(); shop.toggleShop(true); return; }
     if (event.code === 'KeyF' && !event.repeat && !event.ctrlKey && !event.altKey && !event.metaKey && !(event.target instanceof Element && (event.target.isContentEditable || event.target.closest('input,textarea,select')))) { event.preventDefault(); display.toggleFullscreen(); return; }
+    if (event.code === 'KeyM' && !event.repeat && !event.ctrlKey && !event.metaKey && !event.altKey && audio && !(event.target instanceof Element && event.target.closest('input,textarea,select'))) { event.preventDefault(); audio.toggle(); return; }
     if (event.code === 'KeyE' && !event.repeat) { if (canInteractInWorld(view)) { event.preventDefault(); actions.interact(); } return; }
     if ((event.code === 'Escape' || event.code === 'KeyP') && !event.repeat && canTogglePause(view)) { event.preventDefault(); session.pause(); return; }
     if (view.mode !== 'playing' && menuInput.keyboardMenu(event)) { event.preventDefault(); return; }

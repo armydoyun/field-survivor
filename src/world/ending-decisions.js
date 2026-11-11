@@ -1,9 +1,9 @@
 import { commitRunResult } from '../core/run-lifecycle.js';
 import { endingReward } from '../data/world-choices.js';
-import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes, truthFound } from '../data/world.js';
+import { signals, anomalies, sites, objectives, relics, finalEndings, endingTexts, endingScenes, startScenes, truthFound, stokerLines } from '../data/world.js';
 import { episodeTitle } from './effects.js';
 import { appendRecord } from '../core/profile.js';
-import { routeAxes, routeEnding, releaseOpen, endingVariant } from './route.js';
+import { routeAxes, routeEnding, releaseOpen, endingVariant, VARIANTS } from './route.js';
 
 // 결말은 경로가 정한다(NARRATIVE-REDESIGN.md 4절). 마지막 화면은 경로의 결말을 확정하거나,
 // 해방 조건을 채운 판에서 멈춰 있어 열린 문으로 넘어가는 것만 허용한다.
@@ -18,8 +18,10 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
   function witnessScene(id,variant,r){
     const w=endingScenes.witness;
     if(variant==='hollow')return w.hollow;
+    if(variant==='chorus')return w.chorus[r.stoker.state];
     if(id==='release')return w.release;
     if(r.npc.state==='heard')return w.heard[id];
+    if(id==='consume')return `${r.npc.state==='taken'?w.taken:w.none} ${r.stoker?.state==='stoked'?stokerLines.endingStoked:r.stoker?.state==='quenched'?stokerLines.endingQuenched:stokerLines.ending}`;
     return r.npc.state==='taken'?w.taken:w.none;
   }
   function guardianScene(id,variant,a){
@@ -47,6 +49,7 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     for(let i=0;i<r.signalChoices.length;i++)lines.push(`${signals[i].title} · ${r.signalChoices[i]==='hear'?'끝까지 들었다':'연료로 바꿨다'}`);
     if(r.npc.state==='heard')lines.push(`기록원 · 이야기를 들었다${r.npc.silenced?' · 옆에서 4.5초 동안 멈춰 있었다':''}`);
     else if(r.npc.state==='taken')lines.push('기록원 · 기록을 추출했다');
+    if(r.stoker&&r.stoker.state!=='waiting')lines.push(`화부 · ${r.stoker.state==='stoked'?'함께 불을 지폈다':r.stoker.state==='quenched'?'곁에 서서 불을 껐다':'대답하지 않았다'}`);
     if(r.guardianFate.spare||r.guardianFate.end)lines.push(`감시자 · 돌려보냄 ${r.guardianFate.spare}회 / 분해 ${r.guardianFate.end}회`);
     for(const site of sites)if(r.siteDecisions[site.id])lines.push(`${site.title} · ${site.options.find(o=>o.id===r.siteDecisions[site.id]).name}`);
     else if(r.time>=site.at)lines.push(`${site.title} · 응답하지 않고 지나쳤다`);
@@ -72,11 +75,12 @@ export function createEndingDecisions({ sessionState, enemyRuntime }) {
     const r=sessionState.run, current=route(r);
     if (!r || r.finalStep !== 3 || !(id === current.ending || (id === 'release' && current.release))) return null;
     const ending = finalEndings.find(x => x.id === id), variant = endingVariant(id, r);
-    const result = { time: r.time, kills: r.kills, gold: r.gold + endingReward, level: r.level, ending: ending.name, endingId: id, variant, threads: threadResolution(r), scenes: endingSceneList(id, r) };
+    const result = { time: r.time, kills: r.kills, gold: r.gold + endingReward, level: r.level, ending: ending.name, endingId: id, variant, axes: routeAxes(r), threads: threadResolution(r), scenes: endingSceneList(id, r) };
     const memory = sessionState.profile.memory;
-    record(`최종 회수 · ${ending.name}${variant==='hollow'?' · 빈 껍질':''}`);
-    if (!memory.endings[id]) record(truthFound); memory.endings[id]++; if (finalEndings.every(e=>memory.endings[e.id]>0)) record('모든 결말이 모였다. 기록 장치가 작동한 이유는 제목 화면의 결말 기록에서 확인할 수 있다.');
-    memory.lastResolution = { ending: id, variant, threads: result.threads.slice(0, 40), scenes: result.scenes };
+    record(`최종 회수 · ${ending.name}${variant?` · ${VARIANTS[variant].name}`:''}`);
+    if (!memory.endings[id]) record(truthFound);
+    if (id === 'consume' && r.stoker?.state === 'stoked' && !memory.stoker.origin) { memory.stoker.origin = true; record(truthFound); } memory.endings[id]++; if (finalEndings.every(e=>memory.endings[e.id]>0)) record('모든 결말이 모였다. 기록 장치가 작동한 이유는 제목 화면의 결말 기록에서 확인할 수 있다.');
+    memory.lastResolution = { ending: id, variant, axes: result.axes, threads: result.threads.slice(0, 40), scenes: result.scenes };
     return commitRunResult(sessionState,result);
   }
 

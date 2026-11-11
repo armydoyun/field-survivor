@@ -5,6 +5,7 @@ import { pushEnemy, applySlow } from './control.js';
 import { segmentEntry, segmentHit } from '../math/geometry.js';
 import { advanceEnemyBullet } from './hostile-attacks.js';
 import { anomalyActive } from '../world/effects.js';
+import { pillarsActive, pillarBlocks } from '../world/pillars.js';
 
 // Own contact and projectile resolution; app/update.js keeps only execution order.
 export function createCollisions({ sessionState, view, statistics, enemyRuntime, weapons, combat, feedback, inspector }) {
@@ -44,10 +45,11 @@ export function createCollisions({ sessionState, view, statistics, enemyRuntime,
   }
 
   function tickBullets(dt,s){
-    const p=sessionState.run.player;
+    const p=sessionState.run.player,cover=pillarsActive(sessionState.run);
     for (let i = sessionState.run.bullets.length - 1; i >= 0; i--) {
       const b = sessionState.run.bullets[i], x = b.x, y = b.y; advanceEnemyBullet(b,dt); b.life -= dt;
       if (weapons.blockProjectile(b, x, y, s)) { sessionState.run.bullets.splice(i, 1); continue; }
+      if (cover && pillarBlocks(x, y, b.x, b.y, b.radius)) { feedback.burst(b.x, b.y, '#8fa4b0', 4); sessionState.run.bullets.splice(i, 1); continue; }
       if (anomalyActive('border', 'ward',sessionState.run) && sessionState.run.time >= sessionState.run.anomalyWardAt && Math.hypot(b.x - p.x, b.y - p.y) < 125) {
         sessionState.run.anomalyWardAt = sessionState.run.time + 16; feedback.burst(b.x, b.y, '#a7e1e8', 9); feedback.popup(b.x, b.y, 'WARD', '#a7e1e8'); sessionState.run.bullets.splice(i, 1); continue;
       }

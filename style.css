@@ -38,6 +38,18 @@ background:#435862}
 .bar-value{font-size:11px;color:#6c797e;text-align:right;font-variant-numeric:tabular-nums}
 .arena{position:relative;border:1px solid #cfd9df;border-radius:12px;overflow:hidden;background:#142029;aspect-ratio:16/9}
 .arena canvas{width:100%;height:100%;display:block}
+/* 경로 색: 기억 축(보존 = 청록, 연소 = 주황). 숫자 대신 테두리로 느끼게 한다. */
+.arena{transition:border-color 1.2s ease,box-shadow 1.2s ease}
+#gameColumn[data-route="preserve"] .arena{border-color:#8fcfc0;box-shadow:0 0 0 1px rgba(128,227,196,.18),0 0 18px rgba(128,227,196,.10)}
+#gameColumn[data-route="preserve-strong"] .arena{border-color:#6fc7b2;box-shadow:0 0 0 1px rgba(128,227,196,.32),0 0 26px rgba(128,227,196,.18)}
+#gameColumn[data-route="consume"] .arena{border-color:#e0b08a;box-shadow:0 0 0 1px rgba(236,168,112,.18),0 0 18px rgba(236,168,112,.10)}
+#gameColumn[data-route="consume-strong"] .arena{border-color:#d99a6c;box-shadow:0 0 0 1px rgba(236,168,112,.32),0 0 26px rgba(236,168,112,.18)}
+.route-axis{margin:14px 0 4px;font-size:12px;color:#526773}
+.route-axis-track{position:relative;height:8px;margin:8px 0 6px;border-radius:4px;background:linear-gradient(90deg,#ecb48a,#e8eef0 50%,#86d6c2)}
+.route-axis-mark{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#2e4651;border:2px solid #fff;box-shadow:0 0 0 1px #2e4651}
+.route-axis-ends{display:flex;justify-content:space-between;font-weight:700}
+.route-axis-ends span:first-child{color:#b5683a}.route-axis-ends span:last-child{color:#2f8a77}
+.route-axis-notes{margin-top:6px}
 .arena-label{position:absolute;left:17px;bottom:14px;max-width:calc(100% - 34px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;letter-spacing:.12em;font-weight:750;color:#7e959d;pointer-events:none}
 .arena-label span{margin:0 5px;color:#567078}
 .overlay{z-index:1;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(14,23,30,.78);padding:15px;overflow:auto}
@@ -344,3 +356,7 @@ background:#3a5a66}
 @media(max-width:430px){.guide-card-head{flex-wrap:wrap;gap:6px}.guide-badge{max-width:100%;overflow-wrap:anywhere}.guide-summary{gap:7px 13px}}
 
 @media(max-width:430px){.build-toolbar{flex-wrap:wrap;gap:8px}.build-count{white-space:normal}}
+
+/* 효과음 음량(v2.9) */
+.volume-slider { width: 84px; accent-color: #8fcfc0; vertical-align: middle; cursor: pointer; }
+.volume-slider:disabled { opacity: .4; cursor: default; }

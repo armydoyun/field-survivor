@@ -5,7 +5,7 @@ import { initialProfile, hydrateProfile } from '../src/core/profile.js';
 import { createRun } from '../src/core/run.js';
 import { createStatistics } from '../src/core/statistics.js';
 import { createProgression } from '../src/growth/progression.js';
-import { xpNeed } from '../src/growth/experience.js';
+import { xpNeed, xpBonus } from '../src/growth/experience.js';
 import { createSiteDecisions } from '../src/world/site-decisions.js';
 import { createStoryDecisions } from '../src/world/story-decisions.js';
 import { createEndingDecisions } from '../src/world/ending-decisions.js';
@@ -13,10 +13,10 @@ import { createSites } from '../src/world/sites.js';
 import { createStory } from '../src/world/story.js';
 import { createFinale } from '../src/world/finale.js';
 import { createModalContent } from '../src/ui/modal-content.js';
-import { sites, relics, anomalies, startEffects, startScenes, firstSignalAfterPreserve, witnessAfterRelease, deathLines, truthPieces, truthFound, truthReveal } from '../src/data/world.js';
+import { sites, relics, anomalies, startEffects, startScenes, firstSignalAfterPreserve, witnessAfterRelease, deathLines, truthPieces, truthFound, truthReveal, witnessReactions } from '../src/data/world.js';
 import { createSession } from '../src/core/session.js';
 import { siteRewards, signalReward, witnessReward, endingReward } from '../src/data/world-choices.js';
-import { endingTexts, endingScenes } from '../src/data/world.js';
+import { endingTexts, endingScenes, stokerLines } from '../src/data/world.js';
 import { GUARDIAN_SALVAGE, ENEMY_LIMIT, GUARDIAN_REACH, GUARDIAN_YIELD } from '../src/core/config.js';
 
 function state(){const s={profile:initialProfile(),run:null,replaceRun:r=>{s.run=r;}};s.run=createRun(s.profile,{maxHp:100,xpNext:xpNeed(1)});return s;}
@@ -37,7 +37,7 @@ test('all six site choices retain exact rewards, HP order, enemy patterns and si
   for(let i=0;i<sites.length;i++)for(const choice of ['keep','take']){
     const h=harness(),{s}=h;prepareSite(s,i);s.run.player.hp=50;
     assert.equal(h.site.chooseSite(choice).id,sites[i].id);assert.equal(s.run.siteStep,i+1);assert.equal(s.run.sitePending,false);assert.equal(s.run.site,null);assert.equal(s.run.relicPending,sites[i].id);assert.equal(s.profile.memory.sites[sites[i].id][choice],1);
-    const expected={coordinate:{keep:[100,50,0,0,0,100,[]],take:[220,50,0,0,0,240,[1,1,1,1,1,1]]},reservoir:{keep:[0,90,0,0,0,240,[]],take:[0,25,2,0,0,0,[4,4,4,4,4]]},archive:{keep:[350,75,0,1,0,0,[]],take:[0,50,0,0,2,350,[2,5,2,5,2,5]]}}[sites[i].id][choice];
+    const expected={coordinate:{keep:[100,50,0,0,0,100,[]],take:[220,50,0,0,0,240,[1,1,1,1,1,1]]},reservoir:{keep:[0,90,0,0,0,240,[]],take:[0,25,siteRewards.reservoir.take.power,0,0,0,[4,4,4,4,4]]},archive:{keep:[350,75,0,1,0,0,[]],take:[0,50,0,0,siteRewards.archive.take.haste,350,[2,5,2,5,2,5]]}}[sites[i].id][choice];
     const [gold,hp,power,vitality,haste,xp,kinds]=expected;assert.equal(s.run.gold,gold);assert.equal(s.run.player.hp,hp);assert.equal(s.run.up.power||0,power);assert.equal(s.run.up.vitality||0,vitality);assert.equal(s.run.up.haste||0,haste);
     assert.equal(s.run.xp+[...Array(s.run.level-1)].reduce((sum,_,j)=>sum+xpNeed(j+1),0),xp);
     assert.deepEqual(h.spawned.map(e=>e.kind),kinds);if(i===2&&choice==='take')assert.ok(h.spawned.every(e=>e.elite));noChange(s,()=>h.site.chooseSite(choice));
@@ -123,7 +123,7 @@ test('ending scenes follow the witness, guardians and the lost coordinate; the h
   let result=scenes(r=>{prepareRoute(r,4);r.npc.state='heard';r.guardianFate={spare:1,end:0};r.siteDecisions.coordinate='keep';},'preserve');
   assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.heard.preserve,endingScenes.guardian.spared]);assert.ok(result.scenes[2].startsWith(endingScenes.exit.keep));assert.equal(result.variant,'');
   result=scenes(r=>{prepareRoute(r,-6);r.guardianFate={spare:0,end:3};},'consume');assert.equal(result.variant,'hollow');assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.hollow,endingScenes.guardian.hollow]);
-  result=scenes(r=>{prepareRoute(r,-6);r.guardianFate={spare:0,end:2};},'consume');assert.equal(result.variant,'');assert.equal(result.scenes[0],endingScenes.witness.taken);
+  result=scenes(r=>{prepareRoute(r,-6);r.guardianFate={spare:0,end:2};},'consume');assert.equal(result.variant,'');assert.equal(result.scenes[0],`${endingScenes.witness.taken} ${stokerLines.ending}`);
   result=scenes(r=>{prepareRelease(r);r.siteDecisions.coordinate='keep';},'release');assert.deepEqual(result.scenes.slice(0,2),[endingScenes.witness.release,endingScenes.guardian.release]);assert.ok(result.scenes[2].startsWith(endingScenes.exit.release));
   result=scenes(r=>{prepareRoute(r,0);r.time=1800;},'divided');assert.ok(result.scenes[2].includes('지나친 표식 3개'));
 });
@@ -176,7 +176,42 @@ test('truth pieces open one by one from endings and the stillness secret, and th
   assert.equal(count(),0);assert.ok(!content.buildModal().includes(truthReveal));
   s.profile.memory.witness.quiet=true;assert.equal(count(),1);
   for(const [i,id]of ['preserve','consume','divided'].entries()){s.profile.memory.endings[id]=1;assert.equal(count(),i+2);assert.ok(!content.buildModal().includes(truthReveal));}
-  s.profile.memory.endings.release=2;assert.equal(count(),truthPieces.length);assert.ok(content.buildModal().includes(truthReveal));
+  s.profile.memory.endings.release=2;assert.equal(count(),truthPieces.length-1);assert.ok(!content.buildModal().includes(truthReveal));
+  s.profile.memory.stoker.origin=true;assert.equal(count(),truthPieces.length);assert.ok(content.buildModal().includes(truthReveal));
   const fresh=state();prepareRoute(fresh.run,4);createEndingDecisions({sessionState:fresh}).chooseFinale('preserve');assert.ok(fresh.profile.memory.archive.includes(truthFound));
   const again=state();again.profile.memory.endings.preserve=1;prepareRoute(again.run,4);createEndingDecisions({sessionState:again}).chooseFinale('preserve');assert.ok(!again.profile.memory.archive.includes(truthFound));
+});
+test('route rewards: remembering and listening add experience, burning and extraction add the tuned damage',()=>{
+  const profile=initialProfile(),base=createRun(profile,{maxHp:100,xpNext:xpNeed(1)});
+  assert.equal(xpBonus(profile,base),1);
+  const kept={...base,signalChoices:['hear','hear','burn'],npc:{...base.npc,state:'heard'}};
+  assert.ok(Math.abs(xpBonus(profile,kept)-(1+2*signalReward.xp+witnessReward.xp))<1e-12);
+  const s={profile,run:createRun(profile,{maxHp:100,xpNext:xpNeed(1)}),replaceRun(){}},statistics=createStatistics({sessionState:s}),plain=statistics.stats().damage;
+  s.run.signalPower=3;s.run.npc.state='taken';
+  assert.ok(Math.abs(statistics.stats().damage/plain-(1+3*signalReward.burnPower)*(1+witnessReward.takeDamage))<1e-9);
+});
+test('the witness reacts to memory-axis choices: a voice if heard, static if extracted, silence before meeting',()=>{
+  for(const [state,expect]of [['none',null],['waiting',null],['taken','taken'],['heard','voice']]){
+    const h=harness(),{s}=h;s.run.npc.state=state;h.story.chooseSignal('hear');h.story.chooseSignal('hear');h.story.chooseSignal('burn');
+    const logs=s.run.logs.join('\n');
+    if(expect===null)assert.ok(!logs.includes('기록원 · "')&&!logs.includes(witnessReactions.taken),state);
+    if(expect==='taken')assert.ok(logs.includes(witnessReactions.taken));
+    if(expect==='voice'){assert.ok(logs.includes(witnessReactions.keep[0]));assert.ok(logs.includes(witnessReactions.keep[1]));assert.ok(logs.includes(witnessReactions.burn[0]));}
+  }
+  const h=harness(),{s}=h;s.run.npc.state='heard';prepareSite(h.s,0);h.site.chooseSite('take');assert.ok(s.run.logs.includes(witnessReactions.burn[0]));
+  const relic=relics.find(r=>r.site===sites[0].id);h.site.chooseRelic(relic.id);assert.ok(s.run.logs.includes(witnessReactions.relic.replace('{relic}',relic.name)));
+});
+test('the stoker answers burning when the witness was not heard; the archivist keeps the voice when heard',()=>{
+  for(const state of ['none','taken']){const h=harness(),{s}=h;s.run.npc.state=state;h.story.chooseSignal('burn');h.story.chooseSignal('burn');const logs=s.run.logs.join('\n');assert.ok(logs.includes(stokerLines.burn[0]),state);assert.ok(logs.includes(stokerLines.burn[1]),state);}
+  const h=harness(),{s}=h;s.run.npc.state='heard';h.story.chooseSignal('burn');assert.ok(!s.run.logs.join('\n').includes('화부 ·'));
+});
+test('ending and ledger screens draw the run\'s axis position; the result keeps the axes for the ledger',()=>{
+  const s=state();prepareRoute(s.run,4);s.run.guardianFate={spare:2,end:1};const result=createEndingDecisions({sessionState:s}).chooseFinale('preserve');
+  assert.deepEqual({memory:result.axes.memory,spared:result.axes.spared,ended:result.axes.ended},{memory:4,spared:2,ended:1});
+  assert.deepEqual(s.profile.memory.lastResolution.axes,result.axes);
+  const ending=createModalContent({sessionState:s,view:{mode:'ending',lastResult:result},route:()=>null}).buildModal();
+  assert.ok(ending.includes('route-axis'));assert.ok(ending.includes(`left:${Math.round((4+7)/14*100)}%`));assert.ok(ending.includes('돌려보냄 2 / 분해 1'));
+  const ledger=createModalContent({sessionState:s,view:{mode:'ledger'},route:()=>null}).buildModal();assert.ok(ledger.includes('route-axis'));
+  const restored=initialProfile();hydrateProfile(restored,{memory:{lastResolution:{ending:'preserve',threads:[],scenes:[],axes:{memory:99,spared:-3,ended:2,stillness:'yes'}}}});
+  assert.deepEqual({memory:restored.memory.lastResolution.axes.memory,spared:restored.memory.lastResolution.axes.spared,stillness:restored.memory.lastResolution.axes.stillness},{memory:7,spared:0,stillness:false});
 });

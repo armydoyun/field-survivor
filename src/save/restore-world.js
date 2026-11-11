@@ -3,6 +3,7 @@ import { n, integer } from '../core/utils.js';
 import { episodeKinds, anomalies, sites, objectives, relics, signals, finalEndings } from '../data/world.js';
 import { keystones } from '../data/progression.js';
 import { HARVEST_CAP, RUN_END, W, H } from '../core/config.js';
+import { VARIANTS } from '../world/route.js';
 import { relicChoices } from '../world/effects.js';
 
 export function restoreJourney(raw,time) {
@@ -34,9 +35,9 @@ export function restoreWorld(r,raw,_profile){
   r.siteDecisions = {}; for (const site of sites) if (site.options.some(o => o.id === raw.siteDecisions?.[site.id])) r.siteDecisions[site.id] = raw.siteDecisions[site.id];
   // 직전 결말의 여파(시작 장면)만 남긴다. 잔향 · 전선 · 답장 필드는 서사 재설계 5단계에서 폐지했고 이전 저장값은 무시한다.
   r.legacyOrigin = finalEndings.some(e => e.id === raw.legacyOrigin) ? raw.legacyOrigin : null;
-  r.legacyVariant = r.legacyOrigin === 'consume' && raw.legacyVariant === 'hollow' ? 'hollow' : '';
+  r.legacyVariant = VARIANTS[raw.legacyVariant]?.ending === r.legacyOrigin ? raw.legacyVariant : '';
   r.objectiveOutcomes = {}; for (const task of objectives) if (['complete','failed','ignored'].includes(raw.objectiveOutcomes?.[task.id])) r.objectiveOutcomes[task.id] = raw.objectiveOutcomes[task.id];
-  r.guardianFate = { spare: integer(raw.guardianFate?.spare,0,0,1000), end: integer(raw.guardianFate?.end,0,0,1000) }; r.guardianOrder = ['spare','end'].includes(raw.guardianOrder) ? raw.guardianOrder : ''; r.guardianMeet = integer(raw.guardianMeet, 0, 0, 3);
+  r.guardianFate = { spare: integer(raw.guardianFate?.spare,0,0,1000), end: integer(raw.guardianFate?.end,0,0,1000) }; r.guardianOrder = ['spare','end'].includes(raw.guardianOrder) ? raw.guardianOrder : ''; r.guardianMeet = integer(raw.guardianMeet, 0, 0, 3); if (Number.isFinite(raw.guardianMeetAt)) r.guardianMeetAt = n(raw.guardianMeetAt, 0, 0, 1e7);
   r.objectiveStep = integer(raw.objectiveStep, 0, 0, objectives.length);
   const savedObjective = raw.objective, task = objectives[r.objectiveStep];
   if (task && savedObjective?.id === task.id && Number.isFinite(savedObjective.x) && Number.isFinite(savedObjective.y)) r.objective = {
@@ -58,6 +59,8 @@ export function restoreWorld(r,raw,_profile){
   r.finalStep = r.time >= RUN_END ? integer(raw.finalStep, 0, 0, 3) : 0;
   r.signalStep = integer(raw.signalStep, 0, 0, signals.length); r.signalHp = integer(raw.signalHp, 0, 0, 60); r.signalPower = integer(raw.signalPower, 0, 0, 3); r.signalChoices = Array.isArray(raw.signalChoices) ? raw.signalChoices.slice(0,r.signalStep).filter(x=>x==='hear'||x==='burn') : [];
   r.logs = Array.isArray(raw.logs) ? raw.logs.filter(x => typeof x === 'string').slice(-6).map(x => x.slice(0, 110)) : [];
+  const stoker = raw.stoker;
+  if (stoker && typeof stoker === 'object' && ['waiting', 'stoked', 'quenched', 'left'].includes(stoker.state)) r.stoker = { state: stoker.state, x: n(stoker.x, W / 2, -1e7, 1e7), y: n(stoker.y, H / 2, -1e7, 1e7), still: n(stoker.still, 0, 0, 3), until: n(stoker.until, 0, 0, 1e7) };
   const npc = raw.npc;
   if (npc && typeof npc === 'object' && ['none', 'waiting', 'heard', 'taken'].includes(npc.state)) {
     r.npc = { spawned: !!npc.spawned, state: npc.state, x: n(npc.x, W / 2, -1e7, 1e7), y: n(npc.y, H / 2, -1e7, 1e7), still: n(npc.still, 0, 0, 4.5), encounterPending: !!npc.encounterPending && npc.state === 'waiting', secretPending: !!npc.secretPending && npc.state === 'heard' && !npc.silenced, silenced: !!npc.silenced && npc.state === 'heard' };

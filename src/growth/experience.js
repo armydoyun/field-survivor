@@ -1,8 +1,10 @@
 import { GEM_LIMIT, GEM_KEEP_RADIUS, HARVEST_CAP, HARVEST_RATE } from '../core/config.js';
+import { signalReward, witnessReward } from '../data/world-choices.js';
 import { commitRepeatedHealing } from '../combat/recovery.js';
 
 const xpNeed = level => Math.floor(24 * Math.pow(level, 1.34) * (.78 + .22 * Math.min(1, Math.max(0, level - 1) / 23)));
-const xpBonus=(profile,r)=>1+(r?.up.salvage||0)*.08+(profile.perks.learning||0)*.04;
+// 기억한 신호 · 들어 준 기록원은 경험치를 더한다(보존 경로의 성장 축).
+const xpBonus=(profile,r)=>1+(r?.up.salvage||0)*.08+(profile.perks.learning||0)*.04+(r?.signalChoices||[]).filter(x=>x==='hear').length*signalReward.xp+(r?.npc?.state==='heard'?witnessReward.xp:0);
 const xpCollectionScale=(profile,r,harvest)=>(harvest?.75:1)*xpBonus(profile,r);
 
 function dropXp(r, x, y, xp, count = 1) {

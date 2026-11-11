@@ -27,7 +27,7 @@ export function createPopulation({ sessionState, difficulty, enemyRuntime, encou
       const cadence = sessionState.run.time >= 600 ? 240 : 180;
       if (!sessionState.run.enemies.some(e => e.kind === 3 && (e.hp > 0 || e.phase === 3)) && sessionState.run.enemies.length < ENEMY_LIMIT - 1) {
         const guardian = enemyRuntime.spawnEnemy(3), r = sessionState.run; r.nextBoss = Math.max(r.nextBoss + cadence, r.time + 1);
-        if ((r.guardianMeet || 0) < GUARDIAN_MEETINGS.length && r.time >= GUARDIAN_MEETINGS[r.guardianMeet || 0]) { guardian.named = true; r.guardianMeet = (r.guardianMeet || 0) + 1; } else guardian.hollow = true;
+        if ((r.guardianMeet || 0) < GUARDIAN_MEETINGS.length && r.time >= GUARDIAN_MEETINGS[r.guardianMeet || 0]) { guardian.named = true; r.guardianMeet = (r.guardianMeet || 0) + 1; r.guardianMeetAt = r.time; } else guardian.hollow = true;
         onGuardianSpawned(guardian);
       } else sessionState.run.nextBoss = Math.max(sessionState.run.nextBoss + cadence, sessionState.run.time + cadence);
     }
