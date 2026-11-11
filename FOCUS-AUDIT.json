@@ -1,0 +1,394 @@
+[
+  {
+    "name": "base:pulse",
+    "off": 0,
+    "on": 228,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "base:nova",
+    "off": 0,
+    "on": 0,
+    "area": true,
+    "ok": true
+  },
+  {
+    "name": "base:chain",
+    "off": 0,
+    "on": 76,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "base:lance",
+    "off": 0,
+    "on": 45,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "base:mine",
+    "off": 0,
+    "on": 0,
+    "area": true,
+    "ok": true
+  },
+  {
+    "name": "base:rift",
+    "off": 0,
+    "on": 21,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "base:beacon",
+    "off": 0,
+    "on": 45,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "base:orbit",
+    "off": 0,
+    "on": 0,
+    "area": true,
+    "ok": true
+  },
+  {
+    "name": "spec:pulse:tracking",
+    "off": 0,
+    "on": 494,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "spec:pulse:reservoir",
+    "off": 0,
+    "on": 483,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "spec:orbit:escort",
+    "off": 0,
+    "on": 104,
+    "area": true,
+    "ok": true
+  },
+  {
+    "name": "spec:orbit:eccentric",
+    "off": 0,
+    "on": 0,
+    "area": true,
+    "ok": true
+  },
+  {
+    "name": "spec:nova:boundary",
+    "off": 0,
+    "on": 0,
+    "area": true,
+    "ok": true
+  },
+  {
+    "name": "spec:nova:reflux",
+    "off": 0,
+    "on": 0,
+    "area": true,
+    "ok": true
+  },
+  {
+    "name": "spec:chain:return",
+    "off": 0,
+    "on": 193,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "spec:chain:circuit",
+    "off": 0,
+    "on": 157,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "spec:lance:return",
+    "off": 0,
+    "on": 240,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "spec:lance:stake",
+    "off": 0,
+    "on": 142,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "spec:mine:pressure",
+    "off": 0,
+    "on": 0,
+    "area": true,
+    "ok": true
+  },
+  {
+    "name": "spec:mine:leap",
+    "off": 0,
+    "on": 105,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "spec:rift:fold",
+    "off": 0,
+    "on": 142,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "spec:rift:trail",
+    "off": 0,
+    "on": 155,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "spec:beacon:relay",
+    "off": 0,
+    "on": 159,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "spec:beacon:rover",
+    "off": 0,
+    "on": 561,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_rapid_pulse",
+    "off": 0,
+    "on": 672,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_support_guns",
+    "off": 357,
+    "on": 405,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_shock_mines",
+    "off": 157,
+    "on": 366,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_pulse_typhoon",
+    "off": 229,
+    "on": 229,
+    "area": true,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_wing_lances",
+    "off": 0,
+    "on": 533,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_conductive_guard",
+    "off": 472,
+    "on": 680,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_rotating_cutters",
+    "off": 255,
+    "on": 465,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_meteor_satellites",
+    "off": 112,
+    "on": 350,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_bullet_barrier",
+    "off": 0,
+    "on": 472,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_surging_strata",
+    "off": 0,
+    "on": 359,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_reflux_lightning",
+    "off": 289,
+    "on": 457,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_mobile_transmission",
+    "off": 448,
+    "on": 616,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_distributed_cuts",
+    "off": 197,
+    "on": 386,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_leaping_lances",
+    "off": 118,
+    "on": 436,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_instant_slash",
+    "off": 130,
+    "on": 427,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:fs_mobile_mines",
+    "off": 185,
+    "on": 354,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_barrage_rapid_pulse",
+    "off": 307,
+    "on": 1334,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_barrage_support_guns",
+    "off": 931,
+    "on": 1031,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_barrage_bullet_barrier",
+    "off": 364,
+    "on": 868,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_storm_pulse_typhoon",
+    "off": 880,
+    "on": 880,
+    "area": true,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_storm_reflux_lightning",
+    "off": 1093,
+    "on": 1275,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_fleet_wing_lances",
+    "off": 124,
+    "on": 1359,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_fleet_meteor_satellites",
+    "off": 269,
+    "on": 1096,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_fleet_leaping_lances",
+    "off": 316,
+    "on": 1092,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_crusher_conductive_guard",
+    "off": 1196,
+    "on": 1415,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_crusher_rotating_cutters",
+    "off": 1027,
+    "on": 1209,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_crusher_distributed_cuts",
+    "off": 887,
+    "on": 1081,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_frontline_shock_mines",
+    "off": 349,
+    "on": 815,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_frontline_surging_strata",
+    "off": 0,
+    "on": 489,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_frontline_mobile_mines",
+    "off": 417,
+    "on": 553,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_thunder_slash_mobile_transmission",
+    "off": 519,
+    "on": 915,
+    "area": false,
+    "ok": true
+  },
+  {
+    "name": "fusion:hs_thunder_slash_instant_slash",
+    "off": 337,
+    "on": 861,
+    "area": false,
+    "ok": true
+  }
+]

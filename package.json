@@ -19,7 +19,8 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write tools",
-    "format:check": "prettier --check tools"
+    "format:check": "prettier --check tools",
+    "audit:focus": "node tools/focus-audit.mjs FOCUS-AUDIT.json"
   },
   "devDependencies": {
     "@eslint/js": "9.17.0",
