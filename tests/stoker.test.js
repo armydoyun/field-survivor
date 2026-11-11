@@ -78,6 +78,7 @@ test('two voices: hearing the archivist and settling with the stoker turns the d
     const result = createEndingDecisions({ sessionState: h.s }).chooseFinale('divided');
     assert.equal(result.variant, 'chorus'); assert.equal(result.scenes[0], endingScenes.witness.chorus[state]);
     assert.ok(h.s.profile.memory.archive.some(x => x.includes('두 개의 목소리 · 합창')));
+    assert.equal(h.s.profile.memory.variants.chorus, 1);
     const html = createModalContent({ sessionState: h.s, view: { mode: 'ending', lastResult: result }, route: () => null }).buildModal();
     assert.ok(html.includes('합창')); assert.ok(html.includes(endingTexts.chorus.intro.slice(0, 20)));
     const next = createRun(h.s.profile, { maxHp: 100, xpNext: 24 }); assert.equal(next.legacyVariant, 'chorus'); assert.ok(startScenes.chorus.change.includes('6:30'));

@@ -383,3 +383,25 @@ background:#3a5a66}
 #gameColumn[data-labels="on"][data-route^="preserve"] .arena::after,#gameColumn[data-labels="on"][data-route^="consume"] .arena::after{position:absolute;top:8px;right:10px;padding:2px 8px;border-radius:6px;background:rgba(10,20,26,.7);font-size:11px;font-weight:700;pointer-events:none}
 #gameColumn[data-labels="on"][data-route^="preserve"] .arena::after{content:'보존 쪽';color:#a8e5d4}
 #gameColumn[data-labels="on"][data-route^="consume"] .arena::after{content:'연소 쪽';color:#f0c39d}
+
+/* 기록 보관소 한눈에 보기(v3.1) */
+.ledger-overview{display:grid;gap:12px;margin:6px 0 16px}
+.ledger-endings{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.ledger-ending{border:1px solid #dde5e8;border-radius:9px;padding:10px 12px;background:#f8fbfb;display:grid;gap:2px}
+.ledger-ending[data-found="false"]{background:#f1f4f5;color:#9aa8ae}
+.ledger-ending strong{font-size:13px}
+.ledger-ending span{font-size:12px;color:#5c6d75;font-variant-numeric:tabular-nums}
+.ledger-ending[data-ending="preserve"][data-found="true"]{border-color:#9fd6c7}
+.ledger-ending[data-ending="consume"][data-found="true"]{border-color:#e6bf9d}
+.ledger-ending[data-ending="divided"][data-found="true"]{border-color:#b8c3e6}
+.ledger-ending[data-ending="release"][data-found="true"]{border-color:#d9cf9a}
+.ledger-variant{font-size:11px;color:#8a979d}
+.ledger-variant[data-found="true"]{color:#5a4f86;font-weight:700}
+.ledger-people{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.ledger-people li{display:flex;justify-content:space-between;gap:12px;font-size:12px;border-bottom:1px dashed #e3e9ec;padding:4px 0}
+.ledger-people li[data-met="false"]{color:#9aa8ae}
+.ledger-people span{color:#5c6d75;text-align:right}
+.ledger-loadouts{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px}
+.ledger-loadouts span{display:flex;gap:6px;font-size:18px}
+.ledger-loadouts i{display:inline-flex;color:#3e5d66}
+.ledger-loadouts i[data-open="false"]{color:#c7d1d5}
