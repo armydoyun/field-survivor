@@ -10,16 +10,16 @@ import { branchReady } from '../growth/build.js';
 import { upgrades, upgradeFamilies } from '../data/upgrades.js';
 import { branches } from '../data/specializations.js';
 import { canReroll } from '../growth/cards.js';
-import { VARIANTS } from '../world/route.js';
+import { VARIANTS, ROUTE } from '../world/route.js';
 import { settingsHtml } from './settings.js';
 import { ledgerOverviewHtml } from './ledger.js';
 import { truthFoundIds } from '../world/last-record.js';
 import { loadouts, unlockedLoadouts, startWeaponLevel } from '../data/loadouts.js';
 
-// 이번 판의 축 위치(NARRATIVE-REDESIGN.md 3.3절). 기억 축 −7(연소) ~ +7(보존)과 감시자 결정.
+// 이번 판의 축 위치(NARRATIVE-REDESIGN.md 3.3절). 기억 축 −8(연소) ~ +8(보존)과 감시자 결정.
 function routeAxisHtml(axes){
   if(!axes)return '';
-  const position=Math.round((Math.max(-7,Math.min(7,axes.memory))+7)/14*100);
+  const range=ROUTE.memoryRange,position=Math.round((Math.max(-range,Math.min(range,axes.memory))+range)/(range*2)*100);
   return `<div class="route-axis" aria-label="이번 판의 경로"><div class="route-axis-ends"><span>연소</span><span>보존</span></div><div class="route-axis-track"><span class="route-axis-mark" style="left:${position}%"></span></div><div class="route-axis-notes">감시자 · 돌려보냄 ${axes.spared} / 분해 ${axes.ended}${axes.stillness?' · 기록원 곁에서 멈춰 있었다':''}${axes.silence?` · 지나친 표식 ${axes.silence}`:''}</div></div>`;
 }
 

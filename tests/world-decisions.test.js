@@ -210,8 +210,8 @@ test('ending and ledger screens draw the run\'s axis position; the result keeps 
   assert.deepEqual({memory:result.axes.memory,spared:result.axes.spared,ended:result.axes.ended},{memory:4,spared:2,ended:1});
   assert.deepEqual(s.profile.memory.lastResolution.axes,result.axes);
   const ending=createModalContent({sessionState:s,view:{mode:'ending',lastResult:result},route:()=>null}).buildModal();
-  assert.ok(ending.includes('route-axis'));assert.ok(ending.includes(`left:${Math.round((4+7)/14*100)}%`));assert.ok(ending.includes('돌려보냄 2 / 분해 1'));
+  assert.ok(ending.includes('route-axis'));assert.ok(ending.includes(`left:${Math.round((4+8)/16*100)}%`));assert.ok(ending.includes('돌려보냄 2 / 분해 1'));
   const ledger=createModalContent({sessionState:s,view:{mode:'ledger'},route:()=>null}).buildModal();assert.ok(ledger.includes('route-axis'));
   const restored=initialProfile();hydrateProfile(restored,{memory:{lastResolution:{ending:'preserve',threads:[],scenes:[],axes:{memory:99,spared:-3,ended:2,stillness:'yes'}}}});
-  assert.deepEqual({memory:restored.memory.lastResolution.axes.memory,spared:restored.memory.lastResolution.axes.spared,stillness:restored.memory.lastResolution.axes.stillness},{memory:7,spared:0,stillness:false});
+  assert.deepEqual({memory:restored.memory.lastResolution.axes.memory,spared:restored.memory.lastResolution.axes.spared,stillness:restored.memory.lastResolution.axes.stillness},{memory:8,spared:0,stillness:false});
 });
