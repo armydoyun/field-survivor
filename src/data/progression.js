@@ -8,9 +8,9 @@ const phases = [
 ];
 
 const keystones=[
-  {id:'anchor',name:'고정된 심장',desc:'PULSE·BEACON·MINE 피해 +20% · 이동 속도 -8%',weapons:['pulse','beacon','mine']},
-  {id:'drift',name:'떠도는 날',desc:'LANCE·RIFT·ORBIT 피해: 이동 중 및 멈춘 뒤 1초까지 +20%, 그 외 -10%',weapons:['lance','rift','orbit']},
-  {id:'surge',name:'넘치는 전하',desc:'CHAIN·NOVA 피해 +20% · 최대 HP -10%',weapons:['chain','nova']},
+  {id:'anchor',name:'고정된 심장',desc:'펄스 코어·신호 포탑·중력 기뢰 피해 +20% · 이동 속도 -8%',weapons:['pulse','beacon','mine']},
+  {id:'drift',name:'떠도는 날',desc:'파동 창·균열 칼날·방어 위성 피해 +20%(이동 중과 멈춘 뒤 1초까지) · 서 있을 때는 -10%',weapons:['lance','rift','orbit']},
+  {id:'surge',name:'넘치는 전하',desc:'연쇄 번개·노바 충격파 피해 +20% · 최대 HP -10%',weapons:['chain','nova']},
   {id:'control',name:'닫힌 회로',desc:'최대 HP +12% · 모든 무기 피해 -8%',weapons:[]}
 ];
 

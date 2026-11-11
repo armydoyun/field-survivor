@@ -1,4 +1,4 @@
-# FIELD SURVIVOR v3.3.0
+# FIELD SURVIVOR v3.3.1
 
 선택이 결말을 정하는 서바이버. ESM 소스이며 외부 런타임 라이브러리는 없다. 단일 파일 배포본은 `npm run build`로 만든다.
 

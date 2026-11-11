@@ -75,7 +75,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const ev=signals[sessionState.run.signalStep], heard=sessionState.profile.memory.heard, burned=sessionState.profile.memory.burned;
       const trace=sessionState.run.signalStep===2 && heard+burned?`잡음 사이에 ${heard}개의 응답과 ${burned}개의 빈 주파수가 겹친다.`:'';
       const line=sessionState.run.signalStep===0&&sessionState.run.legacyOrigin==='preserve'?firstSignalAfterPreserve:ev.line;
-      return decisionHtml('INCOMING SIGNAL',ev.title,`${line} ${trace}`,[{id:'hear',name:'기억한다',effect:`최대 HP 기초값 +${signalReward.hp} · 즉시 HP 최대 ${signalReward.hp} 회복 · 획득 EXP +${Math.round(signalReward.xp*100)}%`},{id:'burn',name:'연료로 변환한다',effect:`신호 공격력 배율 +${Math.round(signalReward.burnPower*100)}%p · ${signalReward.goldBase+signalReward.goldStep*(sessionState.run.signalStep+1)}G`}]);
+      return decisionHtml('INCOMING SIGNAL',ev.title,`${line} ${trace}`,[{id:'hear',name:'기억한다',effect:`최대 HP 기초값 +${signalReward.hp} · 즉시 HP 최대 ${signalReward.hp} 회복 · 획득 EXP +${Math.round(signalReward.xp*100)}%`},{id:'burn',name:'연료로 변환한다',effect:`이번 도전의 모든 무기 피해 +${Math.round(signalReward.burnPower*100)}%p · ${signalReward.goldBase+signalReward.goldStep*(sessionState.run.signalStep+1)}G`}]);
     } else if (view.mode === 'anomaly') {
       const e=anomalies[sessionState.run.anomalyStep];
       return decisionHtml(`FIELD SHIFT · 전장 변화 ${String(sessionState.run.anomalyStep+1).padStart(2,'0')} / 03`,e.title,e.line,e.options.map(o=>({id:'anomaly-'+o.id,name:o.name,effect:o.effect})));

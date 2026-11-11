@@ -56,7 +56,7 @@ export function createGrowthMetrics({ sessionState, statistics, buildModel }) {
     if (id === 'momentum') { const moving = { ...sessionState.run, momentumTime: 1 }; return fmt('이동 중 기본 공격 간격', statistics.stats(moving).interval, statistics.stats({ ...moving, up: { ...sessionState.run.up, momentum: newLv } }).interval, '초'); }
     if (id === 'multishot') return fmt('한 번에 발사하는 기본 탄환', previous.shots, next.shots, '발');
     if (id === 'pierce') return fmt('탄환 하나당 최대 타격', previous.pierce, next.pierce, '명');
-    if (id === 'area') return fmt('PULSE 충돌 반경', previous.radius, next.radius);
+    if (id === 'area') return fmt('펄스 탄 충돌 반경', previous.radius, next.radius);
     if (id === 'speed') return fmt('이동 속도', previous.speed, next.speed);
     if (id === 'vitality') return `${fmt('최대 체력',previous.maxHp,next.maxHp)} · ${fmt('현재 HP',before.player.hp,after.player.hp)}`;
     if (id === 'magnet') return fmt('보석 흡수 반경', previous.magnet, next.magnet);
@@ -64,7 +64,7 @@ export function createGrowthMetrics({ sessionState, statistics, buildModel }) {
     if (id === 'crit') return `${fmt('중앙탄 치명타',statistics.pulseCritChance(previous)*100,statistics.pulseCritChance(next)*100,'%')} · ${fmt('보조탄 치명타',statistics.pulseCritChance(previous)*100,statistics.pulseCritChance(next)*100,'%')}`;
     if (id === 'orbit') return fmt('방어 위성 수', previous.orbit, next.orbit, '개');
     if (id === 'burst') return `처치 시 파편 발동 확률: ${uiPercent(burstChance(oldLv))} → ${uiPercent(burstChance(newLv))}`;
-    if (id === 'pulse') return fmt('중앙 PULSE 피해', statistics.weaponDamage('pulse', previous), statistics.weaponDamage('pulse', next));
+    if (id === 'pulse') return fmt('중앙탄 피해', statistics.weaponDamage('pulse', previous), statistics.weaponDamage('pulse', next));
     if (id === 'nova') return `${fmt('충격파 반경', oldLv ? statistics.novaRadius(previous) : 0, statistics.novaRadius(next))} · ${fmt('발동 간격', statistics.novaInterval(oldLv), statistics.novaInterval(newLv), '초')}`;
     if (id === 'chain') return `${fmt('번개 최대 대상', oldLv ? statistics.chainTargets(previous) : 0, statistics.chainTargets(next), '명')} · ${fmt('재발동 간격', statistics.chainReload(previous), statistics.chainReload(next), '초')}`;
     if (id === 'lance') return `${fmt('창 최대 타격', oldLv ? statistics.lanceTargets(previous) : 0, statistics.lanceTargets(next), '명')} · ${fmt('발사 간격', statistics.lanceInterval(previous), statistics.lanceInterval(next),'초')}`;
@@ -72,16 +72,16 @@ export function createGrowthMetrics({ sessionState, statistics, buildModel }) {
     if (id === 'beacon') return `${fmt('포탑 피해',oldLv?statistics.weaponDamage('beacon',{...previous,beacon:oldLv}):0,statistics.weaponDamage('beacon',{...next,beacon:newLv}))} · 지속 11초`;
     if (id === 'mine') return `${fmt('기뢰 폭발 반경', oldLv ? statistics.mineRadius(previous) : 0, statistics.mineRadius(next))} · ${fmt('설치 간격', statistics.mineInterval(previous),statistics.mineInterval(next),'초')}`;
     if (id === 'frost') return fmt('적 이동속도 감소', oldLv*12, newLv*12, '%');
-    if (id === 'focus') return fmt('PULSE 치명타 배율', previous.critMult, next.critMult, '배');
+    if (id === 'focus') return fmt('펄스 치명타 배율', previous.critMult, next.critMult, '배');
     if (id === 'salvage') return fmt('수집 EXP 배율',xpCollectionScale(sessionState.profile,before,hasRelic('harvest',before)),xpCollectionScale(sessionState.profile,after,hasRelic('harvest',after)),'배');
     if (id === 'armor') return fmt('장갑 피해 감소', (1-armorScale(sessionState.profile,before))*100, (1-armorScale(sessionState.profile,after))*100, '%');
-    if (id === 'conduction') return `${fmt('CHAIN 연쇄 거리',chainReach({conduction:oldLv}),chainReach({conduction:newLv}))} · ${fmt('재사용 주기 배율',1-oldLv*.055,1-newLv*.055,'배')}`;
-    if (id === 'wavecraft') return `${fmt('NOVA 반경 보정',100+oldLv*6.5,100+newLv*6.5,'%')} · ${fmt('LANCE 충돌 반경',lanceRadius({wavecraft:oldLv}),lanceRadius({wavecraft:newLv}))} · 전문화 RIFT 절개 폭에도 적용`;
+    if (id === 'conduction') return `${fmt('번개 연쇄 거리',chainReach({conduction:oldLv}),chainReach({conduction:newLv}))} · ${fmt('재사용 주기 배율',1-oldLv*.055,1-newLv*.055,'배')}`;
+    if (id === 'wavecraft') return `${fmt('노바 반경 보정',100+oldLv*6.5,100+newLv*6.5,'%')} · ${fmt('창 충돌 반경',lanceRadius({wavecraft:oldLv}),lanceRadius({wavecraft:newLv}))} · 균열 칼날 전문화의 절개 폭에도 적용`;
     if (id === 'machinery') return fmt('장치 공격·설치 주기 배율',1-oldLv*.09,1-newLv*.09,'배');
-    if (id === 'edgecraft') return `${fmt('ORBIT 접촉 피해',100+oldLv*10,100+newLv*10,'%')} · ${fmt('RIFT 사거리',100+oldLv*6.5,100+newLv*6.5,'%')}`;
+    if (id === 'edgecraft') return `${fmt('위성 접촉 피해',100+oldLv*10,100+newLv*10,'%')} · ${fmt('균열 사거리',100+oldLv*6.5,100+newLv*6.5,'%')}`;
     if (id === 'repulsion' && hasBranch('nova','reflux',sessionState.run) && !previous.orbit) return '역류 공명에는 넉백 보정이 적용되지 않습니다.';
-    if (id === 'repulsion') return `${fmt('NOVA 넉백',statistics.novaPush(previous),statistics.novaPush(next))} · ${fmt('ORBIT 넉백',orbitPush({repulsion:oldLv}),orbitPush({repulsion:newLv}))}`;
-    if (id === 'placement') return `${fmt('MINE 배치 거리',oldLv?50+oldLv*20:0,50+newLv*20)} · ${fmt('BEACON 사거리',(beaconRange({placement:oldLv})),(beaconRange({placement:newLv})))}`;
+    if (id === 'repulsion') return `${fmt('노바 넉백',statistics.novaPush(previous),statistics.novaPush(next))} · ${fmt('위성 넉백',orbitPush({repulsion:oldLv}),orbitPush({repulsion:newLv}))}`;
+    if (id === 'placement') return `${fmt('기뢰 배치 거리',oldLv?50+oldLv*20:0,50+newLv*20)} · ${fmt('포탑 사거리',(beaconRange({placement:oldLv})),(beaconRange({placement:newLv})))}`;
     return '';
   }
 

@@ -8,9 +8,9 @@ const signals = [
 const anomalies = [
   { id: 'clock', at: 300, title: '정지된 초침', line: '초침은 움직이지 않는데 유리 안쪽에서 긁는 소리가 난다.', options: [
     { id: 'hold', name: '멈춤을 간직한다', effect: '90초 동안 12초마다 일반 적 행동 2초 정지 · 이미 발사된 탄환·지면 구역은 지속' },
-    { id: 'rush', name: '초침을 부순다', effect: '90초 동안 PULSE 기본 사격 간격 -25%, 적 통상 이동 속도 +12%(돌진 제외)' }] },
+    { id: 'rush', name: '초침을 부순다', effect: '90초 동안 펄스 코어 기본 사격 간격 -25%, 적 통상 이동 속도 +12%(돌진 제외)' }] },
   { id: 'border', at: 600, title: '뒤집힌 경계', line: '지도 바깥에 있던 선이 네 발밑을 지나간다. 먼 쪽의 표식들이 하나씩 꺼진다.', options: [
-    { id: 'ward', name: '경계를 보호한다', effect: '120초 동안 반경 125의 적 투사체 1개 자동 소거 · 첫 감지 즉시, 이후 16초 재사용' },
+    { id: 'ward', name: '경계를 보호한다', effect: '120초 동안 가까이(반경 125) 날아온 적 탄 1발을 지워 줌 · 지운 뒤 16초마다 다시 충전' },
     { id: 'harvest', name: '경계를 거둬들인다', effect: '120초 동안 흡수 범위 +90, 처치 보석 기본 EXP +30%, 적 탄속 +20%' }] },
   { id: 'echo', at: 960, title: '흔들리는 지반', line: '발밑의 지면이 일정한 박자로 꺼졌다가 솟는다. 버틸 자리를 만들지, 흐름에 올라탈지 정해야 한다.', options: [
     { id: 'keep', name: '지반을 다진다', effect: '이번 도전 내내 최대 HP +30, 초당 회복 +0.35' },
@@ -32,7 +32,7 @@ const sites = [
 
 // Optional field objectives complement (and never replace) the three legacy relic sites.
 const objectives = [
-  { id: 'relay', at: 240, name: '붕괴된 중계기', brief: 'E · 접속 / 장치 부근에서 16초 동기화', gold: 140, xp: 200 },
+  { id: 'relay', at: 240, name: '붕괴된 중계기', brief: 'E · 접속 / 장치 곁에서 16초 동기화 · 적이 붙으면 느려짐', gold: 140, xp: 200 },
   { id: 'courier', at: 660, name: '떠도는 신호', brief: 'E · 연결 / 이동한 신호 좌표에서 E · 회수', gold: 240, xp: 320 },
   { id: 'hunter', at: 1020, name: '오염된 전달자', brief: 'E · 활성화 / 지정 표적 처치', gold: 360, xp: 440 }
 ];
@@ -41,10 +41,10 @@ const objectives = [
 const relics = [
   { id: 'glass', site: 'coordinate', name: '유리 심장', desc: '모든 무기 피해 +35%, 최대 HP -20%' },
   { id: 'harvest', site: 'coordinate', name: '수확의 잔', desc: '획득 EXP 25당 HP 1 회복(초당 1.2 · 한 번에 3까지) · 대신 모든 무기 피해 -10%' },
-  { id: 'mirror', site: 'reservoir', name: '반향 거울', desc: 'ORBIT Lv.1 보장 · 위성이 적 탄환을 막으면 공통 공격력의 80% 반사탄 발사' },
+  { id: 'mirror', site: 'reservoir', name: '반향 거울', desc: '방어 위성 Lv.1 보장 · 위성이 적 탄환을 막으면 공통 공격력의 80% 반사탄 발사' },
   { id: 'clockwork', site: 'reservoir', name: '멎은 태엽', desc: '피해를 받으면 반경 225의 일반 적을 1.5초 정지 · 14초 재사용 대기 · 이미 발사된 탄환·지면 구역은 지속' },
   { id: 'capacitor', site: 'archive', name: '불안정한 축전기', desc: 'HP가 최대 HP의 50% 이하일 때 모든 무기 피해 +30%' },
-  { id: 'ember', site: 'archive', name: '잿빛 파편', desc: '처치 수 12의 배수마다 반경 170에 공통 공격력 ×1.4 광역 피해' }
+  { id: 'ember', site: 'archive', name: '잿빛 파편', desc: '적을 12마리 처치할 때마다 주변(반경 170)에 공통 공격력 ×1.4 폭발' }
 ];
 
 // 직전 결말의 여파(NARRATIVE-REDESIGN.md 6.2절). 다음 판 시작 장면 한 문단과 작은 변화 하나.
