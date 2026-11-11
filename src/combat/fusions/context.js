@@ -1,12 +1,16 @@
 import { runRandom } from '../../core/random.js';
 import { targetable } from '../rules.js';
 import { applySlow, pushEnemy } from '../control.js';
+import { FOCUS_NEAR } from '../targeting.js';
 import { segmentEntry } from '../../math/geometry.js';
 export const STEP=1/120;
 export function createFusionContext(r,q,f,p,combat,view,inspector){
   let layer='base';const player=r.player,label=tag=>f.id+':'+tag;
   const alive=e=>view.mode==='playing'&&targetable(e,r);
-  const targets=(range,x=player.x,y=player.y,exclude=[])=>r.enemies.filter(e=>alive(e)&&!exclude.includes(e.id)&&Math.hypot(e.x-x,e.y-y)<=range+e.radius).sort((a,b)=>((a.x-x)**2+(a.y-y)**2)-((b.x-x)**2+(b.y-y)**2)||a.id-b.id);
+  // 감시자 조준(T): 플레이어 위치나 플레이어에 붙어 다니는 장치(120 안, 예: 지원 포대)에서 고를 때는 사거리 안의 감시자를 맨 앞에 둔다.
+  // 멀리 설치된 장치는 자기 주변 표적을 그대로 고른다.
+  const focusFirst=(x,y)=>r.focusGuardian&&Math.hypot(x-player.x,y-player.y)<=FOCUS_NEAR;
+  const targets=(range,x=player.x,y=player.y,exclude=[])=>{const list=r.enemies.filter(e=>alive(e)&&!exclude.includes(e.id)&&Math.hypot(e.x-x,e.y-y)<=range+e.radius).sort((a,b)=>((a.x-x)**2+(a.y-y)**2)-((b.x-x)**2+(b.y-y)**2)||a.id-b.id);if(focusFirst(x,y)){const g=list.findIndex(e=>e.kind===3);if(g>0)list.unshift(list.splice(g,1)[0]);}return list;};
   const aim=range=>targets(range*p.reach+p.aim);
   function allow(e,tag,gap=0,limit=1,period=0){
     let old=q.hits.find(h=>h.id===e.id&&h.tag===tag);

@@ -1,9 +1,10 @@
 import { targetable } from './rules.js';
 
-// 감시자 조준(v3.1): 플레이어가 T로 켜면, 플레이어 위치에서 고르는 표적은 사거리 안의 감시자가 먼저다.
-// 장치(기뢰 · 포탑 등)가 자기 위치에서 고르는 표적은 바꾸지 않는다. 필드가 없으면(기본) 이전과 같다.
+// 감시자 조준(v3.1): 플레이어가 T로 켜면, 플레이어 위치나 플레이어 곁(FOCUS_NEAR 안)에 붙은 장치에서 고르는 표적은
+// 사거리 안의 감시자가 먼저다. 멀리 설치된 장치는 자기 주변 표적을 그대로 고른다. 필드가 없으면(기본) 이전과 같다.
+export const FOCUS_NEAR = 120;
 function focusedGuardian(run, radius, x, y, exclude) {
-  if (!run.focusGuardian || x !== run.player.x || y !== run.player.y) return null;
+  if (!run.focusGuardian || Math.hypot(x - run.player.x, y - run.player.y) > FOCUS_NEAR) return null;
   let best = null, dmin = radius * radius;
   for (const e of run.enemies) { if (e.kind !== 3 || !targetable(e, run) || exclude?.includes(e.id)) continue; const d = (e.x - x) ** 2 + (e.y - y) ** 2; if (d < dmin) { best = e; dmin = d; } }
   return best;

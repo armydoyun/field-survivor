@@ -13,7 +13,7 @@ const xpState = r => ({ level: r.level, xp: r.xp, xpNext: r.xpNext, pending: r.p
 test('XP thresholds and collection multipliers retain original values', () => {
   for (const [level, amount] of [[1,18],[2,47],[3,83],[4,124],[5,169],[10,454],[24,1697],[25,1792],[100,11487]]) assert.equal(xpNeed(level), amount);
   const p = initialProfile(), r = fresh(); p.perks.learning = 3; r.up.salvage = 2;
-  assert.ok(Math.abs(xpBonus(p,r)-1.28) < 1e-12); assert.ok(Math.abs(xpCollectionScale(p,r,true)-.96) < 1e-12); assert.ok(Math.abs(xpCollectionScale(p,r,false)-1.28) < 1e-12);
+  assert.ok(Math.abs(xpBonus(p,r)-1.28) < 1e-12); assert.ok(Math.abs(xpCollectionScale(p,r,true)-1.28) < 1e-12, 'harvest no longer cuts XP (v3.2)'); assert.ok(Math.abs(xpCollectionScale(p,r,false)-1.28) < 1e-12);
 });
 test('gem merging uses exact XP and a strict distance boundary, even at capacity', () => {
   const r = fresh(); assert.equal(dropXp(r,0,0,5), true); assert.equal(dropXp(r,71,0,5,2), true);

@@ -1,7 +1,7 @@
 {
   "name": "field-survivor",
   "private": true,
-  "version": "3.1.0",
+  "version": "3.2.0",
   "type": "module",
   "description": "FIELD SURVIVOR — 빌드·테스트 도구 정의(게임 자체는 런타임 의존성 없음)",
   "engines": {
@@ -19,7 +19,8 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write tools",
-    "format:check": "prettier --check tools"
+    "format:check": "prettier --check tools",
+    "audit:focus": "node tools/focus-audit.mjs FOCUS-AUDIT.json"
   },
   "devDependencies": {
     "@eslint/js": "9.17.0",

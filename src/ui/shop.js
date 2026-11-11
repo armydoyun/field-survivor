@@ -1,10 +1,10 @@
 import { canToggleShop, canBuyPermanentUpgrade } from '../core/view-policy.js';
 import { shopItems } from '../data/shop.js';
+import { shopCost } from '../core/perks.js';
 
 export function createShop({ sessionState, view, platform, storage, hud, screen }) {
   const { $, keys, canvas } = platform;
 
-  const shopCost = (item, level) => Math.round(item.base * Math.pow(item.growth, level));
 
   const cost = item => shopCost(item, sessionState.profile.perks[item.id] || 0);
 

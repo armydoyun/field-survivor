@@ -1,8 +1,12 @@
-# FIELD SURVIVOR v3.1.0
+# FIELD SURVIVOR v3.2.0
 
 선택이 결말을 정하는 서바이버. ESM 소스이며 외부 런타임 라이브러리는 없다. 단일 파일 배포본은 `npm run build`로 만든다.
 
 변경 내역은 [CHANGELOG.md](CHANGELOG.md). v2.6.27까지의 융합 · 그래픽 설계는 아래 절과 [FUSION-REDESIGN.md](FUSION-REDESIGN.md) · [SKILL-VISUAL-DESIGN.md](SKILL-VISUAL-DESIGN.md)에 있다.
+
+## v3.2 유물과 영구 강화 정비
+
+수확의 잔의 경험치 감소를 없애고, 영구 강화의 효과 상한과 가격을 다시 짰다. 자세한 표는 [CHANGELOG.md](CHANGELOG.md).
 
 ## v3.1 읽히는 전장
 

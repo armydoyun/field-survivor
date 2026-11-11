@@ -5,7 +5,7 @@ import { escapeHtml } from './html.js';
 export const VIEW_DEFAULTS = Object.freeze({ shake: true, effects: true, numbers: true, labels: false });
 export const VIEW_SETTINGS = Object.freeze([
   { id: 'shake', name: '화면 흔들림', on: '켜짐', off: '꺼짐', note: '피격 · 폭발 때 화면이 흔들립니다.' },
-  { id: 'effects', name: '이펙트', on: '전체', off: '간단히', note: '간단히: 잔상 · 파편 · 고리 효과를 줄입니다.' },
+  { id: 'effects', name: '이펙트', on: '전체', off: '간단히', note: '간단히: 잔상 · 파편 · 고리 효과와 늘어남 · 눌림 · 히트스톱을 끕니다.' },
   { id: 'numbers', name: '피해 숫자', on: '표시', off: '숨김', note: '적을 맞힐 때 뜨는 숫자입니다.' },
   { id: 'labels', name: '색 대신 글자', on: '켜짐', off: '꺼짐', note: '경로 색 · 표류 구역 종류를 글자로도 보여 줍니다.' }
 ]);
