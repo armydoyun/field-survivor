@@ -19,14 +19,17 @@ export function createMenuInput({ view, platform, session, storage, screen, grow
     const choices = [...overlay.querySelectorAll(view.mode === 'levelup' ? '[data-choice]:not(:disabled)' : 'button:not(:disabled)')];
     if (!choices.length) return false;
     const digit = /^(?:Digit|Numpad)([1-9])$/.exec(event.code);
-    if (digit) { choices[Number(digit[1]) - 1]?.click(); return true; }
+    // 화면 설정 토글은 숫자키 · Enter 기본 선택에서 뺀다(화살표 · Tab으로만 닿는다). 접힌 패널 안 버튼도 제외.
+    const primary = choices.filter(button => !button.closest?.('.settings-panel'));
+    if (digit) { primary[Number(digit[1]) - 1]?.click(); return true; }
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.code)) {
-      const i = choices.indexOf(active), step = ['ArrowRight', 'ArrowDown'].includes(event.code) ? 1 : -1;
-      choices[(i < 0 ? (step > 0 ? 0 : choices.length - 1) : (i + step + choices.length) % choices.length)].focus(); return true;
+      const nav = choices.filter(button => !button.closest?.('.settings-panel:not([open])'));
+      const i = nav.indexOf(active), step = ['ArrowRight', 'ArrowDown'].includes(event.code) ? 1 : -1;
+      nav[(i < 0 ? (step > 0 ? 0 : nav.length - 1) : (i + step + nav.length) % nav.length)].focus(); return true;
     }
     if (event.code === 'Enter' || event.code === 'Space') {
       if (active?.matches('button,summary') && !active.disabled) return false;
-      choices[0].click(); return true;
+      (primary[0] || choices[0]).click(); return true;
     }
     if (event.code === 'Tab' && view.mode === 'levelup') {
       const items = [...overlay.querySelectorAll('.option-card [data-choice], .option-card [data-upgrade-info], [data-action="reroll"]')].filter(button => !button.disabled);

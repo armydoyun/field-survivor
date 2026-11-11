@@ -51,7 +51,8 @@ export function drawPillars(ctx, r, cx, cy) {
 // 표류 구역: 예고 중에는 점선 원이 차오르고, 활성 중에는 종류별 무늬가 흐른다.
 // 연소는 주황 빗금, 정체는 청회색 가로줄, 흡인은 보라 동심원이 안쪽으로 줄어든다.
 const DRIFT_COLORS = { burn: [240, 150, 70], still: [140, 170, 190], pull: [180, 140, 230] };
-export function drawDrift(ctx, r) {
+const DRIFT_NAMES = { burn: '연소', still: '정체', pull: '흡인' };
+export function drawDrift(ctx, r, labels = false) {
   const zones = r.drift?.zones;
   if (!zones?.length || !driftActive(r)) return;
   ctx.save();
@@ -71,6 +72,7 @@ export function drawDrift(ctx, r) {
     else if (z.kind === 'still') for (let k = -z.radius; k < z.radius; k += 18) { ctx.moveTo(z.x - z.radius, z.y + k + (shift % 18) / 3); ctx.lineTo(z.x + z.radius, z.y + k + (shift % 18) / 3); }
     else for (let k = -z.radius * 2; k < z.radius * 2; k += 28) { ctx.moveTo(z.x + k + shift - z.radius, z.y - z.radius); ctx.lineTo(z.x + k + shift + z.radius, z.y + z.radius); }
     ctx.stroke(); ctx.restore();
+    if (labels) { ctx.font = 'bold 13px system-ui'; ctx.textAlign = 'center'; ctx.fillStyle = c(1); ctx.fillText(DRIFT_NAMES[z.kind] || DRIFT_NAMES.burn, z.x, z.y + 4); }
   }
   ctx.restore();
 }

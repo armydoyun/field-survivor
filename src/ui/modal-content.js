@@ -11,6 +11,7 @@ import { upgrades, upgradeFamilies } from '../data/upgrades.js';
 import { branches } from '../data/specializations.js';
 import { canReroll } from '../growth/cards.js';
 import { VARIANTS } from '../world/route.js';
+import { settingsHtml } from './settings.js';
 import { loadouts, unlockedLoadouts, startWeaponLevel } from '../data/loadouts.js';
 
 // 이번 판의 축 위치(NARRATIVE-REDESIGN.md 3.3절). 기억 축 −7(연소) ~ +7(보존)과 감시자 결정.
@@ -35,7 +36,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
       const summary = ongoing ? `<div class="summary"><span>보관된 도전 <strong>${timeText(sessionState.run.time)}</strong></span><span>레벨 <strong>${sessionState.run.level}</strong></span><span>현재 HP <strong>${Math.ceil(sessionState.run.player.hp)}</strong></span></div>` : stored ? `<div class="summary"><span>최장 기록 <strong>${timeText(sessionState.profile.bestTime)}</strong></span><span>총 <strong>${sessionState.profile.runs.toLocaleString('ko-KR')}회</strong> 도전</span></div>` : '';
       const description = ongoing ? '진행 중인 도전이 저장되어 있습니다. 이어서 플레이하면 마지막 상태로 복귀하며, 처음부터 시작하면 해당 도전만 포기합니다.' : '빈 전장에 같은 신호가 다시 울린다.';
       const buttons = (ongoing ? actionHtml('resume', '이어서 플레이', true) : '') + actionHtml('new', ongoing ? '처음부터 시작' : stored ? '새 도전 시작' : '게임 시작', !ongoing) + (sessionState.profile.memory.lastResolution ? actionHtml('ledger-open', '지난 결말의 기록 열람') : '');
-      return  modalHtml(`MODULAR ARCHITECTURE · V${VERSION}`, '끝없는 전장의 기록', description, buttons + (stored ? `<div class="menu-secondary">${actionHtml('reset-open', '모든 기록 초기화')}</div>` : ''), summary);
+      return  modalHtml(`MODULAR ARCHITECTURE · V${VERSION}`, '끝없는 전장의 기록', description, buttons + (stored ? `<div class="menu-secondary">${actionHtml('reset-open', '모든 기록 초기화')}</div>` : ''), summary + settingsHtml(sessionState.profile, view.settingsOpen));
     } else if (view.mode === 'loadout') {
       // 시작 무기: 열린 것만 고를 수 있고, 잠긴 것은 여는 조건을 보여 준다.
       const memory=sessionState.profile.memory,open=new Set(unlockedLoadouts(memory)),label=id=>weaponLabel(id,upgrades.find(u=>u.id===id)?.name||id);
@@ -58,7 +59,7 @@ export function createModalContent({ sessionState, view, keystoneOptions, fusion
     } else if (view.mode === 'resetconfirm') {
       return  modalHtml('DATA MANAGEMENT · PERMANENT', '모든 기록을 초기화할까요?', '되돌릴 수 없습니다. 현재 도전, 골드, 영구 강화, 최고 기록, NPC·신호·이상 현상·탐사·작전·유물의 기억, 엔딩 발견 기록을 이 실행 환경에서 전부 삭제합니다. 다른 사이트 데이터는 삭제하지 않습니다.', actionHtml('reset-cancel', '취소', true) + actionHtml('reset-confirm', '모든 기록을 영구 삭제'));
     } else if (view.mode === 'paused') {
-      return  modalHtml('PAUSED', '일시정지', '게임 시간과 전투가 멈췄습니다. 자동 저장 결과는 상단 저장 상태에서 확인할 수 있습니다.', actionHtml('resume', '계속하기', true) + actionHtml('menu', '제목 화면'));
+      return  modalHtml('PAUSED', '일시정지', '게임 시간과 전투가 멈췄습니다. 자동 저장 결과는 상단 저장 상태에서 확인할 수 있습니다.', actionHtml('resume', '계속하기', true) + actionHtml('menu', '제목 화면'), settingsHtml(sessionState.profile, view.settingsOpen));
     } else if (view.mode === 'encounter') {
       const witness = sessionState.profile.memory.witness, wasTaken = witness.taken > 0, wasHeard = witness.heard > 0;
       const deaths = sessionState.profile.memory.deaths, deathLine = deathLines.witness.filter(x => deaths >= x.from).at(-1)?.line.replace('{phase}', sessionState.profile.memory.lastDeathPhase || '이 벌판').replace('{count}', deaths);

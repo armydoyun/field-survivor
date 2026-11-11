@@ -3,6 +3,7 @@ import { W, H } from '../core/config.js';
 import { upgradeFamilies } from '../data/upgrades.js';
 import { hasBranch } from '../growth/build.js';
 import { clamp } from '../core/utils.js';
+import { viewSetting } from '../ui/settings.js';
 import { enemyType } from '../data/enemies.js';
 
 export function createFeedback({ sessionState, platform, primitives, weaponView, cameraView, sfx = null }) {
@@ -53,7 +54,7 @@ export function createFeedback({ sessionState, platform, primitives, weaponView,
     const r=sessionState.run;if(hitOwner!==r){hitOwner=r;damageLabels=new WeakMap();}sound(crit?'crit':'hit');
     const old=damageLabels.get(enemy),color=crit?'#ffe1a0':'#dce7e8';
     if(old&&r.time-old.at<.09&&r.popups.includes(old.label)){old.amount+=amount;old.label.value=String(Math.round(old.amount));if(crit){old.label.color=color;old.label.crit=true;}}
-    else if(r.popups.length<(primitives.visualDetail()?60:28)){const label={x:enemy.x,y:enemy.y-enemy.radius-8,value:String(Math.round(amount)),color,life:.55,crit,hit:true};r.popups.push(label);damageLabels.set(enemy,{at:r.time,amount,label});}
+    else if(viewSetting(sessionState.profile,'numbers')&&r.popups.length<(primitives.visualDetail()?60:28)){const label={x:enemy.x,y:enemy.y-enemy.radius-8,value:String(Math.round(amount)),color,life:.55,crit,hit:true};r.popups.push(label);damageLabels.set(enemy,{at:r.time,amount,label});}
     if(crit&&primitives.visualDetail()){ring(enemy.x,enemy.y,enemy.radius+10,'#ffe1a0',.16,'pop');burst(enemy.x,enemy.y,'#ffe1a0',4);}
     else if(primitives.visualDetail()&&r.waves.length<60)ring(enemy.x,enemy.y,enemy.radius+4,'#eef7f2',.1,'pop');if(r.fx.length<220&&primitives.visualDetail())impact(enemy.x,enemy.y,crit?'#ffe1a0':'#e5f0e7',crit);
   }

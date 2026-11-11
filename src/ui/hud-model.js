@@ -17,6 +17,7 @@ import { upgrades } from '../data/upgrades.js';
 import { fusionRecipes } from '../data/fusions.js';
 import { branches } from '../data/specializations.js';
 import { burstChance } from '../combat/death.js';
+import { viewSetting } from './settings.js';
 import { keystones } from '../data/progression.js';
 
 export function createHudModel({ sessionState, view, statistics, growthMetrics }) {
@@ -94,7 +95,7 @@ export function createHudModel({ sessionState, view, statistics, growthMetrics }
     text['walletGold'] = `${sessionState.profile.gold.toLocaleString('ko-KR')} G`; text['bestTime'] = timeText(sessionState.profile.bestTime); text['bestKills'] = sessionState.profile.bestKills.toLocaleString('ko-KR'); text['runCount'] = sessionState.profile.runs.toLocaleString('ko-KR');
     // 경로 색(NARRATIVE-REDESIGN.md 3.3절): 숫자 없이 아레나 테두리로 기억 축을 느끼게 한다.
     const memory=sessionState.run?routeAxes(sessionState.run).memory:0,route=memory>=4?'preserve-strong':memory>=2?'preserve':memory<=-4?'consume-strong':memory<=-2?'consume':'neutral';
-    const dataset={gameColumn:{route}};
+    const dataset={gameColumn:{route,labels:viewSetting(sessionState.profile,'labels')?'on':'off'}};
     return {text,html,width,hidden,keys,dataset,fusionDisabled,fusionExpanded:String(view.mode==='fusion')};
   }
 

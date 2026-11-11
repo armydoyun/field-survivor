@@ -1,4 +1,5 @@
 import { W, H } from '../core/config.js';
+import { viewSetting } from '../ui/settings.js';
 
 export function createCameraView({ sessionState, view }) {
   const camera = { x: W / 2, y: H / 2, owner: null, pickupAt: 0, shake: 0, shakeX: 0, shakeY: 0 };
@@ -7,7 +8,7 @@ export function createCameraView({ sessionState, view }) {
 
   const reducedMotion = () => !!motionPreference?.matches;
 
-  const cameraKick = power => { if (sessionState.run && !reducedMotion()) camera.shake = Math.max(camera.shake, Math.min(1, power)); };
+  const cameraKick = power => { if (sessionState.run && !reducedMotion() && viewSetting(sessionState.profile, 'shake')) camera.shake = Math.max(camera.shake, Math.min(1, power)); };
 
   function followCamera(dt) {
     if (!sessionState.run) { camera.owner = null; camera.shake = camera.shakeX = camera.shakeY = 0; return; }

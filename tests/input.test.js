@@ -94,3 +94,16 @@ test('privacy input pauses once, clears held keys, saves and restores timing/foc
 test('event binding excludes command routing and key priority, while menu/global input owners remain distinct',()=>{
   const root=new URL('../src/',import.meta.url),read=name=>readFileSync(new URL(name,root),'utf8'),bindings=read('app/events.js'),actions=read('app/actions.js'),input=read('input/keyboard.js');assert.doesNotMatch(bindings,/event\.code|dataset\.action|\b(?:chooseSite|chooseSignal|chooseAnomaly|chooseFinale|meetWitness|meetObjective)\b/);assert.doesNotMatch(input,/from ['"][^'"]*(?:world|combat|growth|core\/state)/);assert.doesNotMatch(actions,/addEventListener|removeEventListener|\b(?:damage|rewardGold|commitUpgrade|commitFusion)\s*\(/);assert.equal(existsSync(new URL('ui/keyboard.js',root)),false);assert.ok(existsSync(new URL('ui/menu-input.js',root)));
 });
+
+test('number keys and Enter skip the settings toggles so the main actions keep their shortcuts', async () => {
+  const { createMenuInput } = await import('../src/ui/menu-input.js');
+  return withBrowser(env => {
+  env.document.activeElement = null;
+  const clicked = [], mk = (id, panel) => ({ id, disabled: false, click: () => clicked.push(id), focus() {}, matches: () => false, closest: sel => (panel && sel.startsWith('.settings-panel') ? {} : null) });
+  const buttons = [mk('set-shake', true), mk('set-effects', true), mk('resume'), mk('menu')];
+  const overlay = { querySelectorAll: () => buttons };
+  const menu = createMenuInput({ view: { mode: 'paused' }, platform: { $: () => overlay }, screen: {}, growthActions: {} });
+  menu.keyboardMenu({ code: 'Digit1', repeat: false }); menu.keyboardMenu({ code: 'Digit2', repeat: false }); menu.keyboardMenu({ code: 'Enter', repeat: false });
+  assert.deepEqual(clicked, ['resume', 'menu', 'resume']);
+  });
+});

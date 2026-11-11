@@ -52,6 +52,7 @@ import { createCombat } from '../combat/runtime.js';
 import { createUpdate } from './update.js';
 import { createLoop } from './loop.js';
 import { createEvents } from './events.js';
+import { toggleView } from '../ui/settings.js';
 import { createEnemyRuntime } from './enemies.js';
 
 export function createGame(sessionState = defaultSession, { createInspector, seedSource, backend, setup } = {}) {
@@ -112,7 +113,8 @@ export function createGame(sessionState = defaultSession, { createInspector, see
   const population = createPopulation({ sessionState, difficulty, enemyRuntime, encounters, feedback, onGuardianSpawned: story.recordGuardianArrival });
   const update = createUpdate({ stoker, inspector, sessionState, view, platform, screen, feedback, statistics, difficulty, story, sites, objectives, journey, enemyRuntime, session, weapons, specializations, fusions, combat, collisions, population, pickups, growthActions, progression, finale, hints });
   const loop = createLoop({ inspector, sessionState, view, update, cameraView, scene, hud, storage, finale });
-  const actions = createActions({ stoker, view, buildGuide, growthActions, session, screen, storage, story, sites, journey, finale, objectives, sfx:{ play:id=>audio.play(id) } });
+  const viewSettings = { toggle: id => { if (toggleView(sessionState.profile, id) === null) return; view.settingsOpen = true; storage.save(); screen.setMode(view.mode); hud.updateHud?.(); } };
+  const actions = createActions({ viewSettings, stoker, view, buildGuide, growthActions, session, screen, storage, story, sites, journey, finale, objectives, sfx:{ play:id=>audio.play(id) } });
   const input = createKeyboardInput({ sessionState, view, platform, shop, buildGuide, menuInput, storage, growthActions, display, actions, session, audio });
   const events = createEvents({ inspector, view, platform, shop, buildGuide, menuInput, storage, display, session, input, actions, audio });
 
