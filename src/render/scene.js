@@ -1,5 +1,6 @@
 import { W, H } from '../core/config.js';
 import { viewSetting } from '../ui/settings.js';
+import { drawWeaponStrip } from './weapon-strip.js';
 import { floorAt, drawFloorMarks, drawPillars, drawDrift, drawStoker, drawGuardianFocus } from './floor.js';
 
 export function createScene({ sessionState, platform, cameraView, worldView, primitives, statistics, weaponView, fusionView, playerView, feedback, enemyView, navigation, hints }) {
@@ -32,6 +33,7 @@ export function createScene({ sessionState, platform, cameraView, worldView, pri
     playerView.drawStatus(s);
     feedback.drawFeedback(detail,cx,cy);
     ctx.globalAlpha = 1;navigation.drawNavigation(cx,cy);ctx.restore();
+    drawWeaponStrip(ctx,sessionState.run,s,statistics);
     hints?.drawHint();
   }
 
