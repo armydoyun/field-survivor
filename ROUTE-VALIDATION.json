@@ -1,5 +1,5 @@
 {
-  "version": "2.6.27",
+  "version": "3.3.2",
   "note": "Seed 42, fixed build, player stationary, no natural spawns, core fight from 30:00, up to 600s game time. Damage is refilled each frame and summed. Mock canvas only; not browser FPS or general balance evidence.",
   "routes": [
     {

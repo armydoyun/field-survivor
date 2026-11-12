@@ -4,6 +4,7 @@ import { writeFileSync } from 'node:fs';
 import { createMockBrowser } from '../tests/mock-browser.js';
 import { createDebugGame } from '../src/debug/create-debug-game.js';
 import { fusionRecipes } from '../src/data/fusions.js';
+import { VERSION } from '../src/core/config.js';
 const rows=[];
 function sample(f,count,before=false){
  const env=createMockBrowser({observers:true}),descriptors=new Map();for(const [key,value]of Object.entries(env)){descriptors.set(key,Object.getOwnPropertyDescriptor(globalThis,key));Object.defineProperty(globalThis,key,{value,writable:true,configurable:true});}
@@ -20,5 +21,5 @@ function sample(f,count,before=false){
 }
 for(const f of fusionRecipes)for(const count of [1,30,80,165])rows.push(sample(f,count));
 const transitions=fusionRecipes.filter(f=>f.base).map(f=>{const before=sample(f,30,true),after=rows.find(r=>r.id===f.id&&r.count===30);return {id:f.id,beforeDamage:before.damage,afterDamage:after.damage,ratio:after.damage/before.damage};});
-const result={version:'2.6.27',note:'Fixed ring at distance180, 5 seconds, no passives, no enemy AI. Warmup first60 frames excluded from CPU samples. Mock canvas only; not browser FPS or general balance evidence.',rows,transitions};
+const result={version:VERSION,note:'Fixed ring at distance180, 5 seconds, no passives, no enemy AI. Warmup first60 frames excluded from CPU samples. Mock canvas only; not browser FPS or general balance evidence.',rows,transitions};
 writeFileSync(new URL('../FUSION-VALIDATION.json',import.meta.url),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({cases:rows.length,maxP95:Math.max(...rows.map(r=>r.p95CpuMs)),upperRatios:transitions.map(t=>({id:t.id,ratio:+t.ratio.toFixed(3)}))},null,2));

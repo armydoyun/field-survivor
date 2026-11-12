@@ -1,5 +1,5 @@
 {
-  "version": "2.6.27",
+  "version": "3.3.2",
   "note": "Bot autoplay with mock DOM/Canvas. Not human play.",
   "runs": [
     {
@@ -22,6 +22,7 @@
           "damageTaken": 0,
           "virtualDeaths": 0,
           "kills": 53,
+          "gold": 68,
           "enemies": 21,
           "weapons": {
             "rift": 1
@@ -46,6 +47,7 @@
           "damageTaken": 0,
           "virtualDeaths": 0,
           "kills": 94,
+          "gold": 140,
           "enemies": 58,
           "weapons": {
             "rift": 3
@@ -73,6 +75,7 @@
           "damageTaken": 42,
           "virtualDeaths": 0,
           "kills": 207,
+          "gold": 425,
           "enemies": 25,
           "weapons": {
             "rift": 5
@@ -102,6 +105,7 @@
           "damageTaken": 63,
           "virtualDeaths": 0,
           "kills": 290,
+          "gold": 605,
           "enemies": 38,
           "weapons": {
             "pulse": 2,
@@ -132,6 +136,7 @@
           "damageTaken": 217,
           "virtualDeaths": 1,
           "kills": 436,
+          "gold": 1116,
           "enemies": 7,
           "weapons": {
             "pulse": 5,
@@ -162,6 +167,7 @@
           "damageTaken": 217,
           "virtualDeaths": 1,
           "kills": 569,
+          "gold": 1504,
           "enemies": 10,
           "weapons": {
             "pulse": 5,
@@ -195,6 +201,7 @@
           "damageTaken": 227,
           "virtualDeaths": 1,
           "kills": 720,
+          "gold": 1954,
           "enemies": 8,
           "weapons": {
             "pulse": 5,
@@ -229,6 +236,7 @@
           "damageTaken": 227,
           "virtualDeaths": 1,
           "kills": 867,
+          "gold": 2363,
           "enemies": 7,
           "weapons": {
             "pulse": 5,
@@ -262,6 +270,7 @@
           "damageTaken": 237,
           "virtualDeaths": 1,
           "kills": 1034,
+          "gold": 2845,
           "enemies": 15,
           "weapons": {
             "pulse": 5,
@@ -299,6 +308,7 @@
           "damageTaken": 237,
           "virtualDeaths": 1,
           "kills": 1175,
+          "gold": 3255,
           "enemies": 23,
           "weapons": {
             "pulse": 5,
@@ -337,6 +347,7 @@
           "damageTaken": 253,
           "virtualDeaths": 1,
           "kills": 1364,
+          "gold": 3830,
           "enemies": 23,
           "weapons": {
             "pulse": 5,
@@ -374,6 +385,7 @@
           "damageTaken": 253,
           "virtualDeaths": 1,
           "kills": 1619,
+          "gold": 5056,
           "enemies": 18,
           "weapons": {
             "pulse": 5,
@@ -413,6 +425,7 @@
           "damageTaken": 267,
           "virtualDeaths": 1,
           "kills": 1828,
+          "gold": 6137,
           "enemies": 22,
           "weapons": {
             "pulse": 5,
@@ -455,6 +468,7 @@
           "damageTaken": 294,
           "virtualDeaths": 1,
           "kills": 2066,
+          "gold": 7010,
           "enemies": 43,
           "weapons": {
             "pulse": 5,
@@ -502,6 +516,7 @@
           "damageTaken": 324,
           "virtualDeaths": 1,
           "kills": 2303,
+          "gold": 7887,
           "enemies": 55,
           "weapons": {
             "pulse": 5,
@@ -549,6 +564,7 @@
           "damageTaken": 371,
           "virtualDeaths": 1,
           "kills": 2555,
+          "gold": 8797,
           "enemies": 65,
           "weapons": {
             "pulse": 5,
@@ -597,6 +613,7 @@
           "damageTaken": 422,
           "virtualDeaths": 1,
           "kills": 2802,
+          "gold": 9637,
           "enemies": 124,
           "weapons": {
             "pulse": 5,
@@ -648,6 +665,7 @@
           "damageTaken": 546,
           "virtualDeaths": 2,
           "kills": 3072,
+          "gold": 10945,
           "enemies": 85,
           "weapons": {
             "pulse": 5,
@@ -697,6 +715,7 @@
           "damageTaken": 593,
           "virtualDeaths": 2,
           "kills": 3337,
+          "gold": 11960,
           "enemies": 89,
           "weapons": {
             "pulse": 5,
@@ -745,6 +764,7 @@
           "damageTaken": 693,
           "virtualDeaths": 2,
           "kills": 3602,
+          "gold": 12901,
           "enemies": 99,
           "weapons": {
             "pulse": 5,
@@ -798,6 +818,7 @@
           "damageTaken": 795,
           "virtualDeaths": 2,
           "kills": 3851,
+          "gold": 13781,
           "enemies": 103,
           "weapons": {
             "pulse": 5,
@@ -853,6 +874,7 @@
           "damageTaken": 985,
           "virtualDeaths": 3,
           "kills": 4201,
+          "gold": 15054,
           "enemies": 99,
           "weapons": {
             "pulse": 5,
@@ -907,6 +929,7 @@
           "damageTaken": 1144,
           "virtualDeaths": 3,
           "kills": 4569,
+          "gold": 16347,
           "enemies": 145,
           "weapons": {
             "pulse": 5,
@@ -961,6 +984,7 @@
           "damageTaken": 1287,
           "virtualDeaths": 4,
           "kills": 4907,
+          "gold": 17691,
           "enemies": 86,
           "weapons": {
             "pulse": 5,
@@ -1015,6 +1039,7 @@
           "damageTaken": 1382,
           "virtualDeaths": 4,
           "kills": 5209,
+          "gold": 18854,
           "enemies": 104,
           "weapons": {
             "pulse": 5,
@@ -1069,6 +1094,7 @@
           "damageTaken": 1540,
           "virtualDeaths": 4,
           "kills": 5588,
+          "gold": 20368,
           "enemies": 165,
           "weapons": {
             "pulse": 5,
@@ -1122,6 +1148,7 @@
           "damageTaken": 1691,
           "virtualDeaths": 5,
           "kills": 5924,
+          "gold": 22182,
           "enemies": 105,
           "weapons": {
             "pulse": 5,
@@ -1173,6 +1200,7 @@
           "damageTaken": 1906,
           "virtualDeaths": 5,
           "kills": 6306,
+          "gold": 23616,
           "enemies": 119,
           "weapons": {
             "pulse": 5,
@@ -1227,6 +1255,7 @@
           "damageTaken": 1998,
           "virtualDeaths": 5,
           "kills": 6726,
+          "gold": 25268,
           "enemies": 122,
           "weapons": {
             "pulse": 5,
@@ -1281,6 +1310,7 @@
           "damageTaken": 2196,
           "virtualDeaths": 6,
           "kills": 7157,
+          "gold": 26945,
           "enemies": 3,
           "weapons": {
             "pulse": 5,
@@ -1317,6 +1347,7 @@
           "damageTaken": 2247,
           "virtualDeaths": 6,
           "kills": 7159,
+          "gold": 26957,
           "enemies": 1,
           "weapons": {
             "pulse": 5,
@@ -2179,6 +2210,7 @@
           "spawn": 150.1,
           "hp": 1013,
           "level": 6,
+          "left": 0.88,
           "yield": 225.5
         },
         {
@@ -2186,6 +2218,7 @@
           "spawn": 930.1,
           "hp": 5205,
           "level": 33,
+          "left": 0.78,
           "yield": 1020.2
         },
         {
@@ -2193,6 +2226,7 @@
           "spawn": 1650.3,
           "hp": 16070,
           "level": 69,
+          "left": 0.7,
           "yield": 1750.2
         }
       ],
@@ -2228,6 +2262,7 @@
           "damageTaken": 10,
           "virtualDeaths": 0,
           "kills": 60,
+          "gold": 76,
           "enemies": 14,
           "weapons": {
             "chain": 2
@@ -2252,6 +2287,7 @@
           "damageTaken": 10,
           "virtualDeaths": 0,
           "kills": 118,
+          "gold": 172,
           "enemies": 32,
           "weapons": {
             "chain": 2
@@ -2278,6 +2314,7 @@
           "damageTaken": 54,
           "virtualDeaths": 0,
           "kills": 216,
+          "gold": 457,
           "enemies": 16,
           "weapons": {
             "chain": 4
@@ -2304,6 +2341,7 @@
           "damageTaken": 54,
           "virtualDeaths": 0,
           "kills": 289,
+          "gold": 594,
           "enemies": 29,
           "weapons": {
             "chain": 4
@@ -2332,6 +2370,7 @@
           "damageTaken": 54,
           "virtualDeaths": 0,
           "kills": 397,
+          "gold": 964,
           "enemies": 17,
           "weapons": {
             "rift": 4,
@@ -2362,6 +2401,7 @@
           "damageTaken": 65,
           "virtualDeaths": 0,
           "kills": 534,
+          "gold": 1329,
           "enemies": 11,
           "weapons": {
             "rift": 5,
@@ -2394,6 +2434,7 @@
           "damageTaken": 65,
           "virtualDeaths": 0,
           "kills": 686,
+          "gold": 1776,
           "enemies": 7,
           "weapons": {
             "rift": 5,
@@ -2428,6 +2469,7 @@
           "damageTaken": 65,
           "virtualDeaths": 0,
           "kills": 819,
+          "gold": 2152,
           "enemies": 6,
           "weapons": {
             "rift": 5,
@@ -2459,6 +2501,7 @@
           "damageTaken": 75,
           "virtualDeaths": 0,
           "kills": 967,
+          "gold": 2586,
           "enemies": 9,
           "weapons": {
             "rift": 5,
@@ -2494,6 +2537,7 @@
           "damageTaken": 75,
           "virtualDeaths": 0,
           "kills": 1123,
+          "gold": 3080,
           "enemies": 15,
           "weapons": {
             "rift": 5,
@@ -2531,6 +2575,7 @@
           "damageTaken": 100,
           "virtualDeaths": 0,
           "kills": 1296,
+          "gold": 3645,
           "enemies": 14,
           "weapons": {
             "rift": 5,
@@ -2569,6 +2614,7 @@
           "damageTaken": 113,
           "virtualDeaths": 0,
           "kills": 1574,
+          "gold": 4896,
           "enemies": 12,
           "weapons": {
             "rift": 5,
@@ -2609,6 +2655,7 @@
           "damageTaken": 141,
           "virtualDeaths": 0,
           "kills": 1773,
+          "gold": 5977,
           "enemies": 14,
           "weapons": {
             "rift": 5,
@@ -2650,6 +2697,7 @@
           "damageTaken": 173,
           "virtualDeaths": 0,
           "kills": 2015,
+          "gold": 6924,
           "enemies": 23,
           "weapons": {
             "rift": 5,
@@ -2693,6 +2741,7 @@
           "damageTaken": 290,
           "virtualDeaths": 1,
           "kills": 2315,
+          "gold": 8113,
           "enemies": 30,
           "weapons": {
             "rift": 5,
@@ -2737,6 +2786,7 @@
           "damageTaken": 388,
           "virtualDeaths": 1,
           "kills": 2617,
+          "gold": 9233,
           "enemies": 46,
           "weapons": {
             "rift": 5,
@@ -2784,6 +2834,7 @@
           "damageTaken": 438,
           "virtualDeaths": 1,
           "kills": 2945,
+          "gold": 10573,
           "enemies": 60,
           "weapons": {
             "rift": 5,
@@ -2834,6 +2885,7 @@
           "damageTaken": 528,
           "virtualDeaths": 2,
           "kills": 3339,
+          "gold": 12602,
           "enemies": 48,
           "weapons": {
             "rift": 5,
@@ -2880,6 +2932,7 @@
           "damageTaken": 619,
           "virtualDeaths": 2,
           "kills": 3674,
+          "gold": 13985,
           "enemies": 70,
           "weapons": {
             "rift": 5,
@@ -2929,6 +2982,7 @@
           "damageTaken": 684,
           "virtualDeaths": 2,
           "kills": 4076,
+          "gold": 15566,
           "enemies": 60,
           "weapons": {
             "rift": 5,
@@ -2979,6 +3033,7 @@
           "damageTaken": 863,
           "virtualDeaths": 3,
           "kills": 4553,
+          "gold": 17443,
           "enemies": 84,
           "weapons": {
             "rift": 5,
@@ -3029,6 +3084,7 @@
           "damageTaken": 1012,
           "virtualDeaths": 4,
           "kills": 5034,
+          "gold": 19410,
           "enemies": 86,
           "weapons": {
             "rift": 5,
@@ -3079,6 +3135,7 @@
           "damageTaken": 1141,
           "virtualDeaths": 4,
           "kills": 5547,
+          "gold": 21621,
           "enemies": 89,
           "weapons": {
             "rift": 5,
@@ -3130,6 +3187,7 @@
           "damageTaken": 1329,
           "virtualDeaths": 5,
           "kills": 6118,
+          "gold": 24194,
           "enemies": 97,
           "weapons": {
             "rift": 5,
@@ -3179,6 +3237,7 @@
           "damageTaken": 1504,
           "virtualDeaths": 5,
           "kills": 6701,
+          "gold": 26719,
           "enemies": 110,
           "weapons": {
             "rift": 5,
@@ -3231,6 +3290,7 @@
           "damageTaken": 1570,
           "virtualDeaths": 5,
           "kills": 7256,
+          "gold": 29010,
           "enemies": 87,
           "weapons": {
             "rift": 5,
@@ -3284,6 +3344,7 @@
           "damageTaken": 1829,
           "virtualDeaths": 6,
           "kills": 7889,
+          "gold": 31845,
           "enemies": 145,
           "weapons": {
             "rift": 5,
@@ -3337,6 +3398,7 @@
           "damageTaken": 1990,
           "virtualDeaths": 7,
           "kills": 8402,
+          "gold": 33988,
           "enemies": 123,
           "weapons": {
             "rift": 5,
@@ -3391,6 +3453,7 @@
           "damageTaken": 2192,
           "virtualDeaths": 7,
           "kills": 8998,
+          "gold": 36685,
           "enemies": 92,
           "weapons": {
             "rift": 5,
@@ -3445,6 +3508,7 @@
           "damageTaken": 2352,
           "virtualDeaths": 8,
           "kills": 9661,
+          "gold": 39779,
           "enemies": 3,
           "weapons": {
             "rift": 5,
@@ -3482,6 +3546,7 @@
           "damageTaken": 2456,
           "virtualDeaths": 8,
           "kills": 9663,
+          "gold": 39791,
           "enemies": 1,
           "weapons": {
             "rift": 5,
@@ -4345,6 +4410,7 @@
           "spawn": 150.2,
           "hp": 1013,
           "level": 5,
+          "left": 0.95,
           "yield": 225
         },
         {
@@ -4352,6 +4418,7 @@
           "spawn": 930.2,
           "hp": 5117,
           "level": 28,
+          "left": 0.66,
           "yield": 1020.3
         }
       ],
@@ -4387,6 +4454,7 @@
           "damageTaken": 0,
           "virtualDeaths": 0,
           "kills": 53,
+          "gold": 72,
           "enemies": 20,
           "weapons": {},
           "branches": {},
@@ -4409,6 +4477,7 @@
           "damageTaken": 0,
           "virtualDeaths": 0,
           "kills": 103,
+          "gold": 150,
           "enemies": 49,
           "weapons": {
             "pulse": 3
@@ -4437,6 +4506,7 @@
           "damageTaken": 24,
           "virtualDeaths": 0,
           "kills": 149,
+          "gold": 344,
           "enemies": 29,
           "weapons": {
             "pulse": 4
@@ -4465,6 +4535,7 @@
           "damageTaken": 24,
           "virtualDeaths": 0,
           "kills": 201,
+          "gold": 450,
           "enemies": 33,
           "weapons": {
             "pulse": 4,
@@ -4496,6 +4567,7 @@
           "damageTaken": 306,
           "virtualDeaths": 2,
           "kills": 329,
+          "gold": 896,
           "enemies": 35,
           "weapons": {
             "pulse": 4,
@@ -4527,6 +4599,7 @@
           "damageTaken": 314,
           "virtualDeaths": 2,
           "kills": 471,
+          "gold": 1307,
           "enemies": 13,
           "weapons": {
             "pulse": 5,
@@ -4559,6 +4632,7 @@
           "damageTaken": 325,
           "virtualDeaths": 2,
           "kills": 617,
+          "gold": 1740,
           "enemies": 6,
           "weapons": {
             "pulse": 5,
@@ -4591,6 +4665,7 @@
           "damageTaken": 325,
           "virtualDeaths": 2,
           "kills": 756,
+          "gold": 2116,
           "enemies": 13,
           "weapons": {
             "pulse": 5,
@@ -4623,6 +4698,7 @@
           "damageTaken": 325,
           "virtualDeaths": 2,
           "kills": 909,
+          "gold": 2540,
           "enemies": 21,
           "weapons": {
             "pulse": 5,
@@ -4661,6 +4737,7 @@
           "damageTaken": 349,
           "virtualDeaths": 2,
           "kills": 1055,
+          "gold": 2973,
           "enemies": 32,
           "weapons": {
             "pulse": 5,
@@ -4702,6 +4779,7 @@
           "damageTaken": 359,
           "virtualDeaths": 2,
           "kills": 1261,
+          "gold": 3686,
           "enemies": 31,
           "weapons": {
             "pulse": 5,
@@ -4743,6 +4821,7 @@
           "damageTaken": 359,
           "virtualDeaths": 2,
           "kills": 1511,
+          "gold": 4787,
           "enemies": 23,
           "weapons": {
             "pulse": 5,
@@ -4786,6 +4865,7 @@
           "damageTaken": 414,
           "virtualDeaths": 2,
           "kills": 1733,
+          "gold": 5978,
           "enemies": 37,
           "weapons": {
             "pulse": 5,
@@ -4832,6 +4912,7 @@
           "damageTaken": 455,
           "virtualDeaths": 2,
           "kills": 1964,
+          "gold": 6893,
           "enemies": 50,
           "weapons": {
             "pulse": 5,
@@ -4879,6 +4960,7 @@
           "damageTaken": 493,
           "virtualDeaths": 2,
           "kills": 2220,
+          "gold": 7812,
           "enemies": 56,
           "weapons": {
             "pulse": 5,
@@ -4928,6 +5010,7 @@
           "damageTaken": 522,
           "virtualDeaths": 2,
           "kills": 2491,
+          "gold": 8771,
           "enemies": 61,
           "weapons": {
             "pulse": 5,
@@ -4980,6 +5063,7 @@
           "damageTaken": 585,
           "virtualDeaths": 3,
           "kills": 2759,
+          "gold": 9753,
           "enemies": 79,
           "weapons": {
             "pulse": 5,
@@ -5033,6 +5117,7 @@
           "damageTaken": 739,
           "virtualDeaths": 3,
           "kills": 3033,
+          "gold": 11136,
           "enemies": 102,
           "weapons": {
             "pulse": 5,
@@ -5088,6 +5173,7 @@
           "damageTaken": 840,
           "virtualDeaths": 3,
           "kills": 3362,
+          "gold": 12394,
           "enemies": 89,
           "weapons": {
             "pulse": 5,
@@ -5141,6 +5227,7 @@
           "damageTaken": 927,
           "virtualDeaths": 3,
           "kills": 3673,
+          "gold": 13577,
           "enemies": 94,
           "weapons": {
             "pulse": 5,
@@ -5195,6 +5282,7 @@
           "damageTaken": 1167,
           "virtualDeaths": 4,
           "kills": 4003,
+          "gold": 14864,
           "enemies": 125,
           "weapons": {
             "pulse": 5,
@@ -5250,6 +5338,7 @@
           "damageTaken": 1247,
           "virtualDeaths": 4,
           "kills": 4411,
+          "gold": 16279,
           "enemies": 112,
           "weapons": {
             "pulse": 5,
@@ -5303,6 +5392,7 @@
           "damageTaken": 1449,
           "virtualDeaths": 5,
           "kills": 4753,
+          "gold": 17614,
           "enemies": 114,
           "weapons": {
             "pulse": 5,
@@ -5355,6 +5445,7 @@
           "damageTaken": 1724,
           "virtualDeaths": 6,
           "kills": 5121,
+          "gold": 18985,
           "enemies": 146,
           "weapons": {
             "pulse": 5,
@@ -5410,6 +5501,7 @@
           "damageTaken": 1907,
           "virtualDeaths": 6,
           "kills": 5442,
+          "gold": 20223,
           "enemies": 101,
           "weapons": {
             "pulse": 5,
@@ -5465,6 +5557,7 @@
           "damageTaken": 2100,
           "virtualDeaths": 7,
           "kills": 5808,
+          "gold": 21657,
           "enemies": 163,
           "weapons": {
             "pulse": 5,
@@ -5517,6 +5610,7 @@
           "damageTaken": 2240,
           "virtualDeaths": 7,
           "kills": 6298,
+          "gold": 24038,
           "enemies": 160,
           "weapons": {
             "pulse": 5,
@@ -5570,6 +5664,7 @@
           "damageTaken": 2376,
           "virtualDeaths": 7,
           "kills": 6756,
+          "gold": 25977,
           "enemies": 116,
           "weapons": {
             "pulse": 5,
@@ -5624,6 +5719,7 @@
           "damageTaken": 2532,
           "virtualDeaths": 7,
           "kills": 7251,
+          "gold": 28118,
           "enemies": 165,
           "weapons": {
             "pulse": 5,
@@ -5681,6 +5777,7 @@
           "damageTaken": 2667,
           "virtualDeaths": 7,
           "kills": 7703,
+          "gold": 30258,
           "enemies": 3,
           "weapons": {
             "pulse": 5,
@@ -5719,6 +5816,7 @@
           "damageTaken": 2725,
           "virtualDeaths": 7,
           "kills": 7705,
+          "gold": 30270,
           "enemies": 1,
           "weapons": {
             "pulse": 5,
@@ -6582,6 +6680,7 @@
           "spawn": 150.2,
           "hp": 1013,
           "level": 5,
+          "left": 0.86,
           "yield": 225.1
         },
         {
@@ -6589,6 +6688,7 @@
           "spawn": 690.2,
           "hp": 3153,
           "level": 22,
+          "left": 0.55,
           "yield": 780.2
         },
         {
@@ -6596,6 +6696,7 @@
           "spawn": 1410.3,
           "hp": 11194,
           "level": 61,
+          "left": 0.87,
           "yield": 1511.1
         }
       ],
@@ -6631,6 +6732,7 @@
           "damageTaken": 0,
           "virtualDeaths": 0,
           "kills": 53,
+          "gold": 168,
           "enemies": 21,
           "weapons": {
             "rift": 1
@@ -6655,6 +6757,7 @@
           "damageTaken": 0,
           "virtualDeaths": 0,
           "kills": 103,
+          "gold": 405,
           "enemies": 44,
           "weapons": {
             "rift": 2
@@ -6680,6 +6783,7 @@
           "damageTaken": 31,
           "virtualDeaths": 0,
           "kills": 169,
+          "gold": 751,
           "enemies": 64,
           "weapons": {
             "pulse": 2,
@@ -6707,6 +6811,7 @@
           "damageTaken": 31,
           "virtualDeaths": 0,
           "kills": 217,
+          "gold": 986,
           "enemies": 97,
           "weapons": {
             "pulse": 3,
@@ -6737,6 +6842,7 @@
           "damageTaken": 296,
           "virtualDeaths": 3,
           "kills": 415,
+          "gold": 1556,
           "enemies": 15,
           "weapons": {
             "pulse": 5,
@@ -6768,6 +6874,7 @@
           "damageTaken": 296,
           "virtualDeaths": 3,
           "kills": 560,
+          "gold": 1972,
           "enemies": 11,
           "weapons": {
             "pulse": 5,
@@ -6800,6 +6907,7 @@
           "damageTaken": 321,
           "virtualDeaths": 3,
           "kills": 730,
+          "gold": 2521,
           "enemies": 4,
           "weapons": {
             "pulse": 5,
@@ -6830,6 +6938,7 @@
           "damageTaken": 321,
           "virtualDeaths": 3,
           "kills": 865,
+          "gold": 3015,
           "enemies": 8,
           "weapons": {
             "pulse": 5,
@@ -6862,6 +6971,7 @@
           "damageTaken": 321,
           "virtualDeaths": 3,
           "kills": 1019,
+          "gold": 3460,
           "enemies": 9,
           "weapons": {
             "pulse": 5,
@@ -6897,6 +7007,7 @@
           "damageTaken": 321,
           "virtualDeaths": 3,
           "kills": 1192,
+          "gold": 4053,
           "enemies": 14,
           "weapons": {
             "pulse": 5,
@@ -6933,6 +7044,7 @@
           "damageTaken": 321,
           "virtualDeaths": 3,
           "kills": 1352,
+          "gold": 4623,
           "enemies": 23,
           "weapons": {
             "pulse": 5,
@@ -6971,6 +7083,7 @@
           "damageTaken": 321,
           "virtualDeaths": 3,
           "kills": 1614,
+          "gold": 5797,
           "enemies": 7,
           "weapons": {
             "pulse": 5,
@@ -7009,6 +7122,7 @@
           "damageTaken": 321,
           "virtualDeaths": 3,
           "kills": 1823,
+          "gold": 6859,
           "enemies": 7,
           "weapons": {
             "pulse": 5,
@@ -7044,6 +7158,7 @@
           "damageTaken": 321,
           "virtualDeaths": 3,
           "kills": 2080,
+          "gold": 7850,
           "enemies": 8,
           "weapons": {
             "pulse": 5,
@@ -7083,6 +7198,7 @@
           "damageTaken": 336,
           "virtualDeaths": 3,
           "kills": 2349,
+          "gold": 9226,
           "enemies": 23,
           "weapons": {
             "pulse": 5,
@@ -7125,6 +7241,7 @@
           "damageTaken": 366,
           "virtualDeaths": 3,
           "kills": 2645,
+          "gold": 10483,
           "enemies": 47,
           "weapons": {
             "pulse": 5,
@@ -7171,6 +7288,7 @@
           "damageTaken": 426,
           "virtualDeaths": 3,
           "kills": 3073,
+          "gold": 12402,
           "enemies": 51,
           "weapons": {
             "pulse": 5,
@@ -7220,6 +7338,7 @@
           "damageTaken": 486,
           "virtualDeaths": 4,
           "kills": 3451,
+          "gold": 14374,
           "enemies": 53,
           "weapons": {
             "pulse": 5,
@@ -7269,6 +7388,7 @@
           "damageTaken": 547,
           "virtualDeaths": 4,
           "kills": 3879,
+          "gold": 16290,
           "enemies": 50,
           "weapons": {
             "pulse": 5,
@@ -7316,6 +7436,7 @@
           "damageTaken": 637,
           "virtualDeaths": 4,
           "kills": 4305,
+          "gold": 18142,
           "enemies": 100,
           "weapons": {
             "pulse": 5,
@@ -7367,6 +7488,7 @@
           "damageTaken": 637,
           "virtualDeaths": 4,
           "kills": 4743,
+          "gold": 19919,
           "enemies": 91,
           "weapons": {
             "pulse": 5,
@@ -7418,6 +7540,7 @@
           "damageTaken": 808,
           "virtualDeaths": 4,
           "kills": 5259,
+          "gold": 22105,
           "enemies": 107,
           "weapons": {
             "pulse": 5,
@@ -7468,6 +7591,7 @@
           "damageTaken": 874,
           "virtualDeaths": 5,
           "kills": 5792,
+          "gold": 24408,
           "enemies": 134,
           "weapons": {
             "pulse": 5,
@@ -7518,6 +7642,7 @@
           "damageTaken": 1003,
           "virtualDeaths": 5,
           "kills": 6401,
+          "gold": 27034,
           "enemies": 143,
           "weapons": {
             "pulse": 5,
@@ -7569,6 +7694,7 @@
           "damageTaken": 1070,
           "virtualDeaths": 5,
           "kills": 6954,
+          "gold": 29348,
           "enemies": 146,
           "weapons": {
             "pulse": 5,
@@ -7619,6 +7745,7 @@
           "damageTaken": 1164,
           "virtualDeaths": 5,
           "kills": 7389,
+          "gold": 31177,
           "enemies": 113,
           "weapons": {
             "pulse": 5,
@@ -7670,6 +7797,7 @@
           "damageTaken": 1352,
           "virtualDeaths": 6,
           "kills": 8084,
+          "gold": 34109,
           "enemies": 160,
           "weapons": {
             "pulse": 5,
@@ -7721,6 +7849,7 @@
           "damageTaken": 1446,
           "virtualDeaths": 6,
           "kills": 8686,
+          "gold": 37121,
           "enemies": 153,
           "weapons": {
             "pulse": 5,
@@ -7774,6 +7903,7 @@
           "damageTaken": 1514,
           "virtualDeaths": 6,
           "kills": 9238,
+          "gold": 39890,
           "enemies": 106,
           "weapons": {
             "pulse": 5,
@@ -7829,6 +7959,7 @@
           "damageTaken": 1772,
           "virtualDeaths": 7,
           "kills": 10023,
+          "gold": 43779,
           "enemies": 3,
           "weapons": {
             "pulse": 5,
@@ -7865,6 +7996,7 @@
           "damageTaken": 1798,
           "virtualDeaths": 7,
           "kills": 10025,
+          "gold": 43791,
           "enemies": 1,
           "weapons": {
             "pulse": 5,
@@ -8725,6 +8857,7 @@
           "spawn": 150.2,
           "hp": 1013,
           "level": 5,
+          "left": 0.92,
           "yield": 225
         },
         {
@@ -8732,6 +8865,7 @@
           "spawn": 690.1,
           "hp": 3157,
           "level": 21,
+          "left": 0,
           "yield": 715.2
         },
         {
@@ -8739,6 +8873,7 @@
           "spawn": 1410.1,
           "hp": 11400,
           "level": 61,
+          "left": 0.72,
           "yield": 1510.2
         }
       ],
@@ -8774,6 +8909,7 @@
           "damageTaken": 10,
           "virtualDeaths": 0,
           "kills": 60,
+          "gold": 176,
           "enemies": 14,
           "weapons": {
             "chain": 2
@@ -8798,6 +8934,7 @@
           "damageTaken": 21,
           "virtualDeaths": 0,
           "kills": 137,
+          "gold": 440,
           "enemies": 13,
           "weapons": {
             "chain": 3
@@ -8824,6 +8961,7 @@
           "damageTaken": 41,
           "virtualDeaths": 0,
           "kills": 215,
+          "gold": 820,
           "enemies": 25,
           "weapons": {
             "chain": 3,
@@ -8854,6 +8992,7 @@
           "damageTaken": 41,
           "virtualDeaths": 0,
           "kills": 307,
+          "gold": 1130,
           "enemies": 26,
           "weapons": {
             "chain": 3,
@@ -8884,6 +9023,7 @@
           "damageTaken": 74,
           "virtualDeaths": 0,
           "kills": 423,
+          "gold": 1540,
           "enemies": 23,
           "weapons": {
             "chain": 4,
@@ -8916,6 +9056,7 @@
           "damageTaken": 85,
           "virtualDeaths": 0,
           "kills": 519,
+          "gold": 1779,
           "enemies": 39,
           "weapons": {
             "chain": 4,
@@ -8949,6 +9090,7 @@
           "damageTaken": 118,
           "virtualDeaths": 0,
           "kills": 644,
+          "gold": 2124,
           "enemies": 59,
           "weapons": {
             "chain": 5,
@@ -8983,6 +9125,7 @@
           "damageTaken": 149,
           "virtualDeaths": 1,
           "kills": 779,
+          "gold": 2486,
           "enemies": 60,
           "weapons": {
             "chain": 5,
@@ -9020,6 +9163,7 @@
           "damageTaken": 149,
           "virtualDeaths": 1,
           "kills": 923,
+          "gold": 3052,
           "enemies": 70,
           "weapons": {
             "chain": 5,
@@ -9058,6 +9202,7 @@
           "damageTaken": 161,
           "virtualDeaths": 1,
           "kills": 1032,
+          "gold": 3344,
           "enemies": 99,
           "weapons": {
             "chain": 5,
@@ -9098,6 +9243,7 @@
           "damageTaken": 161,
           "virtualDeaths": 1,
           "kills": 1214,
+          "gold": 3781,
           "enemies": 42,
           "weapons": {
             "chain": 5,
@@ -9138,6 +9284,7 @@
           "damageTaken": 175,
           "virtualDeaths": 1,
           "kills": 1485,
+          "gold": 4903,
           "enemies": 26,
           "weapons": {
             "chain": 5,
@@ -9179,6 +9326,7 @@
           "damageTaken": 175,
           "virtualDeaths": 1,
           "kills": 1716,
+          "gold": 6078,
           "enemies": 17,
           "weapons": {
             "chain": 5,
@@ -9219,6 +9367,7 @@
           "damageTaken": 215,
           "virtualDeaths": 1,
           "kills": 1969,
+          "gold": 7079,
           "enemies": 18,
           "weapons": {
             "chain": 5,
@@ -9260,6 +9409,7 @@
           "damageTaken": 226,
           "virtualDeaths": 1,
           "kills": 2230,
+          "gold": 8120,
           "enemies": 47,
           "weapons": {
             "chain": 5,
@@ -9305,6 +9455,7 @@
           "damageTaken": 281,
           "virtualDeaths": 2,
           "kills": 2518,
+          "gold": 9239,
           "enemies": 57,
           "weapons": {
             "chain": 5,
@@ -9355,6 +9506,7 @@
           "damageTaken": 398,
           "virtualDeaths": 3,
           "kills": 2959,
+          "gold": 11110,
           "enemies": 39,
           "weapons": {
             "pulse": 2,
@@ -9402,6 +9554,7 @@
           "damageTaken": 490,
           "virtualDeaths": 3,
           "kills": 3319,
+          "gold": 12926,
           "enemies": 67,
           "weapons": {
             "pulse": 5,
@@ -9454,6 +9607,7 @@
           "damageTaken": 668,
           "virtualDeaths": 4,
           "kills": 3778,
+          "gold": 14910,
           "enemies": 76,
           "weapons": {
             "pulse": 5,
@@ -9506,6 +9660,7 @@
           "damageTaken": 716,
           "virtualDeaths": 5,
           "kills": 4132,
+          "gold": 16500,
           "enemies": 101,
           "weapons": {
             "pulse": 5,
@@ -9561,6 +9716,7 @@
           "damageTaken": 842,
           "virtualDeaths": 5,
           "kills": 4564,
+          "gold": 18244,
           "enemies": 104,
           "weapons": {
             "pulse": 5,
@@ -9617,6 +9773,7 @@
           "damageTaken": 971,
           "virtualDeaths": 6,
           "kills": 5045,
+          "gold": 20243,
           "enemies": 129,
           "weapons": {
             "pulse": 5,
@@ -9674,6 +9831,7 @@
           "damageTaken": 1086,
           "virtualDeaths": 7,
           "kills": 5725,
+          "gold": 23225,
           "enemies": 106,
           "weapons": {
             "pulse": 5,
@@ -9728,6 +9886,7 @@
           "damageTaken": 1244,
           "virtualDeaths": 8,
           "kills": 6317,
+          "gold": 25782,
           "enemies": 102,
           "weapons": {
             "pulse": 5,
@@ -9785,6 +9944,7 @@
           "damageTaken": 1508,
           "virtualDeaths": 9,
           "kills": 7032,
+          "gold": 29208,
           "enemies": 89,
           "weapons": {
             "pulse": 5,
@@ -9841,6 +10001,7 @@
           "damageTaken": 1721,
           "virtualDeaths": 11,
           "kills": 7793,
+          "gold": 32857,
           "enemies": 109,
           "weapons": {
             "pulse": 5,
@@ -9894,6 +10055,7 @@
           "damageTaken": 1893,
           "virtualDeaths": 12,
           "kills": 8731,
+          "gold": 38034,
           "enemies": 80,
           "weapons": {
             "pulse": 5,
@@ -9950,6 +10112,7 @@
           "damageTaken": 2062,
           "virtualDeaths": 12,
           "kills": 9561,
+          "gold": 42157,
           "enemies": 75,
           "weapons": {
             "pulse": 5,
@@ -10006,6 +10169,7 @@
           "damageTaken": 2275,
           "virtualDeaths": 13,
           "kills": 10410,
+          "gold": 46570,
           "enemies": 79,
           "weapons": {
             "pulse": 5,
@@ -10061,6 +10225,7 @@
           "damageTaken": 2424,
           "virtualDeaths": 14,
           "kills": 11397,
+          "gold": 51775,
           "enemies": 3,
           "weapons": {
             "pulse": 5,
@@ -10099,6 +10264,7 @@
           "damageTaken": 2540,
           "virtualDeaths": 14,
           "kills": 11399,
+          "gold": 51787,
           "enemies": 1,
           "weapons": {
             "pulse": 5,
@@ -10962,6 +11128,7 @@
           "spawn": 150.2,
           "hp": 1013,
           "level": 5,
+          "left": 0.65,
           "yield": 225.2
         },
         {
@@ -10969,6 +11136,7 @@
           "spawn": 930.1,
           "hp": 5351,
           "level": 26,
+          "left": 0.53,
           "yield": 1020.7
         },
         {
@@ -10976,6 +11144,7 @@
           "spawn": 1650.1,
           "hp": 16348,
           "level": 79,
+          "left": 0,
           "yield": 1713.5
         }
       ],
@@ -11011,6 +11180,7 @@
           "damageTaken": 0,
           "virtualDeaths": 0,
           "kills": 53,
+          "gold": 172,
           "enemies": 20,
           "weapons": {},
           "branches": {},
@@ -11033,6 +11203,7 @@
           "damageTaken": 11,
           "virtualDeaths": 0,
           "kills": 108,
+          "gold": 412,
           "enemies": 44,
           "weapons": {
             "pulse": 3
@@ -11061,6 +11232,7 @@
           "damageTaken": 31,
           "virtualDeaths": 0,
           "kills": 159,
+          "gold": 732,
           "enemies": 82,
           "weapons": {
             "pulse": 5,
@@ -11091,6 +11263,7 @@
           "damageTaken": 31,
           "virtualDeaths": 0,
           "kills": 215,
+          "gold": 985,
           "enemies": 30,
           "weapons": {
             "pulse": 5,
@@ -11121,6 +11294,7 @@
           "damageTaken": 294,
           "virtualDeaths": 3,
           "kills": 321,
+          "gold": 1392,
           "enemies": 39,
           "weapons": {
             "pulse": 5,
@@ -11153,6 +11327,7 @@
           "damageTaken": 294,
           "virtualDeaths": 3,
           "kills": 467,
+          "gold": 1808,
           "enemies": 12,
           "weapons": {
             "pulse": 5,
@@ -11187,6 +11362,7 @@
           "damageTaken": 319,
           "virtualDeaths": 3,
           "kills": 624,
+          "gold": 2296,
           "enemies": 13,
           "weapons": {
             "pulse": 5,
@@ -11220,6 +11396,7 @@
           "damageTaken": 319,
           "virtualDeaths": 3,
           "kills": 770,
+          "gold": 2836,
           "enemies": 7,
           "weapons": {
             "pulse": 5,
@@ -11254,6 +11431,7 @@
           "damageTaken": 330,
           "virtualDeaths": 3,
           "kills": 912,
+          "gold": 3305,
           "enemies": 13,
           "weapons": {
             "pulse": 5,
@@ -11290,6 +11468,7 @@
           "damageTaken": 330,
           "virtualDeaths": 3,
           "kills": 1086,
+          "gold": 3821,
           "enemies": 13,
           "weapons": {
             "pulse": 5,
@@ -11327,6 +11506,7 @@
           "damageTaken": 330,
           "virtualDeaths": 3,
           "kills": 1294,
+          "gold": 4490,
           "enemies": 24,
           "weapons": {
             "pulse": 5,
@@ -11369,6 +11549,7 @@
           "damageTaken": 371,
           "virtualDeaths": 3,
           "kills": 1526,
+          "gold": 5487,
           "enemies": 19,
           "weapons": {
             "pulse": 5,
@@ -11412,6 +11593,7 @@
           "damageTaken": 382,
           "virtualDeaths": 3,
           "kills": 1733,
+          "gold": 6498,
           "enemies": 29,
           "weapons": {
             "pulse": 5,
@@ -11458,6 +11640,7 @@
           "damageTaken": 393,
           "virtualDeaths": 3,
           "kills": 2015,
+          "gold": 7830,
           "enemies": 25,
           "weapons": {
             "pulse": 5,
@@ -11501,6 +11684,7 @@
           "damageTaken": 408,
           "virtualDeaths": 4,
           "kills": 2314,
+          "gold": 9010,
           "enemies": 34,
           "weapons": {
             "pulse": 5,
@@ -11547,6 +11731,7 @@
           "damageTaken": 574,
           "virtualDeaths": 6,
           "kills": 2642,
+          "gold": 10370,
           "enemies": 55,
           "weapons": {
             "pulse": 5,
@@ -11598,6 +11783,7 @@
           "damageTaken": 629,
           "virtualDeaths": 6,
           "kills": 3068,
+          "gold": 12010,
           "enemies": 66,
           "weapons": {
             "pulse": 5,
@@ -11649,6 +11835,7 @@
           "damageTaken": 724,
           "virtualDeaths": 7,
           "kills": 3447,
+          "gold": 14119,
           "enemies": 66,
           "weapons": {
             "pulse": 5,
@@ -11700,6 +11887,7 @@
           "damageTaken": 826,
           "virtualDeaths": 8,
           "kills": 3881,
+          "gold": 15920,
           "enemies": 56,
           "weapons": {
             "pulse": 5,
@@ -11751,6 +11939,7 @@
           "damageTaken": 842,
           "virtualDeaths": 8,
           "kills": 4316,
+          "gold": 17875,
           "enemies": 93,
           "weapons": {
             "pulse": 5,
@@ -11804,6 +11993,7 @@
           "damageTaken": 907,
           "virtualDeaths": 8,
           "kills": 4793,
+          "gold": 19869,
           "enemies": 114,
           "weapons": {
             "pulse": 5,
@@ -11858,6 +12048,7 @@
           "damageTaken": 957,
           "virtualDeaths": 8,
           "kills": 5329,
+          "gold": 21993,
           "enemies": 150,
           "weapons": {
             "pulse": 5,
@@ -11911,6 +12102,7 @@
           "damageTaken": 985,
           "virtualDeaths": 8,
           "kills": 5972,
+          "gold": 24731,
           "enemies": 160,
           "weapons": {
             "pulse": 5,
@@ -11964,6 +12156,7 @@
           "damageTaken": 1000,
           "virtualDeaths": 8,
           "kills": 6514,
+          "gold": 27238,
           "enemies": 164,
           "weapons": {
             "pulse": 5,
@@ -12017,6 +12210,7 @@
           "damageTaken": 1083,
           "virtualDeaths": 9,
           "kills": 7092,
+          "gold": 29929,
           "enemies": 141,
           "weapons": {
             "pulse": 5,
@@ -12069,6 +12263,7 @@
           "damageTaken": 1131,
           "virtualDeaths": 9,
           "kills": 7641,
+          "gold": 32458,
           "enemies": 164,
           "weapons": {
             "pulse": 5,
@@ -12120,6 +12315,7 @@
           "damageTaken": 1293,
           "virtualDeaths": 10,
           "kills": 8121,
+          "gold": 34922,
           "enemies": 165,
           "weapons": {
             "pulse": 5,
@@ -12171,6 +12367,7 @@
           "damageTaken": 1342,
           "virtualDeaths": 10,
           "kills": 8718,
+          "gold": 37686,
           "enemies": 139,
           "weapons": {
             "pulse": 5,
@@ -12224,6 +12421,7 @@
           "damageTaken": 1530,
           "virtualDeaths": 10,
           "kills": 9287,
+          "gold": 40291,
           "enemies": 165,
           "weapons": {
             "pulse": 5,
@@ -12278,6 +12476,7 @@
           "damageTaken": 1647,
           "virtualDeaths": 11,
           "kills": 9833,
+          "gold": 42917,
           "enemies": 3,
           "weapons": {
             "pulse": 5,
@@ -12316,6 +12515,7 @@
           "damageTaken": 1734,
           "virtualDeaths": 11,
           "kills": 9835,
+          "gold": 42929,
           "enemies": 1,
           "weapons": {
             "pulse": 5,
@@ -13178,6 +13378,7 @@
           "spawn": 150.2,
           "hp": 1013,
           "level": 6,
+          "left": 1,
           "yield": 226.6
         },
         {
@@ -13185,6 +13386,7 @@
           "spawn": 690.2,
           "hp": 3157,
           "level": 20,
+          "left": 0,
           "yield": 778
         },
         {
@@ -13192,6 +13394,7 @@
           "spawn": 1410.2,
           "hp": 11321,
           "level": 60,
+          "left": 0.59,
           "yield": 1510.2
         }
       ],

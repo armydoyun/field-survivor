@@ -8,6 +8,7 @@ import { createMockBrowser } from "../tests/mock-browser.js";
 import { createDebugGame } from "../src/debug/create-debug-game.js";
 import { branches } from "../src/data/specializations.js";
 import { fusionRecipes } from "../src/data/fusions.js";
+import { VERSION } from "../src/core/config.js";
 
 const SECONDS = 10;
 const FRAMES = SECONDS * 60;
@@ -78,7 +79,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       );
   }
   const result = {
-    version: "2.6.27",
+    version: VERSION,
     note: `Seed 42, isolated skill, no passives, fixed targets (HP 1e6) at distance 120 (mines 20, orbit 50) for single/crowd; swarm = 40 approaching from 260 with enemy AI. ${SECONDS}s. DPS = total damage / seconds. Mock canvas only.`,
     rows,
   };

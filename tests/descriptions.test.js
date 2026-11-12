@@ -71,3 +71,11 @@ test('base weapon damage formulas in the level-up details match the real damage,
   }
   for (const level of [1, 5]) { run.up.nova = level; const s = st.stats(run); assert.equal(st.novaRadius(s), 112 + 22 * level); assert.equal(st.novaInterval(level), Math.max(1.7, 4.2 - .38 * level)); }
 });
+
+test('the controls footer lists every global key, and the stat window has no duplicate rows', async () => {
+  const { readFileSync } = await import('node:fs');
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8'), footer = html.match(/<footer class="help">([\s\S]*?)<\/footer>/)[1];
+  for (const key of ['W', 'E', 'ESC', 'P', 'F9', 'F', 'M', 'T', 'B', 'G', 'I', 'S', 'Enter']) assert.ok(footer.includes(`<kbd>${key}</kbd>`), key);
+  const hud = readFileSync(new URL('../src/ui/hud-model.js', import.meta.url), 'utf8'), labels = [...hud.match(/html\['characterStats'\][^\n]*/)[0].matchAll(/\['([^'\]]+)',/g)].map(m => m[1]);
+  assert.ok(labels.length >= 8); assert.equal(new Set(labels).size, labels.length, labels.join(' / '));
+});

@@ -5,6 +5,7 @@
 import { writeFileSync } from "node:fs";
 import { createMockBrowser } from "../tests/mock-browser.js";
 import { createDebugGame } from "../src/debug/create-debug-game.js";
+import { VERSION } from "../src/core/config.js";
 
 const LIMIT = 600; // 게임 시간(초)
 const TIME_SCALE = 4;
@@ -150,7 +151,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       );
     }
   const result = {
-    version: "2.6.27",
+    version: VERSION,
     note: `Seed 42, fixed build, player stationary, no natural spawns, core fight from 30:00, up to ${LIMIT}s game time. Damage is refilled each frame and summed. Mock canvas only; not browser FPS or general balance evidence.`,
     routes: ROUTES.map(({ id, label }) => ({ id, label })),
     builds: BUILDS.map(({ id, label }) => ({ id, label })),
