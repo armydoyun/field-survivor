@@ -9,6 +9,7 @@ import { paceAt } from "../src/core/difficulty.js";
 import { startWeaponLevel } from "../src/data/loadouts.js";
 import { hazardHit } from "../src/math/geometry.js";
 import { fusionRecipes } from "../src/data/fusions.js";
+import { VERSION } from "../src/core/config.js";
 
 // 받은 피해의 출처를 피격 직후 판 상태로 어림한다: 예고 범위 · 표류 구역 · 탄 · 감시자 · 정예 · 일반 적 몸체.
 function damageSource(r) {
@@ -627,7 +628,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     }
   writeFileSync(
     new URL("../AUTOPLAY-VALIDATION.json", import.meta.url),
-    JSON.stringify({ version: "2.6.27", note: "Bot autoplay with mock DOM/Canvas. Not human play.", runs }, null, 2) +
+    JSON.stringify({ version: VERSION, note: "Bot autoplay with mock DOM/Canvas. Not human play.", runs }, null, 2) +
       "\n"
   );
 }

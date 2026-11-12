@@ -61,7 +61,7 @@ export function createGrowthMetrics({ sessionState, statistics, buildModel }) {
     if (id === 'vitality') return `${fmt('최대 체력',previous.maxHp,next.maxHp)} · ${fmt('현재 HP',before.player.hp,after.player.hp)}`;
     if (id === 'magnet') return fmt('보석 흡수 반경', previous.magnet, next.magnet);
     if (id === 'regen') return fmt('초당 체력 회복(현재)', previous.regen*recoveryScale(before), next.regen*recoveryScale(after), ' HP/s');
-    if (id === 'crit') return `${fmt('중앙탄 치명타',statistics.pulseCritChance(previous)*100,statistics.pulseCritChance(next)*100,'%')} · ${fmt('보조탄 치명타',statistics.pulseCritChance(previous)*100,statistics.pulseCritChance(next)*100,'%')}`;
+    if (id === 'crit') return fmt('펄스 치명타 확률',statistics.pulseCritChance(previous)*100,statistics.pulseCritChance(next)*100,'%');
     if (id === 'orbit') return fmt('방어 위성 수', previous.orbit, next.orbit, '개');
     if (id === 'burst') return `처치 시 파편 발동 확률: ${uiPercent(burstChance(oldLv))} → ${uiPercent(burstChance(newLv))}`;
     if (id === 'pulse') return fmt('중앙탄 피해', statistics.weaponDamage('pulse', previous), statistics.weaponDamage('pulse', next));

@@ -1,5 +1,5 @@
 {
-  "version": "2.6.27",
+  "version": "3.3.2",
   "note": "Seed 42, isolated skill, no passives, fixed targets (HP 1e6) at distance 120 (mines 20, orbit 50) for single/crowd; swarm = 40 approaching from 260 with enemy AI. 10s. DPS = total damage / seconds. Mock canvas only.",
   "rows": [
     {
