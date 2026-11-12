@@ -17,6 +17,8 @@ jobs:
   # 정적 검사. 테스트와 따로 돌려서, lint가 실패해도 테스트 결과는 그대로 볼 수 있다.
   # ESLint 경고와 Prettier 어긋남(tools/) 모두 실패로 친다.
   lint:
+    # 같은 저장소의 브랜치에서 연 PR은 push 실행이 이미 같은 커밋을 검사한다(결과도 PR에 그대로 표시된다). 중복 실행을 막는다.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -41,6 +43,8 @@ jobs:
   #   browser  npm run test:build — 배포본을 빌드해 실제 Chromium에서 file://로 열고 새 게임을 진행해 봄
   test:
     name: test (${{ matrix.suite }})
+    # 같은 저장소의 브랜치에서 연 PR은 push 실행이 이미 같은 커밋을 검사한다(결과도 PR에 그대로 표시된다). 중복 실행을 막는다.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
